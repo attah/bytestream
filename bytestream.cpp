@@ -13,8 +13,8 @@ bytestream::bytestream()
 {
   _size = 0;
   _pos = 0;
-  noOfNextBytes = 0;
-  noOfNextBytesValid = false;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
   endianness = big;
 }
 
@@ -24,8 +24,8 @@ bytestream::bytestream(const void* data, size_t len)
   _data = new uint8_t[_size];
   memcpy(_data, data, _size);
   _pos = 0;
-  noOfNextBytes = 0;
-  noOfNextBytesValid = false;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
   endianness = big;
 }
 
@@ -35,8 +35,8 @@ bytestream::bytestream(const bytestream& rhs)
   _data = new uint8_t[_size];
   memcpy(_data, rhs._data, _size);
   _pos = rhs._pos;
-  noOfNextBytes = 0;
-  noOfNextBytesValid = false;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
   endianness = rhs.endianness;
 }
 
@@ -54,7 +54,6 @@ uint8_t bytestream::getU8()
   getBytes(&tmp, 1);
   return tmp;
 }
-
 uint16_t bytestream::getU16()
 {
   uint16_t tmp;
@@ -63,7 +62,6 @@ uint16_t bytestream::getU16()
     tmp = bswap_16(tmp);
   return tmp;
 }
-
 uint32_t bytestream::getU32()
 {
   uint32_t tmp;
@@ -72,10 +70,39 @@ uint32_t bytestream::getU32()
     tmp = bswap_32(tmp);
   return tmp;
 }
-
 uint64_t bytestream::getU64()
 {
   uint64_t tmp;
+  getBytes(&tmp, 8);
+  if(needsSwap())
+    tmp = bswap_64(tmp);
+  return tmp;
+}
+int8_t bytestream::getS8()
+{
+  uint8_t tmp;
+  getBytes(&tmp, 1);
+  return tmp;
+}
+int16_t bytestream::getS16()
+{
+  int16_t tmp;
+  getBytes(&tmp, 2);
+  if(needsSwap())
+    tmp = bswap_16(tmp);
+  return tmp;
+}
+int32_t bytestream::getS32()
+{
+  int32_t tmp;
+  getBytes(&tmp, 4);
+  if(needsSwap())
+    tmp = bswap_32(tmp);
+  return tmp;
+}
+int64_t bytestream::getS64()
+{
+  int64_t tmp;
   getBytes(&tmp, 8);
   if(needsSwap())
     tmp = bswap_64(tmp);
@@ -111,6 +138,28 @@ void bytestream::putU64(uint64_t u)
     u = bswap_64(u);
   putBytes(&u, 8);
 }
+void bytestream::putS8(int8_t u)
+{
+  putBytes(&u, 1);
+}
+void bytestream::putS16(int16_t u)
+{
+  if(needsSwap())
+    u = bswap_16(u);
+  putBytes(&u, 2);
+}
+void bytestream::putS32(int32_t u)
+{
+  if(needsSwap())
+    u = bswap_32(u);
+  putBytes(&u, 4);
+}
+void bytestream::putS64(int64_t u)
+{
+  if(needsSwap())
+    u = bswap_64(u);
+  putBytes(&u, 8);
+}
 void bytestream::putBytes(const void* c, size_t len)
 {
 
@@ -128,8 +177,8 @@ void bytestream::putBytes(const void* c, size_t len)
 
 void bytestream::setNoOfNextBytes(int n)
 {
-  noOfNextBytes = n;
-  noOfNextBytesValid = true;
+  _noOfNextBytes = n;
+  _noOfNextBytesValid = true;
 }
 
 void bytestream::_before(size_t bytesToRead)
@@ -143,7 +192,7 @@ void bytestream::_before(size_t bytesToRead)
 void bytestream::_after(size_t bytesRead)
 {
   _pos += bytesRead;
-  noOfNextBytesValid = false;
+  _noOfNextBytesValid = false;
 }
 
 bytestream& operator>>(bytestream& b, uint8_t& u)
@@ -166,8 +215,32 @@ bytestream& operator>>(bytestream& b, uint64_t& u)
   u = b.getU64();
   return b;
 }
+bytestream& operator>>(bytestream& b, int8_t& u)
+{
+  u = b.getS8();
+  return b;
+}
+bytestream& operator>>(bytestream& b, int16_t& u)
+{
+  u = b.getS16();
+  return b;
+}
+bytestream& operator>>(bytestream& b, int32_t& u)
+{
+  u = b.getS32();
+  return b;
+}
+bytestream& operator>>(bytestream& b, int64_t& u)
+{
+  u = b.getS64();
+  return b;
+}
 bytestream& operator>>(bytestream& b, std::string& s)
 {
+  if(!b.noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
   size_t noOfNextBytes = b.getNoOfNextBytes();
   char* cs = new char[noOfNextBytes+1];
   cs[noOfNextBytes] = 0;
@@ -182,7 +255,6 @@ bytestream& operator/(bytestream& b, int i)
   b.setNoOfNextBytes(i);
   return b;
 }
-
 bytestream& operator<<(bytestream& b, const uint8_t& u)
 {
   b.putU8(u);
@@ -201,6 +273,27 @@ bytestream& operator<<(bytestream& b, const uint32_t& u)
 bytestream& operator<<(bytestream& b, const uint64_t& u)
 {
   b.putU64(u);
+  return b;
+}
+
+bytestream& operator<<(bytestream& b, const int8_t& u)
+{
+  b.putS8(u);
+  return b;
+}
+bytestream& operator<<(bytestream& b, const int16_t& u)
+{
+  b.putS16(u);
+  return b;
+}
+bytestream& operator<<(bytestream& b, const int32_t& u)
+{
+  b.putS32(u);
+  return b;
+}
+bytestream& operator<<(bytestream& b, const int64_t& u)
+{
+  b.putS64(u);
   return b;
 }
 bytestream& operator<<(bytestream& b, const std::string& s)
