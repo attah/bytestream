@@ -16,6 +16,11 @@ public:
   bytestream(const bytestream& rhs);
   ~bytestream();
 
+  bool operator==(const bytestream& other) const;
+  bool operator!=(const bytestream& other) const;
+
+  bytestream& operator=(const bytestream& other);
+
   uint8_t* raw() const {return _data;}
   size_t size() const {return _size;}
   size_t pos() const {return _pos;}
@@ -77,6 +82,7 @@ bytestream& operator>>(bytestream& b, int16_t& u);
 bytestream& operator>>(bytestream& b, int32_t& u);
 bytestream& operator>>(bytestream& b, int64_t& u);
 bytestream& operator>>(bytestream& b, string& s);
+bytestream& operator>>(bytestream& b, bytestream& other);
 
 bytestream& operator>>(bytestream& b, const uint8_t& u);
 bytestream& operator>>(bytestream& b, const uint16_t& u);
@@ -87,6 +93,7 @@ bytestream& operator>>(bytestream& b, const int16_t& u);
 bytestream& operator>>(bytestream& b, const int32_t& u);
 bytestream& operator>>(bytestream& b, const int64_t& u);
 bytestream& operator>>(bytestream& b, const string& s);
+bytestream& operator>>(bytestream& b, const bytestream& other);
 
 bool operator>>=(bytestream& b, const uint8_t& u);
 bool operator>>=(bytestream& b, const uint16_t& u);
@@ -97,6 +104,7 @@ bool operator>>=(bytestream& b, const int16_t& u);
 bool operator>>=(bytestream& b, const int32_t& u);
 bool operator>>=(bytestream& b, const int64_t& u);
 bool operator>>=(bytestream& b, const string& s);
+bool operator>>=(bytestream& b, const bytestream& other);
 
 bytestream& operator/(bytestream& b, int i);
 

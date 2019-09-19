@@ -57,4 +57,15 @@ int main(int argc, char** argv)
   assert(bts4 >>= (int64_t)-4);
   assert(bts4/5 >>= "troll");
 
+  assert(bts4==bts);
+  bytestream bts0;
+  assert(bts4==bts0 != true);
+
+  bytestream bts5 = bts[30];
+  bytestream tmp;
+  bytestream troll;
+  troll << "troll";
+  bts5/5 >> tmp;
+  std::cout << "aaaa" << troll.size() << "..." << troll.size() << "\n";
+  assert(tmp==troll);
 }
