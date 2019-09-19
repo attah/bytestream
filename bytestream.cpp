@@ -285,6 +285,39 @@ bytestream& operator>>(bytestream& b, const int64_t& u)
   return b;
 }
 
+bool operator>>=(bytestream& b, const uint8_t& u)
+{
+  return u == b.getU8();
+}
+bool operator>>=(bytestream& b, const uint16_t& u)
+{
+  return u == b.getU16();
+}
+bool operator>>=(bytestream& b, const uint32_t& u)
+{
+  return u == b.getU32();
+}
+bool operator>>=(bytestream& b, const uint64_t& u)
+{
+  return u == b.getU64();
+}
+bool operator>>=(bytestream& b, const int8_t& u)
+{
+  return u == b.getS8();
+}
+bool operator>>=(bytestream& b, const int16_t& u)
+{
+  return u == b.getS16();
+}
+bool operator>>=(bytestream& b, const int32_t& u)
+{
+  return u == b.getS32();
+}
+bool operator>>=(bytestream& b, const int64_t& u)
+{
+  return u == b.getS64();
+}
+
 bytestream& operator>>(bytestream& b, std::string& s)
 {
   if(!b.noOfNextBytesValid())
