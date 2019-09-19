@@ -284,8 +284,7 @@ bytestream& operator>>(bytestream& b, bytestream& other)
     throw invalid_argument("No length given");
   }
   size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
+  char* cs = new char[noOfNextBytes];
   b.getBytes(cs, noOfNextBytes);
   other = bytestream(cs, noOfNextBytes);
   delete cs;
@@ -432,8 +431,7 @@ bool operator>>=(bytestream& b, const bytestream& other)
     throw invalid_argument("No length given");
   }
   size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
+  char* cs = new char[noOfNextBytes];
   b.getBytes(cs, noOfNextBytes);
   bytestream tmp = bytestream(cs, noOfNextBytes);
   delete cs;
@@ -513,8 +511,7 @@ bool bytestream::needsSwap()
 
 bytestream bytestream::operator[](size_t i)
 {
-  bytestream tmp(*this);
-  tmp.setPos(i);
+  bytestream tmp(_data+i, _size-i);
   return tmp;
 }
 

@@ -62,6 +62,7 @@ int main(int argc, char** argv)
   assert(bts4==bts0 != true);
 
   bytestream bts5 = bts[30];
+  assert(bts5.size() < bts.size());
   bytestream tmp;
   bytestream troll;
   troll << "troll";
