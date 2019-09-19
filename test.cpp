@@ -43,6 +43,7 @@ int main(int argc, char** argv)
 
   bts3 >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
   bts3 >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
+  bts3 >> "troll";
 
   bytestream bts4 = bts3[0];
 
@@ -54,5 +55,6 @@ int main(int argc, char** argv)
   assert(bts4 >>= (int16_t)-2);
   assert(bts4 >>= (int32_t)-3);
   assert(bts4 >>= (int64_t)-4);
+  assert(bts4/5 >>= "troll");
 
 }

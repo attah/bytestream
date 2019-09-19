@@ -235,6 +235,20 @@ bytestream& operator>>(bytestream& b, int64_t& u)
   u = b.getS64();
   return b;
 }
+bytestream& operator>>(bytestream& b, std::string& s)
+{
+  if(!b.noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = b.getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes+1];
+  cs[noOfNextBytes] = 0;
+  b.getBytes(cs, noOfNextBytes);
+  s = string(cs, noOfNextBytes);
+  delete cs;
+  return b;
+}
 
 bytestream& operator>>(bytestream& b, const uint8_t& u)
 {
@@ -284,6 +298,26 @@ bytestream& operator>>(bytestream& b, const int64_t& u)
     throw invalid_argument("Does not match const");
   return b;
 }
+bytestream& operator>>(bytestream& b, const std::string& s)
+{
+  if(!b.noOfNextBytesValid())
+  {
+    b.setNoOfNextBytes(s.length());
+  }
+  else if (b.getNoOfNextBytes() != s.length())
+  {
+    throw invalid_argument("Desired length does not match const length");
+  }
+  size_t noOfNextBytes = b.getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes+1];
+  cs[noOfNextBytes] = 0;
+  b.getBytes(cs, noOfNextBytes);
+  std::string s2 = string(cs, noOfNextBytes);
+  delete cs;
+  if(s2 != s)
+    throw invalid_argument("Does not match const");
+  return b;
+}
 
 bool operator>>=(bytestream& b, const uint8_t& u)
 {
@@ -317,20 +351,23 @@ bool operator>>=(bytestream& b, const int64_t& u)
 {
   return u == b.getS64();
 }
-
-bytestream& operator>>(bytestream& b, std::string& s)
+bool operator>>=(bytestream& b, const std::string& s)
 {
   if(!b.noOfNextBytesValid())
   {
-    throw invalid_argument("No length given");
+    b.setNoOfNextBytes(s.length());
+  }
+  else if (b.getNoOfNextBytes() != s.length())
+  {
+    throw invalid_argument("Desired length does not match const length");
   }
   size_t noOfNextBytes = b.getNoOfNextBytes();
   char* cs = new char[noOfNextBytes+1];
   cs[noOfNextBytes] = 0;
   b.getBytes(cs, noOfNextBytes);
-  s = string(cs, noOfNextBytes);
+  std::string s2 = string(cs, noOfNextBytes);
   delete cs;
-  return b;
+  return s2 == s;
 }
 
 bytestream& operator/(bytestream& b, int i)
