@@ -235,6 +235,56 @@ bytestream& operator>>(bytestream& b, int64_t& u)
   u = b.getS64();
   return b;
 }
+
+bytestream& operator>>(bytestream& b, const uint8_t& u)
+{
+  if(u != b.getU8())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const uint16_t& u)
+{
+  if(u != b.getU16())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const uint32_t& u)
+{
+  if(u != b.getU32())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const uint64_t& u)
+{
+  if(u != b.getU64())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const int8_t& u)
+{
+  if(u != b.getS8())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const int16_t& u)
+{
+  if(u != b.getS16())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const int32_t& u)
+{
+  if(u != b.getS32())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+bytestream& operator>>(bytestream& b, const int64_t& u)
+{
+  if(u != b.getS64())
+    throw invalid_argument("Does not match const");
+  return b;
+}
+
 bytestream& operator>>(bytestream& b, std::string& s)
 {
   if(!b.noOfNextBytesValid())

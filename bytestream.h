@@ -78,6 +78,16 @@ bytestream& operator>>(bytestream& b, int32_t& u);
 bytestream& operator>>(bytestream& b, int64_t& u);
 bytestream& operator>>(bytestream& b, string& s);
 
+bytestream& operator>>(bytestream& b, const uint8_t& u);
+bytestream& operator>>(bytestream& b, const uint16_t& u);
+bytestream& operator>>(bytestream& b, const uint32_t& u);
+bytestream& operator>>(bytestream& b, const uint64_t& u);
+bytestream& operator>>(bytestream& b, const int8_t& u);
+bytestream& operator>>(bytestream& b, const int16_t& u);
+bytestream& operator>>(bytestream& b, const int32_t& u);
+bytestream& operator>>(bytestream& b, const int64_t& u);
+bytestream& operator>>(bytestream& b, string& s);
+
 bytestream& operator/(bytestream& b, int i);
 
 bytestream& operator<<(bytestream& b, const uint8_t& u);
