@@ -1,8 +1,35 @@
 #include "bytestream.h"
 #include <iostream>
 #include <assert.h>
+#include <dlfcn.h>
+
+#define TEST(n) TEST_(n, __COUNTER__)
+#define TEST_(n, counter) TEST__(n, counter)
+#define TEST__(n, counter) \
+  void _test_##n();\
+  extern "C" void __test_##counter()\
+    {_test_##n();}\
+  void _test_##n()
+
+typedef void (*void_f)(void);
 
 int main(int argc, char** argv)
+{
+  void* handle = dlopen(NULL, RTLD_LAZY);
+
+  int i = 0;
+  while(true)
+  {
+    std::string test = "__test_"+std::to_string(i++);
+    void* fptr = dlsym(handle, test.c_str());
+    if(!fptr)
+      break;
+    ((void_f)fptr)();
+  }
+  dlclose(handle);
+}
+
+TEST(legacy)
 {
   bytestream bts;
 
