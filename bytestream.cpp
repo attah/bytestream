@@ -71,7 +71,8 @@ bytestream& bytestream::operator=(const bytestream& other)
   {
     delete _data;
   }
-  _size = other. size();
+  _pos = other.pos();
+  _size = other.size();
   _data = new uint8_t[_size];
   memcpy(_data, other.raw(), _size);
 }
