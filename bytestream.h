@@ -50,7 +50,8 @@ public:
   void putS64(int64_t);
   void putBytes(const void* c, size_t len);
 
-  void setNoOfNextBytes(int n);
+  void setNoOfNextBytes(size_t n);
+  void invalidateNoOfNextBytes();
   size_t getNoOfNextBytes() {return _noOfNextBytes;}
   bool noOfNextBytesValid() const {return _noOfNextBytesValid;}
 

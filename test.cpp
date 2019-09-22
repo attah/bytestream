@@ -46,21 +46,34 @@ TEST(const_types)
   bts/10 >> "someString";
 }
 
-TEST(bool_typechecks)
+TEST(test_operator)
 {
   bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
 
+  // Non-matches should not advance the read offset, matches should
+  ASSERT_FALSE(bts >>= (uint8_t)0);
   ASSERT(bts >>= (uint8_t)1);
+  ASSERT_FALSE(bts >>= (uint16_t)0);
   ASSERT(bts >>= (uint16_t)2);
+  ASSERT_FALSE(bts >>= (uint32_t)0);
   ASSERT(bts >>= (uint32_t)3);
+  ASSERT_FALSE(bts >>= (uint64_t)0);
   ASSERT(bts >>= (uint64_t)4);
+  ASSERT_FALSE(bts >>= (int8_t)0);
   ASSERT(bts >>= (int8_t)-1);
+  ASSERT_FALSE(bts >>= (int16_t)0);
   ASSERT(bts >>= (int16_t)-2);
+  ASSERT_FALSE(bts >>= (int32_t)0);
   ASSERT(bts >>= (int32_t)-3);
+  ASSERT_FALSE(bts >>= (int64_t)0);
   ASSERT(bts >>= (int64_t)-4);
+
+  ASSERT_FALSE(bts >>= "smoeString");
+  // what would have been reading past end should still return false
+  ASSERT_FALSE(bts >>= "notSomeString");
   ASSERT(bts >>= "someString");
   bts -= 10;
   ASSERT(bts/10 >>= "someString");

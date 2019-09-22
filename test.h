@@ -22,6 +22,10 @@
 #define ASSERT(expr) \
   if(!(expr)){throw TestFailedException("Assertion failed", \
                                         __FILE__, __LINE__);}
+#define ASSERT_FALSE(expr) \
+  if((expr)){throw TestFailedException("Assertion failed", \
+                                        __FILE__, __LINE__);}
+
 
 typedef void (*void_f)(void);
 
