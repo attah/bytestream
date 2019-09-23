@@ -98,6 +98,34 @@ GET(int, S, 16);
 GET(int, S, 32);
 GET(int, S, 64);
 
+std::string bytestream::getString()
+{
+  if(!noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes+1];
+  cs[noOfNextBytes] = 0;
+  getBytes(cs, noOfNextBytes);
+  string s = std::string(cs, noOfNextBytes);
+  delete cs;
+  return s;
+}
+bytestream bytestream::getBytestream()
+{
+  if(!noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  uint8_t* cs = new uint8_t[noOfNextBytes];
+  getBytes(cs, noOfNextBytes);
+  bytestream other = bytestream(cs, noOfNextBytes);
+  delete cs;
+  return other;
+}
+
 void bytestream::getBytes(void* cs,  size_t len)
 {
   _before(len);
@@ -142,11 +170,7 @@ bool bytestream::nextString(const std::string& s)
     return false;
   }
 
-  char* cs = new char[noOfNextBytes];
-  getBytes(cs, noOfNextBytes);
-  std::string s2 = string(cs, noOfNextBytes);
-  delete cs;
-  if(s2 == s)
+  if(getString() == s)
   {
     return true;
   }
@@ -175,11 +199,7 @@ bool bytestream::nextBytestream(const bytestream& other)
     return false;
   }
 
-  char* cs = new char[noOfNextBytes];
-  getBytes(cs, noOfNextBytes);
-  bytestream tmp = bytestream(cs, noOfNextBytes);
-  delete cs;
-  if(tmp == other)
+  if(getBytestream() == other)
   {
     return true;
   }
@@ -189,7 +209,6 @@ bool bytestream::nextBytestream(const bytestream& other)
     return false;
   }
 }
-
 
 #define PUT(type, shorthand, len) PUT_(type##len##_t, shorthand##len, len)
 #define PUT_(type, shortType, len) \
@@ -206,9 +225,17 @@ PUT(int, S, 16);
 PUT(int, S, 32);
 PUT(int, S, 64);
 
+void bytestream::putString(const std::string& s)
+{
+  putBytes(s.c_str(), s.length());
+}
+void bytestream::putBytestream(const bytestream& other)
+{
+  putBytes(other.raw(), other.size());
+}
+
 void bytestream::putBytes(const void* c, size_t len)
 {
-
   uint8_t* old = _data;
   _data = new uint8_t[_size+len];
 
@@ -285,14 +312,15 @@ PUTOP(int, S, 8);
 PUTOP(int, S, 16);
 PUTOP(int, S, 32);
 PUTOP(int, S, 64);
+
 bytestream& bytestream::operator<<(const std::string& s)
 {
-  putBytes(s.c_str(), s.length());
+  putString(s);
   return *this;
 }
 bytestream& bytestream::operator<<(const bytestream& other)
 {
-  putBytes(other.raw(), other.size());
+  putBytestream(other);
   return *this;
 }
 
@@ -312,33 +340,17 @@ GETOP(int, S, 64);
 
 bytestream& bytestream::operator>>(std::string& s)
 {
-  if(!noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
-  getBytes(cs, noOfNextBytes);
-  s = string(cs, noOfNextBytes);
-  delete cs;
+  s = getString();
   return *this;
 }
 bytestream& bytestream::operator>>(bytestream& other)
 {
-  if(!noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes];
-  getBytes(cs, noOfNextBytes);
-  other = bytestream(cs, noOfNextBytes);
-  delete cs;
+  other = getBytestream();
   return *this;
 }
 
-#define GETOP_CONST(type, shorthand, len) GETOP_CONST_(type##len##_t, shorthand##len)
+#define GETOP_CONST(type, shorthand, len) \
+  GETOP_CONST_(type##len##_t, shorthand##len)
 #define GETOP_CONST_(type, shortType) \
   bytestream& bytestream::operator>>(const type& u) \
   {if(u!=get##shortType()) {throw invalid_argument("Does not match const");}\
@@ -363,13 +375,7 @@ bytestream& bytestream::operator>>(const std::string& s)
   {
     throw invalid_argument("Desired length does not match const length");
   }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
-  getBytes(cs, noOfNextBytes);
-  std::string s2 = string(cs, noOfNextBytes);
-  delete cs;
-  if(s2 != s)
+  if(getString() != s)
     throw invalid_argument("Does not match const");
   return *this;
 }
@@ -379,13 +385,12 @@ bytestream& bytestream::operator>>(const bytestream& other)
   {
     throw invalid_argument("No length given");
   }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes];
-  getBytes(cs, noOfNextBytes);
-  bytestream tmp = bytestream(cs, noOfNextBytes);
-  if(tmp != other)
+  else if (getNoOfNextBytes() != other.size())
+  {
+    throw invalid_argument("Desired length does not match const length");
+  }
+  if(getBytestream() != other)
     throw invalid_argument("Does not match const");
-  delete cs;
   return *this;
 }
 

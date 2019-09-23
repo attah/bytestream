@@ -1,5 +1,4 @@
 #include <string>
-using namespace std;
 
 class bytestream
 {
@@ -38,6 +37,8 @@ public:
   int16_t getS16();
   int32_t getS32();
   int64_t getS64();
+  std::string getString();
+  bytestream getBytestream();
   void getBytes(void* cs,  size_t len);
 
   bool nextU8(uint8_t);
@@ -59,6 +60,8 @@ public:
   void putS16(int16_t);
   void putS32(int32_t);
   void putS64(int64_t);
+  void putString(const std::string&);
+  void putBytestream(const bytestream&);
   void putBytes(const void* c, size_t len);
 
   void setNoOfNextBytes(size_t n);
@@ -80,7 +83,7 @@ public:
   bytestream& operator<<(const int16_t& u);
   bytestream& operator<<(const int32_t& u);
   bytestream& operator<<(const int64_t& u);
-  bytestream& operator<<(const string& s);
+  bytestream& operator<<(const std::string& s);
   bytestream& operator<<(const bytestream& other);
 
   bytestream& operator>>(uint8_t& u);
@@ -91,7 +94,7 @@ public:
   bytestream& operator>>(int16_t& u);
   bytestream& operator>>(int32_t& u);
   bytestream& operator>>(int64_t& u);
-  bytestream& operator>>(string& s);
+  bytestream& operator>>(std::string& s);
   bytestream& operator>>(bytestream& other);
 
   bytestream& operator>>(const uint8_t& u);
@@ -102,7 +105,7 @@ public:
   bytestream& operator>>(const int16_t& u);
   bytestream& operator>>(const int32_t& u);
   bytestream& operator>>(const int64_t& u);
-  bytestream& operator>>(const string& s);
+  bytestream& operator>>(const std::string& s);
   bytestream& operator>>(const bytestream& other);
 
   bool operator>>=(const uint8_t& u);
@@ -113,7 +116,7 @@ public:
   bool operator>>=(const int16_t& u);
   bool operator>>=(const int32_t& u);
   bool operator>>=(const int64_t& u);
-  bool operator>>=(const string& s);
+  bool operator>>=(const std::string& s);
   bool operator>>=(const bytestream& other);
 
 
