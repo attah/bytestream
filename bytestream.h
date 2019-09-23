@@ -70,6 +70,53 @@ public:
   bytestream& operator+=(size_t i);
   bytestream& operator-=(size_t i);
 
+  bytestream& operator/(int i);
+
+  bytestream& operator<<(const uint8_t& u);
+  bytestream& operator<<(const uint16_t& u);
+  bytestream& operator<<(const uint32_t& u);
+  bytestream& operator<<(const uint64_t& u);
+  bytestream& operator<<(const int8_t& u);
+  bytestream& operator<<(const int16_t& u);
+  bytestream& operator<<(const int32_t& u);
+  bytestream& operator<<(const int64_t& u);
+  bytestream& operator<<(const string& s);
+  bytestream& operator<<(const bytestream& other);
+
+  bytestream& operator>>(uint8_t& u);
+  bytestream& operator>>(uint16_t& u);
+  bytestream& operator>>(uint32_t& u);
+  bytestream& operator>>(uint64_t& u);
+  bytestream& operator>>(int8_t& u);
+  bytestream& operator>>(int16_t& u);
+  bytestream& operator>>(int32_t& u);
+  bytestream& operator>>(int64_t& u);
+  bytestream& operator>>(string& s);
+  bytestream& operator>>(bytestream& other);
+
+  bytestream& operator>>(const uint8_t& u);
+  bytestream& operator>>(const uint16_t& u);
+  bytestream& operator>>(const uint32_t& u);
+  bytestream& operator>>(const uint64_t& u);
+  bytestream& operator>>(const int8_t& u);
+  bytestream& operator>>(const int16_t& u);
+  bytestream& operator>>(const int32_t& u);
+  bytestream& operator>>(const int64_t& u);
+  bytestream& operator>>(const string& s);
+  bytestream& operator>>(const bytestream& other);
+
+  bool operator>>=(const uint8_t& u);
+  bool operator>>=(const uint16_t& u);
+  bool operator>>=(const uint32_t& u);
+  bool operator>>=(const uint64_t& u);
+  bool operator>>=(const int8_t& u);
+  bool operator>>=(const int16_t& u);
+  bool operator>>=(const int32_t& u);
+  bool operator>>=(const int64_t& u);
+  bool operator>>=(const string& s);
+  bool operator>>=(const bytestream& other);
+
+
 private:
   uint8_t* _data;
   size_t _size;
@@ -84,49 +131,3 @@ private:
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
 };
-
-bytestream& operator>>(bytestream& b, uint8_t& u);
-bytestream& operator>>(bytestream& b, uint16_t& u);
-bytestream& operator>>(bytestream& b, uint32_t& u);
-bytestream& operator>>(bytestream& b, uint64_t& u);
-bytestream& operator>>(bytestream& b, int8_t& u);
-bytestream& operator>>(bytestream& b, int16_t& u);
-bytestream& operator>>(bytestream& b, int32_t& u);
-bytestream& operator>>(bytestream& b, int64_t& u);
-bytestream& operator>>(bytestream& b, string& s);
-bytestream& operator>>(bytestream& b, bytestream& other);
-
-bytestream& operator>>(bytestream& b, const uint8_t& u);
-bytestream& operator>>(bytestream& b, const uint16_t& u);
-bytestream& operator>>(bytestream& b, const uint32_t& u);
-bytestream& operator>>(bytestream& b, const uint64_t& u);
-bytestream& operator>>(bytestream& b, const int8_t& u);
-bytestream& operator>>(bytestream& b, const int16_t& u);
-bytestream& operator>>(bytestream& b, const int32_t& u);
-bytestream& operator>>(bytestream& b, const int64_t& u);
-bytestream& operator>>(bytestream& b, const string& s);
-bytestream& operator>>(bytestream& b, const bytestream& other);
-
-bool operator>>=(bytestream& b, const uint8_t& u);
-bool operator>>=(bytestream& b, const uint16_t& u);
-bool operator>>=(bytestream& b, const uint32_t& u);
-bool operator>>=(bytestream& b, const uint64_t& u);
-bool operator>>=(bytestream& b, const int8_t& u);
-bool operator>>=(bytestream& b, const int16_t& u);
-bool operator>>=(bytestream& b, const int32_t& u);
-bool operator>>=(bytestream& b, const int64_t& u);
-bool operator>>=(bytestream& b, const string& s);
-bool operator>>=(bytestream& b, const bytestream& other);
-
-bytestream& operator/(bytestream& b, int i);
-
-bytestream& operator<<(bytestream& b, const uint8_t& u);
-bytestream& operator<<(bytestream& b, const uint16_t& u);
-bytestream& operator<<(bytestream& b, const uint32_t& u);
-bytestream& operator<<(bytestream& b, const uint64_t& u);
-bytestream& operator<<(bytestream& b, const int8_t& u);
-bytestream& operator<<(bytestream& b, const int16_t& u);
-bytestream& operator<<(bytestream& b, const int32_t& u);
-bytestream& operator<<(bytestream& b, const int64_t& u);
-bytestream& operator<<(bytestream& b, const string& s);
-bytestream& operator<<(bytestream& b, const bytestream& other);

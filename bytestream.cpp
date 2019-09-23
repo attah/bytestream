@@ -316,270 +316,6 @@ void bytestream::_after(size_t bytesRead)
   _noOfNextBytesValid = false;
 }
 
-bytestream& operator>>(bytestream& b, uint8_t& u)
-{
-  u = b.getU8();
-  return b;
-}
-bytestream& operator>>(bytestream& b, uint16_t& u)
-{
-  u = b.getU16();
-  return b;
-}
-bytestream& operator>>(bytestream& b, uint32_t& u)
-{
-  u = b.getU32();
-  return b;
-}
-bytestream& operator>>(bytestream& b, uint64_t& u)
-{
-  u = b.getU64();
-  return b;
-}
-bytestream& operator>>(bytestream& b, int8_t& u)
-{
-  u = b.getS8();
-  return b;
-}
-bytestream& operator>>(bytestream& b, int16_t& u)
-{
-  u = b.getS16();
-  return b;
-}
-bytestream& operator>>(bytestream& b, int32_t& u)
-{
-  u = b.getS32();
-  return b;
-}
-bytestream& operator>>(bytestream& b, int64_t& u)
-{
-  u = b.getS64();
-  return b;
-}
-bytestream& operator>>(bytestream& b, std::string& s)
-{
-  if(!b.noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
-  b.getBytes(cs, noOfNextBytes);
-  s = string(cs, noOfNextBytes);
-  delete cs;
-  return b;
-}
-bytestream& operator>>(bytestream& b, bytestream& other)
-{
-  if(!b.noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes];
-  b.getBytes(cs, noOfNextBytes);
-  other = bytestream(cs, noOfNextBytes);
-  delete cs;
-  return b;
-}
-
-bytestream& operator>>(bytestream& b, const uint8_t& u)
-{
-  if(u != b.getU8())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const uint16_t& u)
-{
-  if(u != b.getU16())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const uint32_t& u)
-{
-  if(u != b.getU32())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const uint64_t& u)
-{
-  if(u != b.getU64())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const int8_t& u)
-{
-  if(u != b.getS8())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const int16_t& u)
-{
-  if(u != b.getS16())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const int32_t& u)
-{
-  if(u != b.getS32())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const int64_t& u)
-{
-  if(u != b.getS64())
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const std::string& s)
-{
-  if(!b.noOfNextBytesValid())
-  {
-    b.setNoOfNextBytes(s.length());
-  }
-  else if (b.getNoOfNextBytes() != s.length())
-  {
-    throw invalid_argument("Desired length does not match const length");
-  }
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
-  b.getBytes(cs, noOfNextBytes);
-  std::string s2 = string(cs, noOfNextBytes);
-  delete cs;
-  if(s2 != s)
-    throw invalid_argument("Does not match const");
-  return b;
-}
-bytestream& operator>>(bytestream& b, const bytestream& other)
-{
-  if(!b.noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes];
-  b.getBytes(cs, noOfNextBytes);
-  bytestream tmp = bytestream(cs, noOfNextBytes);
-  if(tmp != other)
-    throw invalid_argument("Does not match const");
-  delete cs;
-  return b;
-}
-
-bool operator>>=(bytestream& b, const uint8_t& u)
-{
-  return b.nextU8(u);
-}
-bool operator>>=(bytestream& b, const uint16_t& u)
-{
-  return b.nextU16(u);
-}
-bool operator>>=(bytestream& b, const uint32_t& u)
-{
-  return b.nextU32(u);
-}
-bool operator>>=(bytestream& b, const uint64_t& u)
-{
-  return b.nextU64(u);
-}
-bool operator>>=(bytestream& b, const int8_t& u)
-{
-  return b.nextS8(u);
-}
-bool operator>>=(bytestream& b, const int16_t& u)
-{
-  return b.nextS16(u);
-}
-bool operator>>=(bytestream& b, const int32_t& u)
-{
-  return b.nextS32(u);
-}
-bool operator>>=(bytestream& b, const int64_t& u)
-{
-  return b.nextS64(u);
-}
-bool operator>>=(bytestream& b, const std::string& s)
-{
-  return b.nextString(s);
-}
-bool operator>>=(bytestream& b, const bytestream& other)
-{
-  return b.nextBytestream(other);
-}
-
-bytestream& operator/(bytestream& b, int i)
-{
-  b.setNoOfNextBytes(i);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const uint8_t& u)
-{
-  b.putU8(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const uint16_t& u)
-{
-  b.putU16(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const uint32_t& u)
-{
-  b.putU32(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const uint64_t& u)
-{
-  b.putU64(u);
-  return b;
-}
-
-bytestream& operator<<(bytestream& b, const int8_t& u)
-{
-  b.putS8(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const int16_t& u)
-{
-  b.putS16(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const int32_t& u)
-{
-  b.putS32(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const int64_t& u)
-{
-  b.putS64(u);
-  return b;
-}
-bytestream& operator<<(bytestream& b, const std::string& s)
-{
-  b.putBytes(s.c_str(), s.length());
-  return b;
-}
-bytestream& operator<<(bytestream& b, const bytestream& other)
-{
-  b.putBytes(other.raw(), other.size());
-  return b;
-}
-
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-bool bytestream::needsSwap()
-{
-  return endianness != Endianness::native && endianness != Endianness::little;
-}
-#elif __BYTE_ORDER == __BIG_ENDIAN
-bool bytestream::needsSwap()
-{
-  return endianness != Endianness::native && endianness != Endianness::big;
-}
-#else
-#error
-#endif
-
 bytestream bytestream::operator[](size_t i)
 {
   bytestream tmp(_data+i, _size-i);
@@ -597,3 +333,162 @@ bytestream& bytestream::operator-=(size_t i)
   _pos -= i;
   return *this;
 }
+
+bytestream& bytestream::operator/(int i)
+{
+  setNoOfNextBytes(i);
+  return *this;
+}
+
+#define PUTOP(type, shorthand, len) PUTOP_(type##len##_t, shorthand##len)
+#define PUTOP_(type, shortType) \
+  bytestream& bytestream::operator<<(const type& u) \
+  {put##shortType(u); return *this;}
+
+PUTOP(uint, U, 8);
+PUTOP(uint, U, 16);
+PUTOP(uint, U, 32);
+PUTOP(uint, U, 64);
+PUTOP(int, S, 8);
+PUTOP(int, S, 16);
+PUTOP(int, S, 32);
+PUTOP(int, S, 64);
+bytestream& bytestream::operator<<(const std::string& s)
+{
+  putBytes(s.c_str(), s.length());
+  return *this;
+}
+bytestream& bytestream::operator<<(const bytestream& other)
+{
+  putBytes(other.raw(), other.size());
+  return *this;
+}
+
+#define GETOP(type, shorthand, len) GETOP_(type##len##_t, shorthand##len)
+#define GETOP_(type, shortType) \
+  bytestream& bytestream::operator>>(type& u) \
+  {u = get##shortType(); return *this;}
+
+GETOP(uint, U, 8);
+GETOP(uint, U, 16);
+GETOP(uint, U, 32);
+GETOP(uint, U, 64);
+GETOP(int, S, 8);
+GETOP(int, S, 16);
+GETOP(int, S, 32);
+GETOP(int, S, 64);
+
+bytestream& bytestream::operator>>(std::string& s)
+{
+  if(!noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes+1];
+  cs[noOfNextBytes] = 0;
+  getBytes(cs, noOfNextBytes);
+  s = string(cs, noOfNextBytes);
+  delete cs;
+  return *this;
+}
+bytestream& bytestream::operator>>(bytestream& other)
+{
+  if(!noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes];
+  getBytes(cs, noOfNextBytes);
+  other = bytestream(cs, noOfNextBytes);
+  delete cs;
+  return *this;
+}
+
+#define GETOP_CONST(type, shorthand, len) GETOP_CONST_(type##len##_t, shorthand##len)
+#define GETOP_CONST_(type, shortType) \
+  bytestream& bytestream::operator>>(const type& u) \
+  {if(u!=get##shortType()) {throw invalid_argument("Does not match const");}\
+   else{return *this;}}
+
+GETOP_CONST(uint, U, 8);
+GETOP_CONST(uint, U, 16);
+GETOP_CONST(uint, U, 32);
+GETOP_CONST(uint, U, 64);
+GETOP_CONST(int, S, 8);
+GETOP_CONST(int, S, 16);
+GETOP_CONST(int, S, 32);
+GETOP_CONST(int, S, 64);
+
+bytestream& bytestream::operator>>(const std::string& s)
+{
+  if(!noOfNextBytesValid())
+  {
+    setNoOfNextBytes(s.length());
+  }
+  else if (getNoOfNextBytes() != s.length())
+  {
+    throw invalid_argument("Desired length does not match const length");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes+1];
+  cs[noOfNextBytes] = 0;
+  getBytes(cs, noOfNextBytes);
+  std::string s2 = string(cs, noOfNextBytes);
+  delete cs;
+  if(s2 != s)
+    throw invalid_argument("Does not match const");
+  return *this;
+}
+bytestream& bytestream::operator>>(const bytestream& other)
+{
+  if(!noOfNextBytesValid())
+  {
+    throw invalid_argument("No length given");
+  }
+  size_t noOfNextBytes = getNoOfNextBytes();
+  char* cs = new char[noOfNextBytes];
+  getBytes(cs, noOfNextBytes);
+  bytestream tmp = bytestream(cs, noOfNextBytes);
+  if(tmp != other)
+    throw invalid_argument("Does not match const");
+  delete cs;
+  return *this;
+}
+
+#define NEXTOP(type, shorthand, len) NEXTOP_(type##len##_t, shorthand##len)
+#define NEXTOP_(type, shortType) \
+  bool bytestream::operator>>=(const type& u) \
+  {return next##shortType(u);}
+
+NEXTOP(uint, U, 8);
+NEXTOP(uint, U, 16);
+NEXTOP(uint, U, 32);
+NEXTOP(uint, U, 64);
+NEXTOP(int, S, 8);
+NEXTOP(int, S, 16);
+NEXTOP(int, S, 32);
+NEXTOP(int, S, 64);
+bool bytestream::operator>>=(const std::string& s)
+{
+  return nextString(s);
+}
+bool bytestream::operator>>=(const bytestream& other)
+{
+  return nextBytestream(other);
+}
+
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+bool bytestream::needsSwap()
+{
+  return endianness != Endianness::native && endianness != Endianness::little;
+}
+#elif __BYTE_ORDER == __BIG_ENDIAN
+bool bytestream::needsSwap()
+{
+  return endianness != Endianness::native && endianness != Endianness::big;
+}
+#else
+#error
+#endif
