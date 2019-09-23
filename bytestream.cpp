@@ -100,34 +100,32 @@ GET(int, S, 64);
 
 std::string bytestream::getString()
 {
-  if(!noOfNextBytesValid())
+  if(!_noOfNextBytesValid)
   {
     throw invalid_argument("No length given");
   }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  char* cs = new char[noOfNextBytes+1];
-  cs[noOfNextBytes] = 0;
-  getBytes(cs, noOfNextBytes);
-  string s = std::string(cs, noOfNextBytes);
+  char* cs = new char[_noOfNextBytes+1];
+  cs[_noOfNextBytes] = 0;
+  getBytes(cs, _noOfNextBytes);
+  string s = std::string(cs, _noOfNextBytes);
   delete cs;
   return s;
 }
 bytestream bytestream::getBytestream()
 {
-  if(!noOfNextBytesValid())
+  if(!_noOfNextBytesValid)
   {
     throw invalid_argument("No length given");
   }
-  size_t noOfNextBytes = getNoOfNextBytes();
-  uint8_t* cs = new uint8_t[noOfNextBytes];
-  getBytes(cs, noOfNextBytes);
-  bytestream other = bytestream(cs, noOfNextBytes);
+  uint8_t* cs = new uint8_t[_noOfNextBytes];
+  getBytes(cs, _noOfNextBytes);
+  bytestream other = bytestream(cs, _noOfNextBytes);
   delete cs;
   return other;
 }
 std::string bytestream::getString(size_t len)
 {
-  if(noOfNextBytesValid() && len != getNoOfNextBytes())
+  if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
     throw invalid_argument("Desired lengths does not match");
   }
@@ -136,7 +134,7 @@ std::string bytestream::getString(size_t len)
 }
 bytestream bytestream::getBytestream(size_t len)
 {
-  if(!noOfNextBytesValid() && len != getNoOfNextBytes())
+  if(!_noOfNextBytesValid && len != _noOfNextBytes)
   {
     throw invalid_argument("Desired lengths does not match");
   }
@@ -171,7 +169,7 @@ NEXT(int, S, 64);
 
 bool bytestream::nextString(const std::string& s)
 {
-  if(!noOfNextBytesValid())
+  if(!_noOfNextBytesValid)
   {
     setNoOfNextBytes(s.length());
   }
@@ -385,7 +383,7 @@ GETOP_CONST(int, S, 64);
 
 bytestream& bytestream::operator>>(const std::string& s)
 {
-  if(!noOfNextBytesValid())
+  if(!_noOfNextBytesValid)
   {
     setNoOfNextBytes(s.length());
   }
@@ -399,11 +397,11 @@ bytestream& bytestream::operator>>(const std::string& s)
 }
 bytestream& bytestream::operator>>(const bytestream& other)
 {
-  if(!noOfNextBytesValid())
+  if(!_noOfNextBytesValid)
   {
     throw invalid_argument("No length given");
   }
-  else if (getNoOfNextBytes() != other.size())
+  else if (_noOfNextBytes != other.size())
   {
     throw invalid_argument("Desired length does not match const length");
   }
