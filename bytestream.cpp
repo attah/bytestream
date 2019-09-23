@@ -125,6 +125,24 @@ bytestream bytestream::getBytestream()
   delete cs;
   return other;
 }
+std::string bytestream::getString(size_t len)
+{
+  if(noOfNextBytesValid() && len != getNoOfNextBytes())
+  {
+    throw invalid_argument("Desired lengths does not match");
+  }
+  setNoOfNextBytes(len);
+  return getString();
+}
+bytestream bytestream::getBytestream(size_t len)
+{
+  if(!noOfNextBytesValid() && len != getNoOfNextBytes())
+  {
+    throw invalid_argument("Desired lengths does not match");
+  }
+  setNoOfNextBytes(len);
+  return getBytestream();
+}
 
 void bytestream::getBytes(void* cs,  size_t len)
 {

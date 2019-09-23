@@ -56,6 +56,11 @@ TEST(get_methods)
   bts-=10;
   bytestream bts2 = (bts/10).getBytestream();
   ASSERT(bts2>>="someString");
+  bts-=10;
+  ASSERT(bts.getString(10)=="someString");
+  bts-=10;
+  bytestream bts3 = bts.getBytestream(10);
+  ASSERT(bts3>>="someString");
 }
 
 TEST(const_types)

@@ -39,6 +39,8 @@ public:
   int64_t getS64();
   std::string getString();
   bytestream getBytestream();
+  std::string getString(size_t len);
+  bytestream getBytestream(size_t len);
   void getBytes(void* cs,  size_t len);
 
   bool nextU8(uint8_t);
