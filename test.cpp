@@ -2,7 +2,7 @@
 #include "test.h"
 using namespace std;
 
-TEST(basic_types)
+TEST(get_operators)
 {
   bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
@@ -21,6 +21,9 @@ TEST(basic_types)
 
   bts >> a >> b >> c >> d >> e >> f >> g >> h;
   bts/10 >> s;
+  bytestream bts2;
+  bts-=10;
+  bts/10 >> bts2;
 
   ASSERT(a==1);
   ASSERT(b==2);
@@ -31,6 +34,28 @@ TEST(basic_types)
   ASSERT(g==-3);
   ASSERT(h==-4);
   ASSERT(s=="someString");
+  ASSERT(bts2>>="someString");
+}
+
+TEST(get_methods)
+{
+  bytestream bts;
+  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
+      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+      << "someString";
+
+  ASSERT(bts.getU8()==1);
+  ASSERT(bts.getU16()==2);
+  ASSERT(bts.getU32()==3);
+  ASSERT(bts.getU64()==4);
+  ASSERT(bts.getS8()==-1);
+  ASSERT(bts.getS16()==-2);
+  ASSERT(bts.getS32()==-3);
+  ASSERT(bts.getS64()==-4);
+  ASSERT((bts/10).getString()=="someString");
+  bts-=10;
+  bytestream bts2 = (bts/10).getBytestream();
+  ASSERT(bts2>>="someString");
 }
 
 TEST(const_types)
