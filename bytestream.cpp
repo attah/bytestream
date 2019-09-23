@@ -77,66 +77,26 @@ bytestream& bytestream::operator=(const bytestream& other)
   memcpy(_data, other.raw(), _size);
 }
 
-uint8_t bytestream::getU8()
+template<typename T>
+T bswap_8(T u)
 {
-  uint8_t tmp;
-  getBytes(&tmp, 1);
-  return tmp;
+  return u;
 }
-uint16_t bytestream::getU16()
-{
-  uint16_t tmp;
-  getBytes(&tmp, 2);
-  if(needsSwap())
-    tmp = bswap_16(tmp);
-  return tmp;
-}
-uint32_t bytestream::getU32()
-{
-  uint32_t tmp;
-  getBytes(&tmp, 4);
-  if(needsSwap())
-    tmp = bswap_32(tmp);
-  return tmp;
-}
-uint64_t bytestream::getU64()
-{
-  uint64_t tmp;
-  getBytes(&tmp, 8);
-  if(needsSwap())
-    tmp = bswap_64(tmp);
-  return tmp;
-}
-int8_t bytestream::getS8()
-{
-  uint8_t tmp;
-  getBytes(&tmp, 1);
-  return tmp;
-}
-int16_t bytestream::getS16()
-{
-  int16_t tmp;
-  getBytes(&tmp, 2);
-  if(needsSwap())
-    tmp = bswap_16(tmp);
-  return tmp;
-}
-int32_t bytestream::getS32()
-{
-  int32_t tmp;
-  getBytes(&tmp, 4);
-  if(needsSwap())
-    tmp = bswap_32(tmp);
-  return tmp;
-}
-int64_t bytestream::getS64()
-{
-  int64_t tmp;
-  getBytes(&tmp, 8);
-  if(needsSwap())
-    tmp = bswap_64(tmp);
-  return tmp;
-}
+
+#define GET(type, shorthand, len) GET_(type##len##_t, shorthand##len, len)
+#define GET_(type, shortType, len) \
+  type bytestream::get##shortType() \
+  {type tmp; getBytes(&tmp, sizeof(type));\
+   if(needsSwap()){tmp=bswap_##len(tmp);} return tmp;}
+
+GET(uint, U, 8);
+GET(uint, U, 16);
+GET(uint, U, 32);
+GET(uint, U, 64);
+GET(int, S, 8);
+GET(int, S, 16);
+GET(int, S, 32);
+GET(int, S, 64);
 
 void bytestream::getBytes(void* cs,  size_t len)
 {
@@ -230,50 +190,22 @@ bool bytestream::nextBytestream(const bytestream& other)
   }
 }
 
-void bytestream::putU8(uint8_t u)
-{
-  putBytes(&u, 1);
-}
-void bytestream::putU16(uint16_t u)
-{
-  if(needsSwap())
-    u = bswap_16(u);
-  putBytes(&u, 2);
-}
-void bytestream::putU32(uint32_t u)
-{
-  if(needsSwap())
-    u = bswap_32(u);
-  putBytes(&u, 4);
-}
-void bytestream::putU64(uint64_t u)
-{
-  if(needsSwap())
-    u = bswap_64(u);
-  putBytes(&u, 8);
-}
-void bytestream::putS8(int8_t u)
-{
-  putBytes(&u, 1);
-}
-void bytestream::putS16(int16_t u)
-{
-  if(needsSwap())
-    u = bswap_16(u);
-  putBytes(&u, 2);
-}
-void bytestream::putS32(int32_t u)
-{
-  if(needsSwap())
-    u = bswap_32(u);
-  putBytes(&u, 4);
-}
-void bytestream::putS64(int64_t u)
-{
-  if(needsSwap())
-    u = bswap_64(u);
-  putBytes(&u, 8);
-}
+
+#define PUT(type, shorthand, len) PUT_(type##len##_t, shorthand##len, len)
+#define PUT_(type, shortType, len) \
+  void bytestream::put##shortType(type u) \
+  {if(needsSwap()){u=bswap_##len(u);} \
+   putBytes(&u, sizeof(u));}
+
+PUT(uint, U, 8);
+PUT(uint, U, 16);
+PUT(uint, U, 32);
+PUT(uint, U, 64);
+PUT(int, S, 8);
+PUT(int, S, 16);
+PUT(int, S, 32);
+PUT(int, S, 64);
+
 void bytestream::putBytes(const void* c, size_t len)
 {
 
