@@ -77,6 +77,48 @@ TEST(test_operator)
   ASSERT(bts >>= "someString");
   bts -= 10;
   ASSERT(bts/10 >>= "someString");
+
+  bts -= 10;
+  bytestream bts2;
+  bts2 << "someString";
+  ASSERT(bts >>=bts2);
+  ASSERT_FALSE(bts >>= bts2); // already consumed
+}
+
+TEST(test_method)
+{
+  bytestream bts;
+  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
+      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+      << "someString";
+
+  // Non-matches should not advance the read offset, matches should
+  ASSERT_FALSE(bts.nextU8(0));
+  ASSERT(bts.nextU8(1));
+  ASSERT_FALSE(bts.nextU16(0));
+  ASSERT(bts.nextU16(2));
+  ASSERT_FALSE(bts.nextU32(0));
+  ASSERT(bts.nextU32(3));
+  ASSERT_FALSE(bts.nextU64(0));
+  ASSERT(bts.nextU64(4));
+  ASSERT_FALSE(bts.nextS8(0));
+  ASSERT(bts.nextS8(-1));
+  ASSERT_FALSE(bts.nextS16(0));
+  ASSERT(bts.nextS16(-2));
+  ASSERT_FALSE(bts.nextS32(0));
+  ASSERT(bts.nextS32(-3));
+  ASSERT_FALSE(bts.nextS64(0));
+  ASSERT(bts.nextS64(-4));
+
+  ASSERT_FALSE(bts.nextString("smoeString"));
+  // what would have been reading past end should still return false
+  ASSERT_FALSE(bts.nextString("notSomeString"));
+  ASSERT(bts.nextString("someString"));
+  bts -= 10;
+  bytestream bts2;
+  bts2 << "someString";
+  ASSERT(bts.nextBytestream(bts2));
+  ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
 }
 
 TEST(position_arithmetics)

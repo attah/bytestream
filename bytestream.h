@@ -40,6 +40,17 @@ public:
   int64_t getS64();
   void getBytes(void* cs,  size_t len);
 
+  bool nextU8(uint8_t);
+  bool nextU16(uint16_t);
+  bool nextU32(uint32_t);
+  bool nextU64(uint64_t);
+  bool nextS8(int8_t);
+  bool nextS16(int16_t);
+  bool nextS32(int32_t);
+  bool nextS64(int64_t);
+  bool nextString(const std::string& bts);
+  bool nextBytestream(const bytestream& bts);
+
   void putU8(uint8_t);
   void putU16(uint16_t);
   void putU32(uint32_t);

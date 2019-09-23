@@ -145,6 +145,91 @@ void bytestream::getBytes(void* cs,  size_t len)
   _after(len);
 }
 
+#define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)
+#define NEXT_(type, shortType) \
+  bool bytestream::next##shortType(type u) \
+  {if(u == get##shortType())\
+     {return true;} \
+   else\
+  {(*this) -= sizeof(type);\
+   return false;}}
+
+NEXT(uint, U, 8);
+NEXT(uint, U, 16);
+NEXT(uint, U, 32);
+NEXT(uint, U, 64);
+NEXT(int, S, 8);
+NEXT(int, S, 16);
+NEXT(int, S, 32);
+NEXT(int, S, 64);
+
+bool bytestream::nextString(const std::string& s)
+{
+  if(!noOfNextBytesValid())
+  {
+    setNoOfNextBytes(s.length());
+  }
+  else if(getNoOfNextBytes() != s.length())
+  {
+    throw invalid_argument("Desired length does not match const length");
+  }
+
+  size_t noOfNextBytes = getNoOfNextBytes();
+
+  if(noOfNextBytes > remaining())
+  {
+    invalidateNoOfNextBytes();
+    return false;
+  }
+
+  char* cs = new char[noOfNextBytes];
+  getBytes(cs, noOfNextBytes);
+  std::string s2 = string(cs, noOfNextBytes);
+  delete cs;
+  if(s2 == s)
+  {
+    return true;
+  }
+  else
+  {
+    (*this) -= noOfNextBytes;
+    return false;
+  }
+}
+bool bytestream::nextBytestream(const bytestream& other)
+{
+  if(!noOfNextBytesValid())
+  {
+    setNoOfNextBytes(other.size());
+  }
+  else if(getNoOfNextBytes() != other.size())
+  {
+    throw invalid_argument("Desired length does not match const length");
+  }
+
+  size_t noOfNextBytes = getNoOfNextBytes();
+
+  if(noOfNextBytes > remaining())
+  {
+    invalidateNoOfNextBytes();
+    return false;
+  }
+
+  char* cs = new char[noOfNextBytes];
+  getBytes(cs, noOfNextBytes);
+  bytestream tmp = bytestream(cs, noOfNextBytes);
+  delete cs;
+  if(tmp == other)
+  {
+    return true;
+  }
+  else
+  {
+    (*this) -= noOfNextBytes;
+    return false;
+  }
+}
+
 void bytestream::putU8(uint8_t u)
 {
   putBytes(&u, 1);
@@ -385,160 +470,43 @@ bytestream& operator>>(bytestream& b, const bytestream& other)
 
 bool operator>>=(bytestream& b, const uint8_t& u)
 {
-  if(u == b.getU8())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 1;
-    return false;
-  }
+  return b.nextU8(u);
 }
 bool operator>>=(bytestream& b, const uint16_t& u)
 {
-  if(u == b.getU16())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 2;
-    return false;
-  }
+  return b.nextU16(u);
 }
 bool operator>>=(bytestream& b, const uint32_t& u)
 {
-  if(u == b.getU32())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 4;
-    return false;
-  }
+  return b.nextU32(u);
 }
 bool operator>>=(bytestream& b, const uint64_t& u)
 {
-  if(u == b.getU64())
-{
-  return true;
-  }
-  else
-  {
-    b -= 8;
-    return false;
-  }
+  return b.nextU64(u);
 }
 bool operator>>=(bytestream& b, const int8_t& u)
 {
-  if(u == b.getS8())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 1;
-    return false;
-  }
+  return b.nextS8(u);
 }
 bool operator>>=(bytestream& b, const int16_t& u)
 {
-  if(u == b.getS16())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 2;
-    return false;
-  }
+  return b.nextS16(u);
 }
 bool operator>>=(bytestream& b, const int32_t& u)
 {
-  if(u == b.getS32())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 4;
-    return false;
-  }
+  return b.nextS32(u);
 }
 bool operator>>=(bytestream& b, const int64_t& u)
 {
-  if(u == b.getS64())
-  {
-    return true;
-  }
-  else
-  {
-    b -= 8;
-    return false;
-  }
+  return b.nextS64(u);
 }
 bool operator>>=(bytestream& b, const std::string& s)
 {
-  if(!b.noOfNextBytesValid())
-  {
-    b.setNoOfNextBytes(s.length());
-  }
-  else if(b.getNoOfNextBytes() != s.length())
-  {
-    throw invalid_argument("Desired length does not match const length");
-  }
-
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-
-  if(noOfNextBytes > b.remaining())
-  {
-    b.invalidateNoOfNextBytes();
-    return false;
-  }
-
-  char* cs = new char[noOfNextBytes];
-  b.getBytes(cs, noOfNextBytes);
-  std::string s2 = string(cs, noOfNextBytes);
-  delete cs;
-  if(s2 == s)
-  {
-    return true;
-  }
-  else
-  {
-    b -= noOfNextBytes;
-    return false;
-  }
+  return b.nextString(s);
 }
 bool operator>>=(bytestream& b, const bytestream& other)
 {
-  if(!b.noOfNextBytesValid())
-  {
-    throw invalid_argument("No length given");
-  }
-  size_t noOfNextBytes = b.getNoOfNextBytes();
-
-  if(noOfNextBytes < b.remaining())
-  {
-    b.invalidateNoOfNextBytes();
-    return false;
-  }
-
-  char* cs = new char[noOfNextBytes];
-  b.getBytes(cs, noOfNextBytes);
-  bytestream tmp = bytestream(cs, noOfNextBytes);
-  delete cs;
-  if(tmp == other)
-  {
-    return true;
-  }
-  else
-  {
-    b -= noOfNextBytes;
-    return false;
-  }
+  return b.nextBytestream(other);
 }
 
 bytestream& operator/(bytestream& b, int i)
