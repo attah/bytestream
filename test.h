@@ -1,5 +1,6 @@
 #include <iostream>
 #include <dlfcn.h>
+#include <cxxabi.h>
 
 #define R(s) "\e[31m" s "\e[39m"
 #define G(s) "\e[32m" s "\e[39m"
@@ -11,12 +12,17 @@
 #define TEST__(name, namestr, counter) \
   void _test_##name();\
   extern "C" void __test_##counter()\
-    {std::cout << Y(" 🡆 ") << namestr << std::endl;\
+    {std::string errmsg;\
+     std::cout << Y(" 🡆 ") << namestr << std::endl;\
      try {_test_##name();\
           std::cout << POS0 << G(" ✔ ") << namestr << std::endl;}\
+     catch(TestFailedException e) {\
+          errmsg = string(" (") + e.what() + ")";}\
      catch(const std::exception& e) {\
-          std::cout << POS0 << R(" ✘ ") << namestr \
-                    << " (" << e.what() << ")" << std::endl;}}\
+          errmsg = string(" (Ecxeption caught: ") + currentExceptionName()\
+          +": \""+e.what()+"\")";}\
+     if(!errmsg.empty()){\
+          std::cout << POS0 << R(" ✘ ") << namestr << errmsg << std::endl;}}\
   void _test_##name()
 
 #define ASSERT(expr) \
@@ -26,8 +32,21 @@
   if((expr)){throw TestFailedException("Assertion failed", \
                                         __FILE__, __LINE__);}
 
+#define ASSERT_THROW(expr, exc) \
+  try {expr; \
+       throw TestFailedException("Assertion failed, exception was not thrown", \
+                                 __FILE__, __LINE__);} \
+  catch(exc e) {}
 
 typedef void (*void_f)(void);
+
+const char* currentExceptionName()
+{
+    int status;
+    return abi::__cxa_demangle(abi::__cxa_current_exception_type()->name(),
+                               0, 0, &status);
+}
+
 
 class TestFailedException: public std::exception
 {

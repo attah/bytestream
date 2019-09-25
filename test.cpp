@@ -2,7 +2,7 @@
 #include "test.h"
 using namespace std;
 
-TEST(get_operators)
+TEST(get_operator)
 {
   bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
@@ -210,6 +210,29 @@ TEST(partials)
   bytestream bts3;
   bts/10 >> bts3;
   ASSERT(bts3>>="someString");
+}
+
+TEST(exceptions)
+{
+  bytestream bts;
+  bts << (uint8_t)1;
+  size_t pos_before = bts.pos();
+  ASSERT_THROW(bts >> (uint16_t)1, out_of_range);
+  ASSERT_THROW(bts >> (uint8_t)2, bytestream::badmatch);
+  ASSERT(bts.pos()==pos_before);
+  ASSERT(bts.noOfNextBytesValid()==false);
+  ASSERT_THROW(bts.getBytestream(17), logic_error);
+  ASSERT(bts.noOfNextBytesValid()==false);
+  ASSERT_THROW(bts.getString(2), out_of_range);
+  ASSERT(bts.noOfNextBytesValid()==false);
+
+  bts << "test";
+  ASSERT(bts.noOfNextBytesValid()==false);
+  ASSERT_THROW(bts >> "fest", bytestream::badmatch);
+  ASSERT(bts.pos()==pos_before);
+
+  ASSERT_THROW(bts/3 >> "fest", logic_error);
+  ASSERT_THROW(bts.getBytestream(17), logic_error);
 }
 
 TEST(legacy)

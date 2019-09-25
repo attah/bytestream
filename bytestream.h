@@ -1,8 +1,15 @@
 #include <string>
+#include <stdexcept>
 
 class bytestream
 {
 public:
+
+  class badmatch : public std::invalid_argument::invalid_argument
+  {
+  public:
+    badmatch(std::string s) : invalid_argument(s) {}
+  };
 
   enum Endianness {
     big,
@@ -108,7 +115,6 @@ public:
   bytestream& operator>>(const int32_t& u);
   bytestream& operator>>(const int64_t& u);
   bytestream& operator>>(const std::string& s);
-  bytestream& operator>>(const bytestream& other);
 
   bool operator>>=(const uint8_t& u);
   bool operator>>=(const uint16_t& u);

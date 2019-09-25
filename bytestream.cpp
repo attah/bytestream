@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
-#include <stdexcept>
 #include <byteswap.h>
 #ifndef __BYTE_ORDER
 #include <endian.h>
@@ -127,16 +126,19 @@ std::string bytestream::getString(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw invalid_argument("Desired lengths does not match");
+    throw logic_error("Desired lengths does not match");
   }
-  setNoOfNextBytes(len);
+  else if(!_noOfNextBytesValid)
+  {
+    setNoOfNextBytes(len);
+  }
   return getString();
 }
 bytestream bytestream::getBytestream(size_t len)
 {
   if(!_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw invalid_argument("Desired lengths does not match");
+    throw logic_error("Desired lengths does not match");
   }
   setNoOfNextBytes(len);
   return getBytestream();
@@ -169,13 +171,13 @@ NEXT(int, S, 64);
 
 bool bytestream::nextString(const std::string& s)
 {
-  if(!_noOfNextBytesValid)
+  if(_noOfNextBytesValid && getNoOfNextBytes() != s.length())
+  {
+    throw logic_error("Desired length does not match const length");
+  }
+  else if(!_noOfNextBytesValid)
   {
     setNoOfNextBytes(s.length());
-  }
-  else if(getNoOfNextBytes() != s.length())
-  {
-    throw invalid_argument("Desired length does not match const length");
   }
 
   size_t noOfNextBytes = getNoOfNextBytes();
@@ -198,13 +200,13 @@ bool bytestream::nextString(const std::string& s)
 }
 bool bytestream::nextBytestream(const bytestream& other)
 {
-  if(!noOfNextBytesValid())
+  if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
+  {
+    throw logic_error("Desired length does not match const length");
+  }
+  else if(!_noOfNextBytesValid)
   {
     setNoOfNextBytes(other.size());
-  }
-  else if(getNoOfNextBytes() != other.size())
-  {
-    throw invalid_argument("Desired length does not match const length");
   }
 
   size_t noOfNextBytes = getNoOfNextBytes();
@@ -281,6 +283,7 @@ void bytestream::_before(size_t bytesToRead)
 {
   if(bytesToRead > remaining())
   {
+    invalidateNoOfNextBytes();
     throw out_of_range("Tried to read past end");
   }
 }
@@ -369,7 +372,8 @@ bytestream& bytestream::operator>>(bytestream& other)
   GETOP_CONST_(type##len##_t, shorthand##len)
 #define GETOP_CONST_(type, shortType) \
   bytestream& bytestream::operator>>(const type& u) \
-  {if(u!=get##shortType()) {throw invalid_argument("Does not match const");}\
+  {if(u!=get##shortType()) {(*this) -= sizeof(type);\
+                            throw badmatch("Does not match const");}\
    else{return *this;}}
 
 GETOP_CONST(uint, U, 8);
@@ -383,30 +387,19 @@ GETOP_CONST(int, S, 64);
 
 bytestream& bytestream::operator>>(const std::string& s)
 {
-  if(!_noOfNextBytesValid)
+  if (_noOfNextBytesValid && getNoOfNextBytes() != s.length())
+  {
+    throw logic_error("Desired length does not match const length");
+  }
+  else if(!_noOfNextBytesValid)
   {
     setNoOfNextBytes(s.length());
   }
-  else if (getNoOfNextBytes() != s.length())
-  {
-    throw invalid_argument("Desired length does not match const length");
-  }
   if(getString() != s)
-    throw invalid_argument("Does not match const");
-  return *this;
-}
-bytestream& bytestream::operator>>(const bytestream& other)
-{
-  if(!_noOfNextBytesValid)
   {
-    throw invalid_argument("No length given");
+    (*this) -= s.length();
+    throw badmatch("Does not match const");
   }
-  else if (_noOfNextBytes != other.size())
-  {
-    throw invalid_argument("Desired length does not match const length");
-  }
-  if(getBytestream() != other)
-    throw invalid_argument("Does not match const");
   return *this;
 }
 
