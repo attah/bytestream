@@ -1,3 +1,5 @@
+#ifndef BYTESTREAM_H
+#define  BYTESTREAM_H
 #include <string>
 #include <stdexcept>
 
@@ -142,3 +144,5 @@ private:
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
 };
+
+#endif
