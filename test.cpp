@@ -288,7 +288,7 @@ TEST(legacy)
 
   ASSERT(bts4==bts);
   bytestream bts0;
-  ASSERT(bts4==bts0 != true);
+  ASSERT((bts4==bts0) != true);
 
   bytestream bts5 = bts[30];
   ASSERT(bts5.size() < bts.size());

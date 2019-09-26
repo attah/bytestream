@@ -74,6 +74,7 @@ bytestream& bytestream::operator=(const bytestream& other)
   _size = other.size();
   _data = new uint8_t[_size];
   memcpy(_data, other.raw(), _size);
+  return *this;
 }
 
 template<typename T>
@@ -88,14 +89,14 @@ T bswap_8(T u)
   {type tmp; getBytes(&tmp, sizeof(type));\
    if(needsSwap()){tmp=bswap_##len(tmp);} return tmp;}
 
-GET(uint, U, 8);
-GET(uint, U, 16);
-GET(uint, U, 32);
-GET(uint, U, 64);
-GET(int, S, 8);
-GET(int, S, 16);
-GET(int, S, 32);
-GET(int, S, 64);
+GET(uint, U, 8)
+GET(uint, U, 16)
+GET(uint, U, 32)
+GET(uint, U, 64)
+GET(int, S, 8)
+GET(int, S, 16)
+GET(int, S, 32)
+GET(int, S, 64)
 
 std::string bytestream::getString()
 {
@@ -160,14 +161,14 @@ void bytestream::getBytes(void* cs,  size_t len)
   {(*this) -= sizeof(type);\
    return false;}}
 
-NEXT(uint, U, 8);
-NEXT(uint, U, 16);
-NEXT(uint, U, 32);
-NEXT(uint, U, 64);
-NEXT(int, S, 8);
-NEXT(int, S, 16);
-NEXT(int, S, 32);
-NEXT(int, S, 64);
+NEXT(uint, U, 8)
+NEXT(uint, U, 16)
+NEXT(uint, U, 32)
+NEXT(uint, U, 64)
+NEXT(int, S, 8)
+NEXT(int, S, 16)
+NEXT(int, S, 32)
+NEXT(int, S, 64)
 
 bool bytestream::nextString(const std::string& s)
 {
@@ -234,14 +235,14 @@ bool bytestream::nextBytestream(const bytestream& other)
   {if(needsSwap()){u=bswap_##len(u);} \
    putBytes(&u, sizeof(u));}
 
-PUT(uint, U, 8);
-PUT(uint, U, 16);
-PUT(uint, U, 32);
-PUT(uint, U, 64);
-PUT(int, S, 8);
-PUT(int, S, 16);
-PUT(int, S, 32);
-PUT(int, S, 64);
+PUT(uint, U, 8)
+PUT(uint, U, 16)
+PUT(uint, U, 32)
+PUT(uint, U, 64)
+PUT(int, S, 8)
+PUT(int, S, 16)
+PUT(int, S, 32)
+PUT(int, S, 64)
 
 void bytestream::putString(const std::string& s)
 {
@@ -323,14 +324,14 @@ bytestream& bytestream::operator/(int i)
   bytestream& bytestream::operator<<(const type& u) \
   {put##shortType(u); return *this;}
 
-PUTOP(uint, U, 8);
-PUTOP(uint, U, 16);
-PUTOP(uint, U, 32);
-PUTOP(uint, U, 64);
-PUTOP(int, S, 8);
-PUTOP(int, S, 16);
-PUTOP(int, S, 32);
-PUTOP(int, S, 64);
+PUTOP(uint, U, 8)
+PUTOP(uint, U, 16)
+PUTOP(uint, U, 32)
+PUTOP(uint, U, 64)
+PUTOP(int, S, 8)
+PUTOP(int, S, 16)
+PUTOP(int, S, 32)
+PUTOP(int, S, 64)
 
 bytestream& bytestream::operator<<(const std::string& s)
 {
@@ -348,14 +349,14 @@ bytestream& bytestream::operator<<(const bytestream& other)
   bytestream& bytestream::operator>>(type& u) \
   {u = get##shortType(); return *this;}
 
-GETOP(uint, U, 8);
-GETOP(uint, U, 16);
-GETOP(uint, U, 32);
-GETOP(uint, U, 64);
-GETOP(int, S, 8);
-GETOP(int, S, 16);
-GETOP(int, S, 32);
-GETOP(int, S, 64);
+GETOP(uint, U, 8)
+GETOP(uint, U, 16)
+GETOP(uint, U, 32)
+GETOP(uint, U, 64)
+GETOP(int, S, 8)
+GETOP(int, S, 16)
+GETOP(int, S, 32)
+GETOP(int, S, 64)
 
 bytestream& bytestream::operator>>(std::string& s)
 {
@@ -376,14 +377,14 @@ bytestream& bytestream::operator>>(bytestream& other)
                             throw badmatch("Does not match const");}\
    else{return *this;}}
 
-GETOP_CONST(uint, U, 8);
-GETOP_CONST(uint, U, 16);
-GETOP_CONST(uint, U, 32);
-GETOP_CONST(uint, U, 64);
-GETOP_CONST(int, S, 8);
-GETOP_CONST(int, S, 16);
-GETOP_CONST(int, S, 32);
-GETOP_CONST(int, S, 64);
+GETOP_CONST(uint, U, 8)
+GETOP_CONST(uint, U, 16)
+GETOP_CONST(uint, U, 32)
+GETOP_CONST(uint, U, 64)
+GETOP_CONST(int, S, 8)
+GETOP_CONST(int, S, 16)
+GETOP_CONST(int, S, 32)
+GETOP_CONST(int, S, 64)
 
 bytestream& bytestream::operator>>(const std::string& s)
 {
@@ -408,14 +409,14 @@ bytestream& bytestream::operator>>(const std::string& s)
   bool bytestream::operator>>=(const type& u) \
   {return next##shortType(u);}
 
-NEXTOP(uint, U, 8);
-NEXTOP(uint, U, 16);
-NEXTOP(uint, U, 32);
-NEXTOP(uint, U, 64);
-NEXTOP(int, S, 8);
-NEXTOP(int, S, 16);
-NEXTOP(int, S, 32);
-NEXTOP(int, S, 64);
+NEXTOP(uint, U, 8)
+NEXTOP(uint, U, 16)
+NEXTOP(uint, U, 32)
+NEXTOP(uint, U, 64)
+NEXTOP(int, S, 8)
+NEXTOP(int, S, 16)
+NEXTOP(int, S, 32)
+NEXTOP(int, S, 64)
 bool bytestream::operator>>=(const std::string& s)
 {
   return nextString(s);

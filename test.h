@@ -2,10 +2,10 @@
 #include <dlfcn.h>
 #include <cxxabi.h>
 
-#define R(s) "\e[31m" s "\e[39m"
-#define G(s) "\e[32m" s "\e[39m"
-#define Y(s) "\e[33m" s "\e[39m"
-#define POS0 "\e[1F" // Of previous line
+#define R(s) "\033[31m" s "\033[39m"
+#define G(s) "\033[32m" s "\033[39m"
+#define Y(s) "\033[33m" s "\033[39m"
+#define POS0 "\033[1F" // Of previous line
 
 #define TEST(name) TEST_(name, __COUNTER__)
 #define TEST_(name, counter) TEST__(name, #name, counter)
@@ -63,7 +63,7 @@ public:
   }
 };
 
-int main(int argc, char** argv)
+int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
 {
   void* handle = dlopen(NULL, RTLD_LAZY);
 
