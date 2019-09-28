@@ -237,6 +237,22 @@ TEST(exceptions)
   ASSERT_THROW(bts.getBytestream(17), logic_error);
 }
 
+TEST(constructors)
+{
+  bytestream bts(15);
+  ASSERT(bts.size()==15);
+  ASSERT(bts.pos()==0);
+  bts >> (uint8_t)0 >> (uint16_t)0 >> (uint32_t)0 >> (uint64_t)0;
+  ASSERT(bts.atEnd());
+
+  const char* cs = "someString";
+  bytestream bts2(cs , 10);
+  ASSERT(bts2.size()==10);
+  ASSERT(bts2.pos()==0);
+  bts2 >> cs;
+  ASSERT(bts2.atEnd());
+}
+
 TEST(legacy)
 {
   bytestream bts;

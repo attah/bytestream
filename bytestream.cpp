@@ -17,6 +17,17 @@ bytestream::bytestream()
   endianness = big;
 }
 
+bytestream::bytestream(size_t len)
+{
+  _size = len;
+  _data = new uint8_t[_size];
+  memset(_data, 0, _size);
+  _pos = 0;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
+  endianness = big;
+}
+
 bytestream::bytestream(const void* data, size_t len)
 {
   _size = len;

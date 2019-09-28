@@ -20,6 +20,7 @@ public:
   };
 
   bytestream();
+  bytestream(size_t len);
   bytestream(const void* data, size_t len);
   bytestream(const bytestream& rhs);
   ~bytestream();
