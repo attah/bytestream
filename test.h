@@ -25,17 +25,21 @@
           std::cout << POS0 << R(" ✘ ") << namestr << errmsg << std::endl;}}\
   void _test_##name()
 
-#define ASSERT(expr) \
-  if(!(expr)){throw TestFailedException("Assertion failed", \
-                                        __FILE__, __LINE__);}
+#define STR(s) STR_(#s)
+#define STR_(s) s
+
+#define ASSERT(expr)\
+  if(!(expr)){throw TestFailedException(__FILE__, __LINE__, "Assertion failed",\
+                                        STR(expr));}
 #define ASSERT_FALSE(expr) \
-  if((expr)){throw TestFailedException("Assertion failed", \
-                                        __FILE__, __LINE__);}
+  if((expr)){throw TestFailedException(__FILE__, __LINE__, "Assertion failed",\
+                                       STR(expr));}
 
 #define ASSERT_THROW(expr, exc) \
   try {expr; \
-       throw TestFailedException("Assertion failed, exception was not thrown", \
-                                 __FILE__, __LINE__);} \
+       throw TestFailedException(__FILE__, __LINE__,\
+                                 "Assertion failed, exception was not thrown", \
+                                 STR(expr));} \
   catch(exc e) {}
 
 typedef void (*void_f)(void);
@@ -47,15 +51,21 @@ const char* currentExceptionName()
                                0, 0, &status);
 }
 
-
 class TestFailedException: public std::exception
 {
 private:
   std::string _msg;
 public:
-  TestFailedException(std::string msg, std::string file, int line)
+  TestFailedException(std::string file,
+                      int line,
+                      std::string msg,
+                      std::string extra = "")
   {
-    _msg = msg+" at "+file+":"+std::to_string(line);
+    _msg = file+":"+std::to_string(line)+": "+msg;
+    if(!extra.empty())
+    {
+      _msg=_msg+": "+extra;
+    }
   }
   virtual const char* what() const throw()
   {
