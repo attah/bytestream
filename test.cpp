@@ -44,23 +44,38 @@ TEST(get_methods)
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
 
+  ASSERT(bts.peekU8()==1);
   ASSERT(bts.getU8()==1);
+  ASSERT(bts.peekU16()==2);
   ASSERT(bts.getU16()==2);
+  ASSERT(bts.peekU32()==3);
   ASSERT(bts.getU32()==3);
+  ASSERT(bts.peekU64()==4);
   ASSERT(bts.getU64()==4);
+  ASSERT(bts.peekS8()==-1);
   ASSERT(bts.getS8()==-1);
+  ASSERT(bts.peekS16()==-2);
   ASSERT(bts.getS16()==-2);
+  ASSERT(bts.peekS32()==-3);
   ASSERT(bts.getS32()==-3);
+  ASSERT(bts.peekS64()==-4);
   ASSERT(bts.getS64()==-4);
+
+  ASSERT((bts/10).peekString()=="someString");
   ASSERT((bts/10).getString()=="someString");
   bts-=10;
-  bytestream bts2 = (bts/10).getBytestream();
-  ASSERT(bts2>>="someString");
+  bytestream bts2a = (bts/10).peekBytestream();
+  bytestream bts2b = (bts/10).getBytestream();
+  ASSERT(bts2a==bts2b);
+  ASSERT(bts2b>>="someString");
   bts-=10;
+  ASSERT(bts.peekString(10)=="someString");
   ASSERT(bts.getString(10)=="someString");
   bts-=10;
-  bytestream bts3 = bts.getBytestream(10);
-  ASSERT(bts3>>="someString");
+  bytestream bts3a = bts.peekBytestream(10);
+  bytestream bts3b = bts.getBytestream(10);
+  ASSERT(bts3a==bts3b);
+  ASSERT(bts3b>>="someString");
 }
 
 TEST(const_types)

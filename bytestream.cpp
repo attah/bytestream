@@ -157,10 +157,75 @@ bytestream bytestream::getBytestream(size_t len)
 }
 
 void bytestream::getBytes(void* cs,  size_t len)
-{
+ {
   _before(len);
   memcpy(cs, &(_data[_pos]), len);
   _after(len);
+}
+
+
+#define PEEK(type, shorthand, len) PEEK_(type##len##_t, shorthand##len, len)
+#define PEEK_(type, shortType, len) \
+  type bytestream::peek##shortType() \
+  {type tmp; getBytes(&tmp, sizeof(type));\
+   if(needsSwap()){tmp=bswap_##len(tmp);} (*this) -= sizeof(type); return tmp;}
+
+PEEK(uint, U, 8)
+PEEK(uint, U, 16)
+PEEK(uint, U, 32)
+PEEK(uint, U, 64)
+PEEK(int, S, 8)
+PEEK(int, S, 16)
+PEEK(int, S, 32)
+PEEK(int, S, 64)
+
+std::string bytestream::peekString()
+{
+  if(!_noOfNextBytesValid)
+  {
+    throw invalid_argument("No length given");
+  }
+  char* cs = new char[_noOfNextBytes+1];
+  cs[_noOfNextBytes] = 0;
+  getBytes(cs, _noOfNextBytes);
+  string s = std::string(cs, _noOfNextBytes);
+  delete cs;
+  (*this) -= _noOfNextBytes;
+  return s;
+}
+bytestream bytestream::peekBytestream()
+{
+  if(!_noOfNextBytesValid)
+  {
+    throw invalid_argument("No length given");
+  }
+  uint8_t* cs = new uint8_t[_noOfNextBytes];
+  getBytes(cs, _noOfNextBytes);
+  bytestream other = bytestream(cs, _noOfNextBytes);
+  delete cs;
+  (*this) -= _noOfNextBytes;
+  return other;
+}
+std::string bytestream::peekString(size_t len)
+{
+  if(_noOfNextBytesValid && len != _noOfNextBytes)
+  {
+    throw logic_error("Desired lengths does not match");
+  }
+  else if(!_noOfNextBytesValid)
+  {
+    setNoOfNextBytes(len);
+  }
+  return peekString();
+}
+bytestream bytestream::peekBytestream(size_t len)
+{
+  if(!_noOfNextBytesValid && len != _noOfNextBytes)
+  {
+    throw logic_error("Desired lengths does not match");
+  }
+  setNoOfNextBytes(len);
+  return peekBytestream();
 }
 
 #define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)

@@ -53,6 +53,19 @@ public:
   bytestream getBytestream(size_t len);
   void getBytes(void* cs,  size_t len);
 
+  uint8_t peekU8();
+  uint16_t peekU16();
+  uint32_t peekU32();
+  uint64_t peekU64();
+  int8_t peekS8();
+  int16_t peekS16();
+  int32_t peekS32();
+  int64_t peekS64();
+  std::string peekString();
+  bytestream peekBytestream();
+  std::string peekString(size_t len);
+  bytestream peekBytestream(size_t len);
+
   bool nextU8(uint8_t);
   bool nextU16(uint16_t);
   bool nextU32(uint32_t);
