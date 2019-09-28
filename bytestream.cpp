@@ -303,6 +303,11 @@ bytestream bytestream::operator[](size_t i)
 
 bytestream& bytestream::operator+=(size_t i)
 {
+  if((_pos+i) > _size)
+  {
+    invalidateNoOfNextBytes();
+    throw out_of_range("Tried to address data past end");
+  }
   _pos += i;
   return *this;
 }

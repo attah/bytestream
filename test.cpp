@@ -167,6 +167,8 @@ TEST(position_arithmetics)
   ASSERT(bts.pos()==0);
   ASSERT(bts.size()==10);
   bts >> "someString";
+
+  ASSERT_THROW((bts+=1), out_of_range);
 }
 
 TEST(copying)
