@@ -167,6 +167,34 @@ TEST(test_method)
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
 }
 
+#define HIBIT(sign, suffix) \
+  (sign##suffix)((uint##suffix)1<<(sizeof(sign##suffix)*8-1))
+
+TEST(limits)
+{
+  bytestream bts;
+      // 0xff...
+  bts << (uint8_t)255 << (uint16_t)65535 << (uint32_t)4294967295UL
+      << (uint64_t)18446744073709551615ULL
+      << (int8_t)-1 << (int16_t)-1 << (int32_t)-1 << (int64_t)-1
+      // 0x80...
+      << (int8_t)-128 << (int16_t)-32768 << (int32_t)-2147483648UL
+      << (int64_t)-9223372036854775808ULL;
+
+      // 0xff...
+  bts >> (uint8_t)~0 >> (uint16_t)~0 >> (uint32_t)~0 >> (uint64_t)~0;
+  bts >> (int8_t)~0 >> (int16_t)~0 >> (int32_t)~0 >> (int64_t)~0;
+  bts -= 15;
+  bts >> (uint8_t)~0 >> (uint16_t)~0 >> (uint32_t)~0 >> (uint64_t)~0;
+
+      // 0x80...
+  bts >> HIBIT(int,8_t) >> HIBIT(int,16_t) >> HIBIT(int,32_t)
+      >> HIBIT(int,64_t);
+  bts -= 15;
+  bts >> HIBIT(uint,8_t) >> HIBIT(uint,16_t) >> HIBIT(uint,32_t)
+      >> HIBIT(uint,64_t);
+}
+
 TEST(position_arithmetics)
 {
   bytestream bts;
