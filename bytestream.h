@@ -10,7 +10,12 @@ public:
   class badmatch : public std::invalid_argument::invalid_argument
   {
   public:
-    badmatch(std::string s) : invalid_argument(s) {}
+    badmatch(std::string s, std::string v, std::string u) :
+        invalid_argument(s+": "+v+" != "+u) {}
+    template<typename T>
+    badmatch(std::string s, T v, T u) :
+        invalid_argument(s+": "+std::to_string(v)+" != "+std::to_string(u)) {}
+
   };
 
   enum Endianness {

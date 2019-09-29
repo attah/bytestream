@@ -454,8 +454,9 @@ bytestream& bytestream::operator>>(bytestream& other)
   GETOP_CONST_(type##len##_t, shorthand##len)
 #define GETOP_CONST_(type, shortType) \
   bytestream& bytestream::operator>>(const type& u) \
-  {if(u!=get##shortType()) {(*this) -= sizeof(type);\
-                            throw badmatch("Does not match const");}\
+  {type v = get##shortType();\
+   if(u!=v) {(*this) -= sizeof(type);\
+      throw badmatch("Does not match const", v, u);}\
    else{return *this;}}
 
 GETOP_CONST(uint, U, 8)
@@ -477,10 +478,11 @@ bytestream& bytestream::operator>>(const std::string& s)
   {
     setNoOfNextBytes(s.length());
   }
-  if(getString() != s)
+  std::string sv = getString();
+  if(sv != s)
   {
     (*this) -= s.length();
-    throw badmatch("Does not match const");
+    throw badmatch("Does not match const", sv, s);
   }
   return *this;
 }
