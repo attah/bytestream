@@ -2,7 +2,12 @@
 #define  BYTESTREAM_H
 #include <string>
 #include <stdexcept>
-
+#include <byteswap.h>
+#ifndef __STDC_IEC_559__
+#error "Double must be IEEE 754"
+#endif
+#define float32_t float
+#define float64_t double
 class bytestream
 {
 public:
@@ -52,6 +57,8 @@ public:
   int16_t getS16();
   int32_t getS32();
   int64_t getS64();
+  float32_t getF32();
+  float64_t getF64();
   std::string getString();
   bytestream getBytestream();
   std::string getString(size_t len);
@@ -66,6 +73,8 @@ public:
   int16_t peekS16();
   int32_t peekS32();
   int64_t peekS64();
+  float32_t peekF32();
+  float64_t peekF64();
   std::string peekString();
   bytestream peekBytestream();
   std::string peekString(size_t len);
@@ -79,6 +88,8 @@ public:
   bool nextS16(int16_t);
   bool nextS32(int32_t);
   bool nextS64(int64_t);
+  bool nextF32(float32_t);
+  bool nextF64(float64_t);
   bool nextString(const std::string& bts);
   bool nextBytestream(const bytestream& bts);
 
@@ -90,6 +101,8 @@ public:
   void putS16(int16_t);
   void putS32(int32_t);
   void putS64(int64_t);
+  void putF32(float32_t);
+  void putF64(float64_t);
   void putString(const std::string&);
   void putBytestream(const bytestream&);
   void putBytes(const void* c, size_t len);
@@ -113,6 +126,8 @@ public:
   bytestream& operator<<(const int16_t& u);
   bytestream& operator<<(const int32_t& u);
   bytestream& operator<<(const int64_t& u);
+  bytestream& operator<<(const float32_t& u);
+  bytestream& operator<<(const float64_t& u);
   bytestream& operator<<(const std::string& s);
   bytestream& operator<<(const bytestream& other);
 
@@ -124,6 +139,8 @@ public:
   bytestream& operator>>(int16_t& u);
   bytestream& operator>>(int32_t& u);
   bytestream& operator>>(int64_t& u);
+  bytestream& operator>>(float32_t& u);
+  bytestream& operator>>(float64_t& u);
   bytestream& operator>>(std::string& s);
   bytestream& operator>>(bytestream& other);
 
@@ -135,6 +152,8 @@ public:
   bytestream& operator>>(const int16_t& u);
   bytestream& operator>>(const int32_t& u);
   bytestream& operator>>(const int64_t& u);
+  bytestream& operator>>(const float32_t& u);
+  bytestream& operator>>(const float64_t& u);
   bytestream& operator>>(const std::string& s);
 
   bool operator>>=(const uint8_t& u);
@@ -145,6 +164,8 @@ public:
   bool operator>>=(const int16_t& u);
   bool operator>>=(const int32_t& u);
   bool operator>>=(const int64_t& u);
+  bool operator>>=(const float32_t& u);
+  bool operator>>=(const float64_t& u);
   bool operator>>=(const std::string& s);
   bool operator>>=(const bytestream& other);
 

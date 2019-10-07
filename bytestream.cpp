@@ -2,10 +2,6 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
-#include <byteswap.h>
-#ifndef __BYTE_ORDER
-#include <endian.h>
-#endif
 using namespace std;
 
 bytestream::bytestream()
@@ -88,17 +84,22 @@ bytestream& bytestream::operator=(const bytestream& other)
   return *this;
 }
 
-template<typename T>
-T bswap_8(T u)
+template <typename T>
+T bswap(T u)
 {
-  return u;
+    uint8_t* const p = reinterpret_cast<uint8_t*>(&u);
+    for (size_t i = 0; i < sizeof(T) / 2; i++)
+    {
+        std::swap(p[i], p[sizeof(T) - i - 1]);
+    }
+    return u;
 }
 
 #define GET(type, shorthand, len) GET_(type##len##_t, shorthand##len, len)
 #define GET_(type, shortType, len) \
   type bytestream::get##shortType() \
   {type tmp; getBytes(&tmp, sizeof(type));\
-   if(needsSwap()){tmp=bswap_##len(tmp);} return tmp;}
+   if(needsSwap()){tmp=bswap(tmp);} return tmp;}
 
 GET(uint, U, 8)
 GET(uint, U, 16)
@@ -108,6 +109,8 @@ GET(int, S, 8)
 GET(int, S, 16)
 GET(int, S, 32)
 GET(int, S, 64)
+GET(float, F, 32)
+GET(float, F, 64)
 
 std::string bytestream::getString()
 {
@@ -168,7 +171,7 @@ void bytestream::getBytes(void* cs,  size_t len)
 #define PEEK_(type, shortType, len) \
   type bytestream::peek##shortType() \
   {type tmp; getBytes(&tmp, sizeof(type));\
-   if(needsSwap()){tmp=bswap_##len(tmp);} (*this) -= sizeof(type); return tmp;}
+   if(needsSwap()){tmp=bswap(tmp);} (*this) -= sizeof(type); return tmp;}
 
 PEEK(uint, U, 8)
 PEEK(uint, U, 16)
@@ -178,6 +181,8 @@ PEEK(int, S, 8)
 PEEK(int, S, 16)
 PEEK(int, S, 32)
 PEEK(int, S, 64)
+PEEK(float, F, 32)
+PEEK(float, F, 64)
 
 std::string bytestream::peekString()
 {
@@ -245,6 +250,8 @@ NEXT(int, S, 8)
 NEXT(int, S, 16)
 NEXT(int, S, 32)
 NEXT(int, S, 64)
+NEXT(float, F, 32)
+NEXT(float, F, 64)
 
 bool bytestream::nextString(const std::string& s)
 {
@@ -308,7 +315,7 @@ bool bytestream::nextBytestream(const bytestream& other)
 #define PUT(type, shorthand, len) PUT_(type##len##_t, shorthand##len, len)
 #define PUT_(type, shortType, len) \
   void bytestream::put##shortType(type u) \
-  {if(needsSwap()){u=bswap_##len(u);} \
+  {if(needsSwap()){u=bswap(u);} \
    putBytes(&u, sizeof(u));}
 
 PUT(uint, U, 8)
@@ -319,6 +326,8 @@ PUT(int, S, 8)
 PUT(int, S, 16)
 PUT(int, S, 32)
 PUT(int, S, 64)
+PUT(float, F, 32)
+PUT(float, F, 64)
 
 void bytestream::putString(const std::string& s)
 {
@@ -413,6 +422,8 @@ PUTOP(int, S, 8)
 PUTOP(int, S, 16)
 PUTOP(int, S, 32)
 PUTOP(int, S, 64)
+PUTOP(float, F, 32)
+PUTOP(float, F, 64)
 
 bytestream& bytestream::operator<<(const std::string& s)
 {
@@ -438,6 +449,8 @@ GETOP(int, S, 8)
 GETOP(int, S, 16)
 GETOP(int, S, 32)
 GETOP(int, S, 64)
+GETOP(float, F, 32)
+GETOP(float, F, 64)
 
 bytestream& bytestream::operator>>(std::string& s)
 {
@@ -467,6 +480,8 @@ GETOP_CONST(int, S, 8)
 GETOP_CONST(int, S, 16)
 GETOP_CONST(int, S, 32)
 GETOP_CONST(int, S, 64)
+GETOP_CONST(float, F, 32)
+GETOP_CONST(float, F, 64)
 
 bytestream& bytestream::operator>>(const std::string& s)
 {
@@ -500,6 +515,8 @@ NEXTOP(int, S, 8)
 NEXTOP(int, S, 16)
 NEXTOP(int, S, 32)
 NEXTOP(int, S, 64)
+NEXTOP(float, F, 32)
+NEXTOP(float, F, 64)
 bool bytestream::operator>>=(const std::string& s)
 {
   return nextString(s);
