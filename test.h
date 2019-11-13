@@ -83,6 +83,7 @@ public:
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
 {
+  int ret = 0;
   void* handle = dlopen(NULL, RTLD_LAZY);
 
   int i = 0;
@@ -116,8 +117,10 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
     if(!errmsg.empty())
     {
       std::cout << RESULTPOS << R(" ✘ ") << namestr << errmsg << std::endl;
+      ret = 1;
     }
     i++;
   }
   dlclose(handle);
+  return ret;
 }
