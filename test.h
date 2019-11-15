@@ -117,7 +117,7 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
     if(!errmsg.empty())
     {
       std::cout << RESULTPOS << R(" ✘ ") << namestr << errmsg << std::endl;
-      ret = 1;
+      ret++;
     }
     i++;
   }
