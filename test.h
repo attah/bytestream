@@ -101,7 +101,7 @@ public:
 
 int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
 {
-  int ret = 0;
+  int ret = 1;
   void* handle = dlopen(NULL, RTLD_LAZY);
 
   int i = 0;
