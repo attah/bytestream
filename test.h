@@ -16,6 +16,24 @@ class DebugStream
     }
 };
 
+DebugStream& operator<< (DebugStream &d, std::ostream& (*f)(std::ostream &)) {
+  f(std::cout);
+  return d;
+  d.used=true;
+}
+
+DebugStream& operator<< (DebugStream &d, std::ostream& (*f)(std::ios &)) {
+  f(std::cout);
+  d.used=true;
+  return d;
+}
+
+DebugStream& operator<< (DebugStream &d, std::ostream& (*f)(std::ios_base &)) {
+  f(std::cout);
+  d.used=true;
+  return d;
+}
+
 #define R(s) "\033[31m" s "\033[39m"
 #define G(s) "\033[32m" s "\033[39m"
 #define Y(s) "\033[33m" s "\033[39m"
