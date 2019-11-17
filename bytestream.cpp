@@ -10,7 +10,7 @@ Bytestream::Bytestream()
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = big;
+  _endianness = BigEndian;
 }
 
 Bytestream::Bytestream(size_t len)
@@ -21,7 +21,7 @@ Bytestream::Bytestream(size_t len)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = big;
+  _endianness = BigEndian;
 }
 
 Bytestream::Bytestream(const void* data, size_t len)
@@ -32,7 +32,17 @@ Bytestream::Bytestream(const void* data, size_t len)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = big;
+  _endianness = BigEndian;
+}
+Bytestream::Bytestream(const void* data, size_t len, Endianness e)
+{
+  _size = len;
+  _data = new uint8_t[_size];
+  memcpy(_data, data, _size);
+  _pos = 0;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
+  _endianness = e;
 }
 
 Bytestream::Bytestream(const Bytestream& rhs)
@@ -529,12 +539,14 @@ bool Bytestream::operator>>=(const Bytestream& other)
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 bool Bytestream::needsSwap()
 {
-  return _endianness != Endianness::native && _endianness != Endianness::little;
+  return _endianness != Endianness::NativeEndian
+      && _endianness != Endianness::LittleEndian;
 }
 #elif __BYTE_ORDER == __BIG_ENDIAN
 bool Bytestream::needsSwap()
 {
-  return _endianness != Endianness::native && _endianness != Endianness::big;
+  return _endianness != Endianness::NativeEndian
+      && _endianness != Endianness::BigEndian;
 }
 #else
 #error

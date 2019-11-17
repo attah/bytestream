@@ -24,14 +24,15 @@ public:
   };
 
   enum Endianness {
-    big,
-    little,
-    native
+    NativeEndian,
+    BigEndian,
+    LittleEndian
   };
 
   Bytestream();
   Bytestream(size_t len);
   Bytestream(const void* data, size_t len);
+  Bytestream(const void* data, size_t len, Endianness e);
   Bytestream(const Bytestream& rhs);
   ~Bytestream();
 
@@ -45,9 +46,9 @@ public:
   size_t pos() const {return _pos;}
   size_t remaining() const {return _size - _pos;}
   bool atEnd() const {return _pos >= _size;}
-
   void setPos(size_t pos) {_pos = pos;}
-
+  Endianness getEndianness() {return _endianness;}
+  void setEndianness(Endianness e) {_endianness = e;}
 
   uint8_t getU8();
   uint16_t getU16();
