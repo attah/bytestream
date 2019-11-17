@@ -8,17 +8,17 @@
 #endif
 #define float32_t float
 #define float64_t double
-class bytestream
+class Bytestream
 {
 public:
 
-  class badmatch : public std::invalid_argument::invalid_argument
+  class Badmatch : public std::invalid_argument::invalid_argument
   {
   public:
-    badmatch(std::string s, std::string v, std::string u) :
+    Badmatch(std::string s, std::string v, std::string u) :
         invalid_argument(s+": "+v+" != "+u) {}
     template<typename T>
-    badmatch(std::string s, T v, T u) :
+    Badmatch(std::string s, T v, T u) :
         invalid_argument(s+": "+std::to_string(v)+" != "+std::to_string(u)) {}
 
   };
@@ -29,16 +29,16 @@ public:
     native
   };
 
-  bytestream();
-  bytestream(size_t len);
-  bytestream(const void* data, size_t len);
-  bytestream(const bytestream& rhs);
-  ~bytestream();
+  Bytestream();
+  Bytestream(size_t len);
+  Bytestream(const void* data, size_t len);
+  Bytestream(const Bytestream& rhs);
+  ~Bytestream();
 
-  bool operator==(const bytestream& other) const;
-  bool operator!=(const bytestream& other) const;
+  bool operator==(const Bytestream& other) const;
+  bool operator!=(const Bytestream& other) const;
 
-  bytestream& operator=(const bytestream& other);
+  Bytestream& operator=(const Bytestream& other);
 
   uint8_t* raw() const {return _data;}
   size_t size() const {return _size;}
@@ -60,9 +60,9 @@ public:
   float32_t getF32();
   float64_t getF64();
   std::string getString();
-  bytestream getBytestream();
+  Bytestream getBytestream();
   std::string getString(size_t len);
-  bytestream getBytestream(size_t len);
+  Bytestream getBytestream(size_t len);
   void getBytes(void* cs,  size_t len);
 
   uint8_t peekU8();
@@ -76,9 +76,9 @@ public:
   float32_t peekF32();
   float64_t peekF64();
   std::string peekString();
-  bytestream peekBytestream();
+  Bytestream peekBytestream();
   std::string peekString(size_t len);
-  bytestream peekBytestream(size_t len);
+  Bytestream peekBytestream(size_t len);
 
   bool nextU8(uint8_t);
   bool nextU16(uint16_t);
@@ -91,7 +91,7 @@ public:
   bool nextF32(float32_t);
   bool nextF64(float64_t);
   bool nextString(const std::string& bts);
-  bool nextBytestream(const bytestream& bts);
+  bool nextBytestream(const Bytestream& bts);
 
   void putU8(uint8_t);
   void putU16(uint16_t);
@@ -104,7 +104,7 @@ public:
   void putF32(float32_t);
   void putF64(float64_t);
   void putString(const std::string&);
-  void putBytestream(const bytestream&);
+  void putBytestream(const Bytestream&);
   void putBytes(const void* c, size_t len);
 
   void setNoOfNextBytes(size_t n);
@@ -112,49 +112,49 @@ public:
   size_t getNoOfNextBytes() {return _noOfNextBytes;}
   bool noOfNextBytesValid() const {return _noOfNextBytesValid;}
 
-  bytestream operator[](size_t i);
-  bytestream& operator+=(size_t i);
-  bytestream& operator-=(size_t i);
+  Bytestream operator[](size_t i);
+  Bytestream& operator+=(size_t i);
+  Bytestream& operator-=(size_t i);
 
-  bytestream& operator/(int i);
+  Bytestream& operator/(int i);
 
-  bytestream& operator<<(const uint8_t& u);
-  bytestream& operator<<(const uint16_t& u);
-  bytestream& operator<<(const uint32_t& u);
-  bytestream& operator<<(const uint64_t& u);
-  bytestream& operator<<(const int8_t& u);
-  bytestream& operator<<(const int16_t& u);
-  bytestream& operator<<(const int32_t& u);
-  bytestream& operator<<(const int64_t& u);
-  bytestream& operator<<(const float32_t& u);
-  bytestream& operator<<(const float64_t& u);
-  bytestream& operator<<(const std::string& s);
-  bytestream& operator<<(const bytestream& other);
+  Bytestream& operator<<(const uint8_t& u);
+  Bytestream& operator<<(const uint16_t& u);
+  Bytestream& operator<<(const uint32_t& u);
+  Bytestream& operator<<(const uint64_t& u);
+  Bytestream& operator<<(const int8_t& u);
+  Bytestream& operator<<(const int16_t& u);
+  Bytestream& operator<<(const int32_t& u);
+  Bytestream& operator<<(const int64_t& u);
+  Bytestream& operator<<(const float32_t& u);
+  Bytestream& operator<<(const float64_t& u);
+  Bytestream& operator<<(const std::string& s);
+  Bytestream& operator<<(const Bytestream& other);
 
-  bytestream& operator>>(uint8_t& u);
-  bytestream& operator>>(uint16_t& u);
-  bytestream& operator>>(uint32_t& u);
-  bytestream& operator>>(uint64_t& u);
-  bytestream& operator>>(int8_t& u);
-  bytestream& operator>>(int16_t& u);
-  bytestream& operator>>(int32_t& u);
-  bytestream& operator>>(int64_t& u);
-  bytestream& operator>>(float32_t& u);
-  bytestream& operator>>(float64_t& u);
-  bytestream& operator>>(std::string& s);
-  bytestream& operator>>(bytestream& other);
+  Bytestream& operator>>(uint8_t& u);
+  Bytestream& operator>>(uint16_t& u);
+  Bytestream& operator>>(uint32_t& u);
+  Bytestream& operator>>(uint64_t& u);
+  Bytestream& operator>>(int8_t& u);
+  Bytestream& operator>>(int16_t& u);
+  Bytestream& operator>>(int32_t& u);
+  Bytestream& operator>>(int64_t& u);
+  Bytestream& operator>>(float32_t& u);
+  Bytestream& operator>>(float64_t& u);
+  Bytestream& operator>>(std::string& s);
+  Bytestream& operator>>(Bytestream& other);
 
-  bytestream& operator>>(const uint8_t& u);
-  bytestream& operator>>(const uint16_t& u);
-  bytestream& operator>>(const uint32_t& u);
-  bytestream& operator>>(const uint64_t& u);
-  bytestream& operator>>(const int8_t& u);
-  bytestream& operator>>(const int16_t& u);
-  bytestream& operator>>(const int32_t& u);
-  bytestream& operator>>(const int64_t& u);
-  bytestream& operator>>(const float32_t& u);
-  bytestream& operator>>(const float64_t& u);
-  bytestream& operator>>(const std::string& s);
+  Bytestream& operator>>(const uint8_t& u);
+  Bytestream& operator>>(const uint16_t& u);
+  Bytestream& operator>>(const uint32_t& u);
+  Bytestream& operator>>(const uint64_t& u);
+  Bytestream& operator>>(const int8_t& u);
+  Bytestream& operator>>(const int16_t& u);
+  Bytestream& operator>>(const int32_t& u);
+  Bytestream& operator>>(const int64_t& u);
+  Bytestream& operator>>(const float32_t& u);
+  Bytestream& operator>>(const float64_t& u);
+  Bytestream& operator>>(const std::string& s);
 
   bool operator>>=(const uint8_t& u);
   bool operator>>=(const uint16_t& u);
@@ -167,7 +167,7 @@ public:
   bool operator>>=(const float32_t& u);
   bool operator>>=(const float64_t& u);
   bool operator>>=(const std::string& s);
-  bool operator>>=(const bytestream& other);
+  bool operator>>=(const Bytestream& other);
 
 
 private:
@@ -177,7 +177,7 @@ private:
   size_t _noOfNextBytes;
   bool _noOfNextBytesValid;
 
-  Endianness endianness;
+  Endianness _endianness;
 
   bool needsSwap();
 

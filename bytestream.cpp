@@ -4,16 +4,16 @@
 #include <cstring>
 using namespace std;
 
-bytestream::bytestream()
+Bytestream::Bytestream()
 {
   _size = 0;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  endianness = big;
+  _endianness = big;
 }
 
-bytestream::bytestream(size_t len)
+Bytestream::Bytestream(size_t len)
 {
   _size = len;
   _data = new uint8_t[_size];
@@ -21,10 +21,10 @@ bytestream::bytestream(size_t len)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  endianness = big;
+  _endianness = big;
 }
 
-bytestream::bytestream(const void* data, size_t len)
+Bytestream::Bytestream(const void* data, size_t len)
 {
   _size = len;
   _data = new uint8_t[_size];
@@ -32,10 +32,10 @@ bytestream::bytestream(const void* data, size_t len)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  endianness = big;
+  _endianness = big;
 }
 
-bytestream::bytestream(const bytestream& rhs)
+Bytestream::Bytestream(const Bytestream& rhs)
 {
   _size = rhs._size;
   _data = new uint8_t[_size];
@@ -43,10 +43,10 @@ bytestream::bytestream(const bytestream& rhs)
   _pos = rhs._pos;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  endianness = rhs.endianness;
+  _endianness = rhs._endianness;
 }
 
-bytestream::~bytestream()
+Bytestream::~Bytestream()
 {
   if(_size != 0)
   {
@@ -54,7 +54,7 @@ bytestream::~bytestream()
   }
 }
 
-bool bytestream::operator==(const bytestream& other) const
+bool Bytestream::operator==(const Bytestream& other) const
 {
   if(_size != other.size())
   {
@@ -62,7 +62,7 @@ bool bytestream::operator==(const bytestream& other) const
   }
   return memcmp(_data, other.raw(), _size) == 0;
 }
-bool bytestream::operator!=(const bytestream& other) const
+bool Bytestream::operator!=(const Bytestream& other) const
 {
   if(_size != other.size())
   {
@@ -71,7 +71,7 @@ bool bytestream::operator!=(const bytestream& other) const
   return memcmp(_data, other.raw(), _size) != 0;
 }
 
-bytestream& bytestream::operator=(const bytestream& other)
+Bytestream& Bytestream::operator=(const Bytestream& other)
 {
   if(_size != 0)
   {
@@ -97,7 +97,7 @@ T bswap(T u)
 
 #define GET(type, shorthand, len) GET_(type##len##_t, shorthand##len, len)
 #define GET_(type, shortType, len) \
-  type bytestream::get##shortType() \
+  type Bytestream::get##shortType() \
   {type tmp; getBytes(&tmp, sizeof(type));\
    if(needsSwap()){tmp=bswap(tmp);} return tmp;}
 
@@ -112,7 +112,7 @@ GET(int, S, 64)
 GET(float, F, 32)
 GET(float, F, 64)
 
-std::string bytestream::getString()
+std::string Bytestream::getString()
 {
   if(!_noOfNextBytesValid)
   {
@@ -125,7 +125,7 @@ std::string bytestream::getString()
   delete cs;
   return s;
 }
-bytestream bytestream::getBytestream()
+Bytestream Bytestream::getBytestream()
 {
   if(!_noOfNextBytesValid)
   {
@@ -133,11 +133,11 @@ bytestream bytestream::getBytestream()
   }
   uint8_t* cs = new uint8_t[_noOfNextBytes];
   getBytes(cs, _noOfNextBytes);
-  bytestream other = bytestream(cs, _noOfNextBytes);
+  Bytestream other = Bytestream(cs, _noOfNextBytes);
   delete cs;
   return other;
 }
-std::string bytestream::getString(size_t len)
+std::string Bytestream::getString(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
@@ -149,7 +149,7 @@ std::string bytestream::getString(size_t len)
   }
   return getString();
 }
-bytestream bytestream::getBytestream(size_t len)
+Bytestream Bytestream::getBytestream(size_t len)
 {
   if(!_noOfNextBytesValid && len != _noOfNextBytes)
   {
@@ -159,7 +159,7 @@ bytestream bytestream::getBytestream(size_t len)
   return getBytestream();
 }
 
-void bytestream::getBytes(void* cs,  size_t len)
+void Bytestream::getBytes(void* cs,  size_t len)
  {
   _before(len);
   memcpy(cs, &(_data[_pos]), len);
@@ -169,7 +169,7 @@ void bytestream::getBytes(void* cs,  size_t len)
 
 #define PEEK(type, shorthand, len) PEEK_(type##len##_t, shorthand##len, len)
 #define PEEK_(type, shortType, len) \
-  type bytestream::peek##shortType() \
+  type Bytestream::peek##shortType() \
   {type tmp; getBytes(&tmp, sizeof(type));\
    if(needsSwap()){tmp=bswap(tmp);} (*this) -= sizeof(type); return tmp;}
 
@@ -184,7 +184,7 @@ PEEK(int, S, 64)
 PEEK(float, F, 32)
 PEEK(float, F, 64)
 
-std::string bytestream::peekString()
+std::string Bytestream::peekString()
 {
   if(!_noOfNextBytesValid)
   {
@@ -198,7 +198,7 @@ std::string bytestream::peekString()
   (*this) -= _noOfNextBytes;
   return s;
 }
-bytestream bytestream::peekBytestream()
+Bytestream Bytestream::peekBytestream()
 {
   if(!_noOfNextBytesValid)
   {
@@ -206,12 +206,12 @@ bytestream bytestream::peekBytestream()
   }
   uint8_t* cs = new uint8_t[_noOfNextBytes];
   getBytes(cs, _noOfNextBytes);
-  bytestream other = bytestream(cs, _noOfNextBytes);
+  Bytestream other = Bytestream(cs, _noOfNextBytes);
   delete cs;
   (*this) -= _noOfNextBytes;
   return other;
 }
-std::string bytestream::peekString(size_t len)
+std::string Bytestream::peekString(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
@@ -223,7 +223,7 @@ std::string bytestream::peekString(size_t len)
   }
   return peekString();
 }
-bytestream bytestream::peekBytestream(size_t len)
+Bytestream Bytestream::peekBytestream(size_t len)
 {
   if(!_noOfNextBytesValid && len != _noOfNextBytes)
   {
@@ -235,7 +235,7 @@ bytestream bytestream::peekBytestream(size_t len)
 
 #define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)
 #define NEXT_(type, shortType) \
-  bool bytestream::next##shortType(type u) \
+  bool Bytestream::next##shortType(type u) \
   {if(u == get##shortType())\
      {return true;} \
    else\
@@ -253,7 +253,7 @@ NEXT(int, S, 64)
 NEXT(float, F, 32)
 NEXT(float, F, 64)
 
-bool bytestream::nextString(const std::string& s)
+bool Bytestream::nextString(const std::string& s)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != s.length())
   {
@@ -282,7 +282,7 @@ bool bytestream::nextString(const std::string& s)
     return false;
   }
 }
-bool bytestream::nextBytestream(const bytestream& other)
+bool Bytestream::nextBytestream(const Bytestream& other)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
   {
@@ -314,7 +314,7 @@ bool bytestream::nextBytestream(const bytestream& other)
 
 #define PUT(type, shorthand, len) PUT_(type##len##_t, shorthand##len, len)
 #define PUT_(type, shortType, len) \
-  void bytestream::put##shortType(type u) \
+  void Bytestream::put##shortType(type u) \
   {if(needsSwap()){u=bswap(u);} \
    putBytes(&u, sizeof(u));}
 
@@ -329,16 +329,16 @@ PUT(int, S, 64)
 PUT(float, F, 32)
 PUT(float, F, 64)
 
-void bytestream::putString(const std::string& s)
+void Bytestream::putString(const std::string& s)
 {
   putBytes(s.c_str(), s.length());
 }
-void bytestream::putBytestream(const bytestream& other)
+void Bytestream::putBytestream(const Bytestream& other)
 {
   putBytes(other.raw(), other.size());
 }
 
-void bytestream::putBytes(const void* c, size_t len)
+void Bytestream::putBytes(const void* c, size_t len)
 {
   uint8_t* old = _data;
   _data = new uint8_t[_size+len];
@@ -352,20 +352,20 @@ void bytestream::putBytes(const void* c, size_t len)
   _size += len;
 }
 
-void bytestream::setNoOfNextBytes(size_t n)
+void Bytestream::setNoOfNextBytes(size_t n)
 {
   _noOfNextBytes = n;
   _noOfNextBytesValid = true;
 }
 
-void bytestream::invalidateNoOfNextBytes()
+void Bytestream::invalidateNoOfNextBytes()
 {
     _noOfNextBytes = 0;
     _noOfNextBytesValid = false;
 }
 
 
-void bytestream::_before(size_t bytesToRead)
+void Bytestream::_before(size_t bytesToRead)
 {
   if(bytesToRead > remaining())
   {
@@ -374,19 +374,19 @@ void bytestream::_before(size_t bytesToRead)
   }
 }
 
-void bytestream::_after(size_t bytesRead)
+void Bytestream::_after(size_t bytesRead)
 {
   _pos += bytesRead;
   _noOfNextBytesValid = false;
 }
 
-bytestream bytestream::operator[](size_t i)
+Bytestream Bytestream::operator[](size_t i)
 {
-  bytestream tmp(_data+i, _size-i);
+  Bytestream tmp(_data+i, _size-i);
   return tmp;
 }
 
-bytestream& bytestream::operator+=(size_t i)
+Bytestream& Bytestream::operator+=(size_t i)
 {
   if((_pos+i) > _size)
   {
@@ -397,13 +397,13 @@ bytestream& bytestream::operator+=(size_t i)
   return *this;
 }
 
-bytestream& bytestream::operator-=(size_t i)
+Bytestream& Bytestream::operator-=(size_t i)
 {
   _pos -= i;
   return *this;
 }
 
-bytestream& bytestream::operator/(int i)
+Bytestream& Bytestream::operator/(int i)
 {
   setNoOfNextBytes(i);
   return *this;
@@ -411,7 +411,7 @@ bytestream& bytestream::operator/(int i)
 
 #define PUTOP(type, shorthand, len) PUTOP_(type##len##_t, shorthand##len)
 #define PUTOP_(type, shortType) \
-  bytestream& bytestream::operator<<(const type& u) \
+  Bytestream& Bytestream::operator<<(const type& u) \
   {put##shortType(u); return *this;}
 
 PUTOP(uint, U, 8)
@@ -425,12 +425,12 @@ PUTOP(int, S, 64)
 PUTOP(float, F, 32)
 PUTOP(float, F, 64)
 
-bytestream& bytestream::operator<<(const std::string& s)
+Bytestream& Bytestream::operator<<(const std::string& s)
 {
   putString(s);
   return *this;
 }
-bytestream& bytestream::operator<<(const bytestream& other)
+Bytestream& Bytestream::operator<<(const Bytestream& other)
 {
   putBytestream(other);
   return *this;
@@ -438,7 +438,7 @@ bytestream& bytestream::operator<<(const bytestream& other)
 
 #define GETOP(type, shorthand, len) GETOP_(type##len##_t, shorthand##len)
 #define GETOP_(type, shortType) \
-  bytestream& bytestream::operator>>(type& u) \
+  Bytestream& Bytestream::operator>>(type& u) \
   {u = get##shortType(); return *this;}
 
 GETOP(uint, U, 8)
@@ -452,12 +452,12 @@ GETOP(int, S, 64)
 GETOP(float, F, 32)
 GETOP(float, F, 64)
 
-bytestream& bytestream::operator>>(std::string& s)
+Bytestream& Bytestream::operator>>(std::string& s)
 {
   s = getString();
   return *this;
 }
-bytestream& bytestream::operator>>(bytestream& other)
+Bytestream& Bytestream::operator>>(Bytestream& other)
 {
   other = getBytestream();
   return *this;
@@ -466,10 +466,10 @@ bytestream& bytestream::operator>>(bytestream& other)
 #define GETOP_CONST(type, shorthand, len) \
   GETOP_CONST_(type##len##_t, shorthand##len)
 #define GETOP_CONST_(type, shortType) \
-  bytestream& bytestream::operator>>(const type& u) \
+  Bytestream& Bytestream::operator>>(const type& u) \
   {type v = get##shortType();\
    if(u!=v) {(*this) -= sizeof(type);\
-      throw badmatch("Does not match const", v, u);}\
+      throw Badmatch("Does not match const", v, u);}\
    else{return *this;}}
 
 GETOP_CONST(uint, U, 8)
@@ -483,7 +483,7 @@ GETOP_CONST(int, S, 64)
 GETOP_CONST(float, F, 32)
 GETOP_CONST(float, F, 64)
 
-bytestream& bytestream::operator>>(const std::string& s)
+Bytestream& Bytestream::operator>>(const std::string& s)
 {
   if (_noOfNextBytesValid && getNoOfNextBytes() != s.length())
   {
@@ -497,14 +497,14 @@ bytestream& bytestream::operator>>(const std::string& s)
   if(sv != s)
   {
     (*this) -= s.length();
-    throw badmatch("Does not match const", sv, s);
+    throw Badmatch("Does not match const", sv, s);
   }
   return *this;
 }
 
 #define NEXTOP(type, shorthand, len) NEXTOP_(type##len##_t, shorthand##len)
 #define NEXTOP_(type, shortType) \
-  bool bytestream::operator>>=(const type& u) \
+  bool Bytestream::operator>>=(const type& u) \
   {return next##shortType(u);}
 
 NEXTOP(uint, U, 8)
@@ -517,24 +517,24 @@ NEXTOP(int, S, 32)
 NEXTOP(int, S, 64)
 NEXTOP(float, F, 32)
 NEXTOP(float, F, 64)
-bool bytestream::operator>>=(const std::string& s)
+bool Bytestream::operator>>=(const std::string& s)
 {
   return nextString(s);
 }
-bool bytestream::operator>>=(const bytestream& other)
+bool Bytestream::operator>>=(const Bytestream& other)
 {
   return nextBytestream(other);
 }
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-bool bytestream::needsSwap()
+bool Bytestream::needsSwap()
 {
-  return endianness != Endianness::native && endianness != Endianness::little;
+  return _endianness != Endianness::native && _endianness != Endianness::little;
 }
 #elif __BYTE_ORDER == __BIG_ENDIAN
-bool bytestream::needsSwap()
+bool Bytestream::needsSwap()
 {
-  return endianness != Endianness::native && endianness != Endianness::big;
+  return _endianness != Endianness::native && _endianness != Endianness::big;
 }
 #else
 #error

@@ -5,7 +5,7 @@ using namespace std;
 
 TEST(get_operator)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -22,7 +22,7 @@ TEST(get_operator)
 
   bts >> a >> b >> c >> d >> e >> f >> g >> h;
   bts/10 >> s;
-  bytestream bts2;
+  Bytestream bts2;
   bts-=10;
   bts/10 >> bts2;
 
@@ -40,7 +40,7 @@ TEST(get_operator)
 
 TEST(get_methods)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -65,23 +65,23 @@ TEST(get_methods)
   ASSERT((bts/10).peekString()=="someString");
   ASSERT((bts/10).getString()=="someString");
   bts-=10;
-  bytestream bts2a = (bts/10).peekBytestream();
-  bytestream bts2b = (bts/10).getBytestream();
+  Bytestream bts2a = (bts/10).peekBytestream();
+  Bytestream bts2b = (bts/10).getBytestream();
   ASSERT(bts2a==bts2b);
   ASSERT(bts2b>>="someString");
   bts-=10;
   ASSERT(bts.peekString(10)=="someString");
   ASSERT(bts.getString(10)=="someString");
   bts-=10;
-  bytestream bts3a = bts.peekBytestream(10);
-  bytestream bts3b = bts.getBytestream(10);
+  Bytestream bts3a = bts.peekBytestream(10);
+  Bytestream bts3b = bts.getBytestream(10);
   ASSERT(bts3a==bts3b);
   ASSERT(bts3b>>="someString");
 }
 
 TEST(const_types)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -95,7 +95,7 @@ TEST(const_types)
 
 TEST(test_operator)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -126,7 +126,7 @@ TEST(test_operator)
   ASSERT(bts/10 >>= "someString");
 
   bts -= 10;
-  bytestream bts2;
+  Bytestream bts2;
   bts2 << "someString";
   ASSERT(bts >>=bts2);
   ASSERT_FALSE(bts >>= bts2); // already consumed
@@ -134,7 +134,7 @@ TEST(test_operator)
 
 TEST(test_method)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -162,7 +162,7 @@ TEST(test_method)
   ASSERT_FALSE(bts.nextString("notSomeString"));
   ASSERT(bts.nextString("someString"));
   bts -= 10;
-  bytestream bts2;
+  Bytestream bts2;
   bts2 << "someString";
   ASSERT(bts.nextBytestream(bts2));
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
@@ -173,7 +173,7 @@ TEST(test_method)
 
 TEST(limits)
 {
-  bytestream bts;
+  Bytestream bts;
       // 0xff...
   bts << (uint8_t)255 << (uint16_t)65535 << (uint32_t)4294967295UL
       << (uint64_t)18446744073709551615ULL
@@ -198,7 +198,7 @@ TEST(limits)
 
 TEST(position_arithmetics)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
@@ -217,20 +217,20 @@ TEST(position_arithmetics)
 
 TEST(copying)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
-  bytestream bts2(bts);
+  Bytestream bts2(bts);
   ASSERT(bts2==bts);
-  bytestream bts3 = bts;
+  Bytestream bts3 = bts;
   ASSERT(bts3==bts);
-  bytestream bts4;
+  Bytestream bts4;
   bts4 = bts;
   ASSERT(bts4==bts);
 
   bts += 30;
-  bytestream bts5 = bts;
+  Bytestream bts5 = bts;
   ASSERT(bts5==bts);
   ASSERT(bts.pos()==30);
   ASSERT(bts5.pos()==30);
@@ -241,30 +241,30 @@ TEST(copying)
 
 TEST(partials)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
 
-  bytestream bts2;
+  Bytestream bts2;
   bts/bts.size() >> bts2;
   ASSERT(bts2==bts);
 
   bts-=10;
   ASSERT(bts>>="someString");
   bts-=10;
-  bytestream bts3;
+  Bytestream bts3;
   bts/10 >> bts3;
   ASSERT(bts3>>="someString");
 }
 
 TEST(exceptions)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (uint8_t)1;
   size_t pos_before = bts.pos();
   ASSERT_THROW(bts >> (uint16_t)1, out_of_range);
-  ASSERT_THROW(bts >> (uint8_t)2, bytestream::badmatch);
+  ASSERT_THROW(bts >> (uint8_t)2, Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
   ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts.getBytestream(17), logic_error);
@@ -274,7 +274,7 @@ TEST(exceptions)
 
   bts << "test";
   ASSERT(bts.noOfNextBytesValid()==false);
-  ASSERT_THROW(bts >> "fest", bytestream::badmatch);
+  ASSERT_THROW(bts >> "fest", Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
 
   ASSERT_THROW(bts/3 >> "fest", logic_error);
@@ -283,14 +283,14 @@ TEST(exceptions)
 
 TEST(constructors)
 {
-  bytestream bts(15);
+  Bytestream bts(15);
   ASSERT(bts.size()==15);
   ASSERT(bts.pos()==0);
   bts >> (uint8_t)0 >> (uint16_t)0 >> (uint32_t)0 >> (uint64_t)0;
   ASSERT(bts.atEnd());
 
   const char* cs = "someString";
-  bytestream bts2(cs , 10);
+  Bytestream bts2(cs , 10);
   ASSERT(bts2.size()==10);
   ASSERT(bts2.pos()==0);
   bts2 >> cs;
@@ -299,7 +299,7 @@ TEST(constructors)
 
 TEST(floats)
 {
-  bytestream bts;
+  Bytestream bts;
   bts << (float64_t)0.0F << (float64_t)1 << (float64_t)1.1 << (float64_t)12.7
       << 0.01171875 << 3.14159F;
   bts << 0x4037000000000000;
