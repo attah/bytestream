@@ -6,10 +6,21 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v1
     - name: make
       run: make
+    - name: test
+      run: ./test
+
+  build_clang:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: make
+      run: CXX=clang++ make
     - name: test
       run: ./test
