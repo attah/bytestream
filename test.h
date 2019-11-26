@@ -40,8 +40,7 @@ class DebugStream
 #define TEST(name) TEST_(name, __COUNTER__)
 #define TEST_(name, counter) TEST__(name, #name, counter)
 #define TEST__(name, namestr, counter) \
-  extern "C" std::string __test_##counter##_name()\
-  {return namestr;}\
+  extern "C" const char __test_##counter##_name[] = namestr;\
   void _test_##name(DebugStream& debug);\
   extern "C" void __test_##counter(DebugStream& debug)\
     {_test_##name(debug);}\
@@ -64,7 +63,6 @@ class DebugStream
                                  STR(expr));} \
   catch(exc e) {}
 
-typedef std::string (*name_f)(void);
 typedef void (*test_f)(DebugStream& debug);
 
 const char* currentExceptionName()
@@ -106,18 +104,18 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
   {
     std::string testname = "__test_"+std::to_string(i)+"_name";
     std::string testfun = "__test_"+std::to_string(i);
-    void* name_fptr = dlsym(handle, testname.c_str());
+    void* name_ptr = dlsym(handle, testname.c_str());
     void* test_fptr = dlsym(handle, testfun.c_str());
-    if(!name_fptr || !test_fptr)
+    if(!name_ptr || !test_fptr)
       break;
-    std::string namestr = ((name_f)name_fptr)();
+    std::string namestr = reinterpret_cast<const char*>(name_ptr);
     std::string errmsg;
     std::cout << Y(" 🡆 ") << namestr << std::endl;
     DebugStream debug;
     std::string resultpos = POS0;
     try
     {
-      ((test_f)test_fptr)(debug);
+      reinterpret_cast<test_f>(test_fptr)(debug);
       std::cout << RESULTPOS << G(" ✔ ") << namestr << std::endl;
     }
     catch(TestFailedException e)
