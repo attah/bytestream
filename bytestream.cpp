@@ -132,7 +132,7 @@ std::string Bytestream::getString()
   cs[_noOfNextBytes] = 0;
   getBytes(cs, _noOfNextBytes);
   string s = std::string(cs, _noOfNextBytes);
-  delete cs;
+  delete[] cs;
   return s;
 }
 Bytestream Bytestream::getBytestream()
@@ -144,7 +144,7 @@ Bytestream Bytestream::getBytestream()
   uint8_t* cs = new uint8_t[_noOfNextBytes];
   getBytes(cs, _noOfNextBytes);
   Bytestream other = Bytestream(cs, _noOfNextBytes);
-  delete cs;
+  delete[] cs;
   return other;
 }
 std::string Bytestream::getString(size_t len)
@@ -204,7 +204,7 @@ std::string Bytestream::peekString()
   cs[_noOfNextBytes] = 0;
   getBytes(cs, _noOfNextBytes);
   string s = std::string(cs, _noOfNextBytes);
-  delete cs;
+  delete[] cs;
   (*this) -= _noOfNextBytes;
   return s;
 }
@@ -217,7 +217,7 @@ Bytestream Bytestream::peekBytestream()
   uint8_t* cs = new uint8_t[_noOfNextBytes];
   getBytes(cs, _noOfNextBytes);
   Bytestream other = Bytestream(cs, _noOfNextBytes);
-  delete cs;
+  delete[] cs;
   (*this) -= _noOfNextBytes;
   return other;
 }
