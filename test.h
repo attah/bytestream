@@ -1,50 +1,21 @@
 #include <iostream>
+#include <sstream>
 #include <dlfcn.h>
 #include <cxxabi.h>
-
-class DebugStream
-{
-  public:
-    DebugStream() : used(false) {}
-    bool used;
-    template <typename T>
-    DebugStream& operator<<(const T &data)
-    {
-      std::cout << data;
-      used=true;
-      return *this;
-    }
-    DebugStream& operator<<(std::ostream& (*f)(std::ostream &)) {
-      f(std::cout);
-      used=true;
-      return *this;
-    }
-    DebugStream& operator<<(std::ostream& (*f)(std::ios &)) {
-      f(std::cout);
-      used=true;
-      return *this;
-    }
-    DebugStream& operator<<(std::ostream& (*f)(std::ios_base &)) {
-      f(std::cout);
-      used=true;
-      return *this;
-    }
-};
 
 #define R(s) "\033[31m" s "\033[39m"
 #define G(s) "\033[32m" s "\033[39m"
 #define Y(s) "\033[33m" s "\033[39m"
 #define POS0 "\033[1F" // Pos0 of previous line
-#define RESULTPOS (debug.used ? "\n" : POS0)
 
 #define TEST(name) TEST_(name, __COUNTER__)
 #define TEST_(name, counter) TEST__(name, #name, counter)
 #define TEST__(name, namestr, counter) \
   extern "C" const char __test_##counter##_name[] = namestr;\
-  void _test_##name(DebugStream& debug);\
-  extern "C" void __test_##counter(DebugStream& debug)\
+  void _test_##name(std::stringstream& debug);\
+  extern "C" void __test_##counter(std::stringstream& debug)\
     {_test_##name(debug);}\
-  void _test_##name(__attribute__((unused)) DebugStream& debug)
+  void _test_##name(__attribute__((unused)) std::stringstream& debug)
 
 #define STR(s) STR_(#s)
 #define STR_(s) s
@@ -63,7 +34,7 @@ class DebugStream
                                  STR(expr));} \
   catch(exc e) {}
 
-typedef void (*test_f)(DebugStream& debug);
+typedef void (*test_f)(std::stringstream& debug);
 
 const char* currentExceptionName()
 {
@@ -111,12 +82,12 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
     std::string namestr = reinterpret_cast<const char*>(name_ptr);
     std::string errmsg;
     std::cout << Y(" 🡆 ") << namestr << std::endl;
-    DebugStream debug;
-    std::string resultpos = POS0;
+    std::stringstream debug;
     try
     {
       reinterpret_cast<test_f>(test_fptr)(debug);
-      std::cout << RESULTPOS << G(" ✔ ") << namestr << std::endl;
+      std::cout << (debug.str().empty() ? POS0 : debug.str())
+                << G(" ✔ ") << namestr << std::endl;
     }
     catch(TestFailedException e)
     {
@@ -129,7 +100,8 @@ int main(__attribute__((unused)) int argc, __attribute__((unused)) char** argv)
     }
     if(!errmsg.empty())
     {
-      std::cout << RESULTPOS << R(" ✘ ") << namestr << errmsg << std::endl;
+      std::cout << (debug.str().empty() ? POS0 : debug.str())
+                << R(" ✘ ") << namestr << errmsg << std::endl;
       ret++;
     }
     i++;
