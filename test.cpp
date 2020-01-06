@@ -380,6 +380,19 @@ TEST(mixed_eandian)
 TEST(codable)
 {
   TestCodable cod;
+  ASSERT(cod.a == 0);
+  ASSERT(cod.b == 0);
+  ASSERT(cod.c == 0);
+  ASSERT(cod.d == 0);
+  ASSERT(cod.e == 0);
+  ASSERT(cod.f == 0);
+  ASSERT(cod.g == 0);
+  ASSERT(cod.h == 0);
+  ASSERT(cod.s == "");
+  ASSERT(cod.f1 == 0.0);
+  ASSERT(cod.f2 == 0.0);
+  ASSERT(cod.s2 == "");
+
   Bytestream bts;
   bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
@@ -407,4 +420,8 @@ TEST(codable)
   cod2.s2 = "short";
 
   ASSERT(cod2.encode() == bts);
+
+  bts.setPos(0);
+  TestCodable cod3(bts);
+  ASSERT(cod3.encode() == bts);
 }

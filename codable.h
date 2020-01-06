@@ -3,13 +3,36 @@
 #define CODABLE(name) \
 class name \
 { \
-public: \
+public:
 
   #define FIELD(type, name) type name;
   #define STRING(length, name) std::string name;
   #define PADDING(length)
 
   #include CODABLE_FILE
+
+  #undef FIELD
+  #undef STRING
+  #undef CODABLE
+
+  #define CODABLE(name) \
+  name() \
+  {
+    #define FIELD(type, name) name = type();
+    #define STRING(length, name)
+    #include CODABLE_FILE
+  }
+
+  #undef FIELD
+  #undef CODABLE
+
+  #define CODABLE(name) \
+  name(Bytestream& bts) \
+  {
+    #define FIELD(type, name);
+    #include CODABLE_FILE
+    this->decode_from(bts);
+  }
 
   #undef CODABLE
   #define CODABLE(name)
