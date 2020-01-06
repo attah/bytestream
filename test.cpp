@@ -386,7 +386,7 @@ TEST(codable)
       << "someString" << (float32_t)1.1 << (float64_t)-2.2
          // Null padding so encoded comparison works
       << std::string(6, 0) << "short" << std::string(5, 0);
-  cod.decode(bts);
+  cod.decode_from(bts);
 
   ASSERT(bts.remaining() == 0);
 

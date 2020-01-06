@@ -1,3 +1,5 @@
+#include <sstream>
+
 #define CODABLE(name) \
 class name \
 { \
@@ -15,7 +17,7 @@ public: \
   #undef STRING
   #undef SKIP
 
-  void decode(Bytestream& bts)
+  void decode_from(Bytestream& bts)
   {
     #define INT(type, name) bts >> name;
     #define STRING(length, name) bts/length >> name;
@@ -32,7 +34,7 @@ public: \
   {
     #define INT(type, name) bts << name;
     #define STRING(length, name) name.resize(length); bts << name;
-    #define SKIP(length) std::string tmp(length, 0); bts << tmp;
+    #define SKIP(length) {std::string tmp(length, 0); bts << tmp;}
 
     #include CODABLE_FILE
   }
@@ -43,6 +45,28 @@ public: \
     encode_into(bts);
     return bts;
   }
+
+  #undef INT
+  #undef STRING
+  #undef SKIP
+
+  std::string describe()
+  {
+    std::stringstream ss;
+    #define INT(type, name) ss << "INT " << #type << " " << #name << " " \
+                               << name << std::endl;
+    #define STRING(length, name) ss << "STRING " << #name << " \"" \
+                                    << name << "\"" << std::endl;
+    #define SKIP(length) ss << "SKIP "<< length << std::endl;
+
+    #include CODABLE_FILE
+
+    return ss.str();
+  }
+
+  #undef INT
+  #undef STRING
+  #undef SKIP
 
 };
 
