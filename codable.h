@@ -5,36 +5,36 @@ class name \
 { \
 public: \
 
-  #define INT(type, name) type name;
+  #define FIELD(type, name) type name;
   #define STRING(length, name) std::string name;
-  #define SKIP(length)
+  #define PADDING(length)
 
   #include CODABLE_FILE
 
   #undef CODABLE
   #define CODABLE(name)
-  #undef INT
+  #undef FIELD
   #undef STRING
-  #undef SKIP
+  #undef PADDING
 
   void decode_from(Bytestream& bts)
   {
-    #define INT(type, name) bts >> name;
+    #define FIELD(type, name) bts >> name;
     #define STRING(length, name) bts/length >> name;
-    #define SKIP(length) bts += length;
+    #define PADDING(length) bts += length;
 
     #include CODABLE_FILE
   }
 
-  #undef INT
+  #undef FIELD
   #undef STRING
-  #undef SKIP
+  #undef PADDING
 
   void encode_into(Bytestream& bts)
   {
-    #define INT(type, name) bts << name;
+    #define FIELD(type, name) bts << name;
     #define STRING(length, name) name.resize(length); bts << name;
-    #define SKIP(length) {std::string tmp(length, 0); bts << tmp;}
+    #define PADDING(length) {std::string tmp(length, 0); bts << tmp;}
 
     #include CODABLE_FILE
   }
@@ -46,27 +46,27 @@ public: \
     return bts;
   }
 
-  #undef INT
+  #undef FIELD
   #undef STRING
-  #undef SKIP
+  #undef PADDING
 
   std::string describe()
   {
     std::stringstream ss;
-    #define INT(type, name) ss << "INT " << #type << " " << #name << " " \
+    #define FIELD(type, name) ss << "FIELD " << #type << " " << #name << " " \
                                << name << std::endl;
     #define STRING(length, name) ss << "STRING " << #name << " \"" \
                                     << name << "\"" << std::endl;
-    #define SKIP(length) ss << "SKIP "<< length << std::endl;
+    #define PADDING(length) ss << "PADDING "<< length << std::endl;
 
     #include CODABLE_FILE
 
     return ss.str();
   }
 
-  #undef INT
+  #undef FIELD
   #undef STRING
-  #undef SKIP
+  #undef PADDING
 
 };
 
