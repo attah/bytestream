@@ -382,11 +382,11 @@ TEST(codable)
   TestCodable cod;
   ASSERT(cod.a == 0);
   ASSERT(cod.b == 0);
-  ASSERT(cod.c == 0);
+  ASSERT(cod.c == 7);
   ASSERT(cod.d == 0);
   ASSERT(cod.e == 0);
   ASSERT(cod.f == 0);
-  ASSERT(cod.g == 0);
+  ASSERT(cod.g == 8);
   ASSERT(cod.h == 0);
   ASSERT(cod.s == "");
   ASSERT(cod.f1 == 0.0);
@@ -398,7 +398,7 @@ TEST(codable)
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString" << (float32_t)1.1 << (float64_t)-2.2
          // Null padding so encoded comparison works
-      << std::string(6, 0) << "short" << std::string(5, 0);
+      << std::string(6, 0) << "short" << std::string(5, 0) << "match";
   cod.decode_from(bts);
 
   ASSERT(bts.remaining() == 0);
