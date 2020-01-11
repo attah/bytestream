@@ -246,7 +246,9 @@ Bytestream Bytestream::peekBytestream(size_t len)
 #define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)
 #define NEXT_(type, shortType) \
   bool Bytestream::next##shortType(type u) \
-  {if(u == get##shortType())\
+  {if(remaining() < sizeof(type)) \
+     {return false;} \
+   else if(u == get##shortType())\
      {return true;} \
    else\
   {(*this) -= sizeof(type);\

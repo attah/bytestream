@@ -130,6 +130,8 @@ TEST(test_operator)
   bts2 << "someString";
   ASSERT(bts >>=bts2);
   ASSERT_FALSE(bts >>= bts2); // already consumed
+  ASSERT_FALSE(bts >>= (uint8_t)1); // empty
+
 }
 
 TEST(test_method)
