@@ -174,6 +174,7 @@ public:
 private:
   uint8_t* _data;
   size_t _size;
+  size_t _allocated;
   size_t _pos;
   size_t _noOfNextBytes;
   bool _noOfNextBytesValid;
