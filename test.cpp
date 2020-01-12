@@ -213,8 +213,16 @@ TEST(position_arithmetics)
   ASSERT(bts.pos()==0);
   ASSERT(bts.size()==10);
   bts >> "someString";
+  ASSERT(bts.atEnd());
 
   ASSERT_THROW((bts+=1), out_of_range);
+  ASSERT_THROW(bts.setPos(bts.pos()+1), out_of_range);
+  ASSERT_THROW(bts-=(bts.pos()+1), out_of_range);
+
+  bts.setPos(5);
+  ASSERT(bts.pos()==5);
+  bts.setPos(10);
+  ASSERT(bts.pos()==10);
 }
 
 TEST(copying)

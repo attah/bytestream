@@ -411,8 +411,25 @@ Bytestream& Bytestream::operator+=(size_t i)
 
 Bytestream& Bytestream::operator-=(size_t i)
 {
+  if(i > _pos)
+  {
+    invalidateNoOfNextBytes();
+    throw out_of_range("Tried to address data before start");
+  }
   _pos -= i;
   return *this;
+}
+
+void Bytestream::setPos(size_t pos)
+{
+  if(pos > _pos)
+  {
+    *this += (pos-_pos);
+  }
+  else
+  {
+    *this -= (_pos-pos);
+  }
 }
 
 Bytestream& Bytestream::operator/(int i)
