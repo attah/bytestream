@@ -7,6 +7,7 @@ using namespace std;
 Bytestream::Bytestream()
 {
   _size = 0;
+  _allocated = 0;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -16,8 +17,9 @@ Bytestream::Bytestream()
 Bytestream::Bytestream(size_t len)
 {
   _size = len;
-  _data = new uint8_t[_size];
-  memset(_data, 0, _size);
+  _allocated  = len;
+  _data = new uint8_t[_allocated];
+  memset(_data, 0, _allocated);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -27,6 +29,7 @@ Bytestream::Bytestream(size_t len)
 Bytestream::Bytestream(const void* data, size_t len)
 {
   _size = len;
+  _allocated  = _size;
   _data = new uint8_t[_size];
   memcpy(_data, data, _size);
   _pos = 0;
@@ -37,6 +40,7 @@ Bytestream::Bytestream(const void* data, size_t len)
 Bytestream::Bytestream(const void* data, size_t len, Endianness e)
 {
   _size = len;
+  _allocated  = _size;
   _data = new uint8_t[_size];
   memcpy(_data, data, _size);
   _pos = 0;
@@ -48,6 +52,7 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
 Bytestream::Bytestream(const Bytestream& rhs)
 {
   _size = rhs._size;
+  _allocated  = _size;
   _data = new uint8_t[_size];
   memcpy(_data, rhs._data, _size);
   _pos = rhs._pos;
@@ -89,6 +94,7 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
   }
   _pos = other.pos();
   _size = other.size();
+  _allocated = _size;
   _data = new uint8_t[_size];
   memcpy(_data, other.raw(), _size);
   return *this;
@@ -352,13 +358,21 @@ void Bytestream::putBytestream(const Bytestream& other)
 
 void Bytestream::putBytes(const void* c, size_t len)
 {
-  uint8_t* old = _data;
-  _data = new uint8_t[_size+len];
+  size_t new_size = _size + len;
 
-  if (_size != 0)
+  if(new_size > _allocated)
   {
-    memcpy(_data, old, _size);
-    delete old;
+    uint8_t* old = _data;
+    size_t next_size = new_size > 2*_allocated ? new_size : 2*_allocated;
+
+    _data = new uint8_t[next_size];
+    _allocated = next_size;
+
+    if (_size != 0)
+    {
+      memcpy(_data, old, _size);
+      delete old;
+    }
   }
   memcpy((_data+_size), c, len);
   _size += len;
@@ -411,8 +425,25 @@ Bytestream& Bytestream::operator+=(size_t i)
 
 Bytestream& Bytestream::operator-=(size_t i)
 {
+  if(i > _pos)
+  {
+    invalidateNoOfNextBytes();
+    throw out_of_range("Tried to address data before start");
+  }
   _pos -= i;
   return *this;
+}
+
+void Bytestream::setPos(size_t pos)
+{
+  if(pos > _pos)
+  {
+    *this += (pos-_pos);
+  }
+  else
+  {
+    *this -= (_pos-pos);
+  }
 }
 
 Bytestream& Bytestream::operator/(int i)

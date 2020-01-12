@@ -46,7 +46,7 @@ public:
   size_t pos() const {return _pos;}
   size_t remaining() const {return _size - _pos;}
   bool atEnd() const {return _pos >= _size;}
-  void setPos(size_t pos) {_pos = pos;}
+  void setPos(size_t pos);
   Endianness getEndianness() {return _endianness;}
   void setEndianness(Endianness e) {_endianness = e;}
 
@@ -174,6 +174,7 @@ public:
 private:
   uint8_t* _data;
   size_t _size;
+  size_t _allocated;
   size_t _pos;
   size_t _noOfNextBytes;
   bool _noOfNextBytesValid;
