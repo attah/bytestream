@@ -381,3 +381,55 @@ TEST(mixed_eandian)
       >> (float64_t)631000.000 >> (float64_t)6542410.613;
   bts >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0;
 }
+
+#define CODABLE_FILE "test_codable.h"
+#include "codable.h"
+
+TEST(codable)
+{
+  TestCodable cod;
+  ASSERT(cod.a == 0);
+  ASSERT(cod.b == 0);
+  ASSERT(cod.c == 7);
+  ASSERT(cod.d == 0);
+  ASSERT(cod.e == 0);
+  ASSERT(cod.f == 0);
+  ASSERT(cod.g == 8);
+  ASSERT(cod.h == 0);
+  ASSERT(cod.s == "");
+  ASSERT(cod.f1 == 0.0);
+  ASSERT(cod.f2 == 0.0);
+  ASSERT(cod.s2 == "");
+
+  Bytestream bts;
+  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
+      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+      << "someString" << (float32_t)1.1 << (float64_t)-2.2
+         // Null padding so encoded comparison works
+      << std::string(6, 0) << "short" << std::string(5, 0) << "match";
+  cod.decode_from(bts);
+
+  ASSERT(bts.remaining() == 0);
+
+  ASSERT(cod.encode() == bts);
+
+  TestCodable cod2;
+  cod2.a = 1;
+  cod2.b = 2;
+  cod2.c = 3;
+  cod2.d = 4;
+  cod2.e = -1;
+  cod2.f = -2;
+  cod2.g = -3;
+  cod2.h = -4;
+  cod2.s = "someString";
+  cod2.f1 = 1.1;
+  cod2.f2 = -2.2;
+  cod2.s2 = "short";
+
+  ASSERT(cod2.encode() == bts);
+
+  bts.setPos(0);
+  TestCodable cod3(bts);
+  ASSERT(cod3.encode() == bts);
+}
