@@ -1,0 +1,3 @@
+[submodule "minitest"]
+	path = minitest
+	url = https://github.com/attah/minitest

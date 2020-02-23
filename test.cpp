@@ -1,5 +1,5 @@
 #include "bytestream.h"
-#include "test.h"
+#include "minitest/test.h"
 #include <cstring>
 using namespace std;
 
