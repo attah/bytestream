@@ -8,7 +8,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+    - name: update submodules
+      run: git submodule sync --recursive && git submodule update --init --force --recursive --depth=1
     - name: make
       run: make
     - name: test
@@ -19,7 +21,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+    - name: update submodules
+      run: git submodule sync --recursive && git submodule update --init --force --recursive --depth=1
     - name: make
       run: CXX=clang++ make
     - name: test
