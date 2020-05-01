@@ -2,6 +2,7 @@
 #define  BYTESTREAM_H
 #include <string>
 #include <stdexcept>
+#include <stdint.h>
 #include <byteswap.h>
 #ifndef __STDC_IEC_559__
 #error "Double must be IEEE 754"
