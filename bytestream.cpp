@@ -147,10 +147,8 @@ Bytestream Bytestream::getBytestream()
   {
     throw invalid_argument("No length given");
   }
-  uint8_t* cs = new uint8_t[_noOfNextBytes];
-  getBytes(cs, _noOfNextBytes);
-  Bytestream other = Bytestream(cs, _noOfNextBytes);
-  delete[] cs;
+  Bytestream other = Bytestream(_noOfNextBytes);
+  getBytes(other.raw(), _noOfNextBytes);
   return other;
 }
 std::string Bytestream::getString(size_t len)
