@@ -93,7 +93,7 @@ public:
   bool nextF32(float32_t);
   bool nextF64(float64_t);
   bool nextString(const std::string& bts);
-  bool nextBytestream(const Bytestream& bts);
+  bool nextBytestream(const Bytestream& bts, bool compareEqual=true);
 
   void putU8(uint8_t);
   void putU16(uint16_t);

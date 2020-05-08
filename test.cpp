@@ -179,6 +179,20 @@ TEST(test_method)
   bts2 << "someString";
   ASSERT(bts.nextBytestream(bts2));
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
+
+  bts -= 10;
+  Bytestream bts3, bts4;
+  bts3 << "sooomeString";
+  bts4 << "someStrong";
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextBytestream(bts3, false));
+  // ...only advance the read position if the bytestreams aren't equal
+  ASSERT(bts.nextBytestream(bts4, false));
+  ASSERT(bts.atEnd());
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextBytestream(bts4, false));
+
+
 }
 
 #define HIBIT(sign, suffix) \

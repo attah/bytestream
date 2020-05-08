@@ -296,7 +296,7 @@ bool Bytestream::nextString(const std::string& s)
     return false;
   }
 }
-bool Bytestream::nextBytestream(const Bytestream& other)
+bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
   {
@@ -315,13 +315,16 @@ bool Bytestream::nextBytestream(const Bytestream& other)
     return false;
   }
 
-  if(getBytestream() == other)
+  bool res = memcmp(&(_data[_pos]), other.raw(), _noOfNextBytes) == 0;
+
+  if(res == compareEqual)
   {
+    _after(noOfNextBytes);
     return true;
   }
   else
   {
-    (*this) -= noOfNextBytes;
+    invalidateNoOfNextBytes();
     return false;
   }
 }
