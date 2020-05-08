@@ -165,7 +165,7 @@ std::string Bytestream::getString(size_t len)
 }
 Bytestream Bytestream::getBytestream(size_t len)
 {
-  if(!_noOfNextBytesValid && len != _noOfNextBytes)
+  if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
     throw logic_error("Desired lengths does not match");
   }
@@ -237,7 +237,7 @@ std::string Bytestream::peekString(size_t len)
 }
 Bytestream Bytestream::peekBytestream(size_t len)
 {
-  if(!_noOfNextBytesValid && len != _noOfNextBytes)
+  if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
     throw logic_error("Desired lengths does not match");
   }

@@ -77,6 +77,17 @@ TEST(get_methods)
   Bytestream bts3b = bts.getBytestream(10);
   ASSERT(bts3a==bts3b);
   ASSERT(bts3b>>="someString");
+
+  bts-=10;
+  Bytestream bts4a;
+  Bytestream bts4b;
+  bts.setNoOfNextBytes(7);
+  ASSERT_THROW(bts4a = bts.getBytestream(10), logic_error);
+  ASSERT_THROW(bts4a = bts.peekBytestream(10), logic_error);
+  bts.setNoOfNextBytes(10);
+  bts4b = bts.peekBytestream(10);
+  bts4a = bts.getBytestream(10);
+  ASSERT(bts4a==bts4b);
 }
 
 TEST(const_types)
@@ -128,7 +139,7 @@ TEST(test_operator)
   bts -= 10;
   Bytestream bts2;
   bts2 << "someString";
-  ASSERT(bts >>=bts2);
+  ASSERT(bts >>= bts2);
   ASSERT_FALSE(bts >>= bts2); // already consumed
   ASSERT_FALSE(bts >>= (uint8_t)1); // empty
 
