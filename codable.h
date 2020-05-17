@@ -97,6 +97,25 @@ public:
     encode_into(bts);
     return bts;
   }
+  #undef FIELD
+  #undef DEFAULT_FIELD
+  #undef STRING
+  #undef CONST_STRING
+  #undef DEFAULT_STRING
+  #undef PADDING
+
+  size_t encoded_size()
+  {
+    size_t size = 0;
+    #define FIELD(type, name) size += sizeof(type);
+    #define DEFAULT_FIELD(type, name, default) size += sizeof(type);
+    #define STRING(length, name) size += length;
+    #define CONST_STRING(name, value) size += strlen(value);
+    #define DEFAULT_STRING(length, name, default) size += length;
+    #define PADDING(length) size += length;
+    #include CODABLE_FILE
+    return size;
+  }
 
   #undef FIELD
   #undef DEFAULT_FIELD

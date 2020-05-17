@@ -457,4 +457,7 @@ TEST(codable)
   bts.setPos(0);
   TestCodable cod3(bts);
   ASSERT(cod3.encode() == bts);
+
+  ASSERT(cod.encoded_size() == bts.size());
+  ASSERT(cod.encoded_size() == 15+15+10+4+8+6+5+5+5);
 }
