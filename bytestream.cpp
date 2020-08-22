@@ -93,6 +93,15 @@ Bytestream::~Bytestream()
   }
 }
 
+Bytestream Bytestream::preallocated(size_t size)
+{
+  Bytestream bts;
+  bts._size = size;
+  bts._allocated  = size;
+  bts._data = new uint8_t[bts._allocated];
+  return bts;
+}
+
 bool Bytestream::operator==(const Bytestream& other) const
 {
   if(_size != other.size())

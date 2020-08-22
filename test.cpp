@@ -330,6 +330,10 @@ TEST(constructors)
   ASSERT(bts2.pos()==0);
   bts2 >> cs;
   ASSERT(bts2.atEnd());
+
+  Bytestream bts3 = Bytestream::preallocated(7);
+  ASSERT(bts3.size()==7);
+  ASSERT(bts3.pos()==0);
 }
 
 TEST(floats)

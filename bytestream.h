@@ -51,6 +51,8 @@ public:
   Bytestream(const Bytestream& rhs);
   ~Bytestream();
 
+  static Bytestream preallocated(size_t size);
+
   bool operator==(const Bytestream& other) const;
   bool operator!=(const Bytestream& other) const;
 
