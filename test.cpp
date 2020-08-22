@@ -318,7 +318,7 @@ TEST(exceptions)
 
 TEST(constructors)
 {
-  Bytestream bts(15);
+  Bytestream bts(0, 15);
   ASSERT(bts.size()==15);
   ASSERT(bts.pos()==0);
   bts >> (uint8_t)0 >> (uint16_t)0 >> (uint32_t)0 >> (uint64_t)0;
@@ -461,3 +461,57 @@ TEST(codable)
   ASSERT(cod.encoded_size() == bts.size());
   ASSERT(cod.encoded_size() == 15+15+10+4+8+6+5+5+5);
 }
+
+TEST(type_constructors)
+{
+  uint8_t u8 = 1;
+  Bytestream u8bts(u8);
+  ASSERT(u8bts.size() == sizeof(u8));
+  ASSERT(u8bts >>= u8);
+
+  uint16_t u16 = 2;
+  Bytestream u16bts(u16);
+  ASSERT(u16bts.size() == sizeof(u16));
+  ASSERT(u16bts >>= u16);
+
+  uint32_t u32 = 3;
+  Bytestream u32bts(u32);
+  ASSERT(u32bts.size() == sizeof(u32));
+  ASSERT(u32bts >>= u32);
+
+  uint64_t u64 = 4;
+  Bytestream u64bts(u64);
+  ASSERT(u64bts.size() == sizeof(u64));
+  ASSERT(u64bts >>= u64);
+
+  int8_t i8 = -1;
+  Bytestream i8bts(i8);
+  ASSERT(i8bts.size() == sizeof(i8));
+  ASSERT(i8bts >>= i8);
+
+  int16_t i16 = -2;
+  Bytestream i16bts(i16);
+  ASSERT(i16bts.size() == sizeof(i16));
+  ASSERT(i16bts >>= i16);
+
+  int32_t i32 = -3;
+  Bytestream i32bts(i32);
+  ASSERT(i32bts.size() == sizeof(i32));
+  ASSERT(i32bts >>= i32);
+
+  int64_t i64 = -4;
+  Bytestream i64bts(i64);
+  ASSERT(i64bts.size() == sizeof(i64));
+  ASSERT(i64bts >>= i64);
+
+  float32_t f32 = 1.1;
+  Bytestream f32bts(f32);
+  ASSERT(f32bts.size() == sizeof(f32));
+  ASSERT(f32bts >>= f32);
+
+  float64_t f64 = 2.2;
+  Bytestream f64bts(f64);
+  ASSERT(f64bts.size() == sizeof(f64));
+  ASSERT(f64bts >>= f64);
+}
+

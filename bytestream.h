@@ -31,9 +31,22 @@ public:
   };
 
   Bytestream();
-  Bytestream(size_t len);
+  Bytestream(int pattern, size_t len);
   Bytestream(const void* data, size_t len);
   Bytestream(const void* data, size_t len, Endianness e);
+
+  Bytestream(uint8_t u);
+  Bytestream(uint16_t u);
+  Bytestream(uint32_t u);
+  Bytestream(uint64_t u);
+  Bytestream(int8_t u);
+  Bytestream(int16_t u);
+  Bytestream(int32_t u);
+  Bytestream(int64_t u);
+  Bytestream(float32_t f);
+  Bytestream(float64_t f);
+  Bytestream(std::string s);
+
   Bytestream(const Bytestream& rhs);
   ~Bytestream();
 

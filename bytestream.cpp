@@ -14,12 +14,12 @@ Bytestream::Bytestream()
   _endianness = BigEndian;
 }
 
-Bytestream::Bytestream(size_t len)
+Bytestream::Bytestream(int pattern, size_t len)
 {
   _size = len;
   _allocated  = len;
   _data = new uint8_t[_allocated];
-  memset(_data, 0, _allocated);
+  memset(_data, pattern, _allocated);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -48,6 +48,22 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _noOfNextBytesValid = false;
   _endianness = e;
 }
+
+#define TYPE_CTOR(type) \
+  Bytestream::Bytestream(type t):Bytestream() \
+  { (*this) << t;}
+
+TYPE_CTOR(uint8_t)
+TYPE_CTOR(uint16_t)
+TYPE_CTOR(uint32_t)
+TYPE_CTOR(uint64_t)
+TYPE_CTOR(int8_t)
+TYPE_CTOR(int16_t)
+TYPE_CTOR(int32_t)
+TYPE_CTOR(int64_t)
+TYPE_CTOR(float32_t)
+TYPE_CTOR(float64_t)
+TYPE_CTOR(std::string)
 
 Bytestream::Bytestream(const Bytestream& rhs)
 {
@@ -147,7 +163,7 @@ Bytestream Bytestream::getBytestream()
   {
     throw invalid_argument("No length given");
   }
-  Bytestream other = Bytestream(_noOfNextBytes);
+  Bytestream other = Bytestream(0, _noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
   return other;
 }
@@ -218,7 +234,7 @@ Bytestream Bytestream::peekBytestream()
   {
     throw invalid_argument("No length given");
   }
-  Bytestream other = Bytestream(_noOfNextBytes);
+  Bytestream other = Bytestream(0, _noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
   (*this) -= _noOfNextBytes;
   return other;
