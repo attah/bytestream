@@ -34,6 +34,7 @@ public:
   Bytestream(int pattern, size_t len);
   Bytestream(const void* data, size_t len);
   Bytestream(const void* data, size_t len, Endianness e);
+  Bytestream(std::initializer_list<Bytestream> il);
 
   Bytestream(uint8_t u);
   Bytestream(uint16_t u);

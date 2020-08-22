@@ -49,6 +49,14 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _endianness = e;
 }
 
+Bytestream::Bytestream(std::initializer_list<Bytestream> il):Bytestream()
+{
+  for(Bytestream b : il)
+  {
+    *this << b;
+  }
+}
+
 #define TYPE_CTOR(type) \
   Bytestream::Bytestream(type t):Bytestream() \
   { (*this) << t;}

@@ -515,3 +515,15 @@ TEST(type_constructors)
   ASSERT(f64bts >>= f64);
 }
 
+TEST(initializer_list)
+{
+  Bytestream bts({(uint8_t)1, (uint16_t)2, (uint32_t)3, (uint64_t)4,
+                  (int8_t)-1, (int16_t)-2, (int32_t)-3, (int64_t)-4,
+                  (float32_t)1.1, (float64_t)2.2,
+                  std::string("someString")});
+
+  bts >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
+  bts >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
+  bts >> (float32_t)1.1 >> (float64_t)2.2;
+  bts >> "someString";
+}
