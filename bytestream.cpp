@@ -14,6 +14,17 @@ Bytestream::Bytestream()
   _endianness = BigEndian;
 }
 
+Bytestream::Bytestream(size_t size)
+{
+  _size = size;
+  _allocated  = size;
+  _data = new uint8_t[size];
+  _pos = 0;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
+  _endianness = BigEndian;
+}
+
 Bytestream::Bytestream(int pattern, size_t len)
 {
   _size = len;
@@ -49,29 +60,13 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _endianness = e;
 }
 
-Bytestream::Bytestream(std::initializer_list<Bytestream> il):Bytestream()
+Bytestream::Bytestream(std::initializer_list<Bytes> il):Bytestream()
 {
-  for(Bytestream b : il)
+  for(Bytes b : il)
   {
     *this << b;
   }
 }
-
-#define TYPE_CTOR(type) \
-  Bytestream::Bytestream(type t):Bytestream() \
-  { (*this) << t;}
-
-TYPE_CTOR(uint8_t)
-TYPE_CTOR(uint16_t)
-TYPE_CTOR(uint32_t)
-TYPE_CTOR(uint64_t)
-TYPE_CTOR(int8_t)
-TYPE_CTOR(int16_t)
-TYPE_CTOR(int32_t)
-TYPE_CTOR(int64_t)
-TYPE_CTOR(float32_t)
-TYPE_CTOR(float64_t)
-TYPE_CTOR(std::string)
 
 Bytestream::Bytestream(const Bytestream& rhs)
 {
@@ -91,15 +86,6 @@ Bytestream::~Bytestream()
   {
     delete _data;
   }
-}
-
-Bytestream Bytestream::preallocated(size_t size)
-{
-  Bytestream bts;
-  bts._size = size;
-  bts._allocated  = size;
-  bts._data = new uint8_t[bts._allocated];
-  return bts;
 }
 
 bool Bytestream::operator==(const Bytestream& other) const
@@ -616,3 +602,19 @@ bool Bytestream::needsSwap()
 #else
 #error
 #endif
+
+#define TYPE_CTOR(type) \
+  Bytes::Bytes(type t) \
+  { (*this) << t;}
+
+TYPE_CTOR(uint8_t)
+TYPE_CTOR(uint16_t)
+TYPE_CTOR(uint32_t)
+TYPE_CTOR(uint64_t)
+TYPE_CTOR(int8_t)
+TYPE_CTOR(int16_t)
+TYPE_CTOR(int32_t)
+TYPE_CTOR(int64_t)
+TYPE_CTOR(float32_t)
+TYPE_CTOR(float64_t)
+TYPE_CTOR(std::string)

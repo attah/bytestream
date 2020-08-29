@@ -9,6 +9,9 @@
 #endif
 #define float32_t float
 #define float64_t double
+
+class Bytes;
+
 class Bytestream
 {
 public:
@@ -31,27 +34,14 @@ public:
   };
 
   Bytestream();
+  Bytestream(size_t size);
   Bytestream(int pattern, size_t len);
   Bytestream(const void* data, size_t len);
   Bytestream(const void* data, size_t len, Endianness e);
-  Bytestream(std::initializer_list<Bytestream> il);
-
-  Bytestream(uint8_t u);
-  Bytestream(uint16_t u);
-  Bytestream(uint32_t u);
-  Bytestream(uint64_t u);
-  Bytestream(int8_t u);
-  Bytestream(int16_t u);
-  Bytestream(int32_t u);
-  Bytestream(int64_t u);
-  Bytestream(float32_t f);
-  Bytestream(float64_t f);
-  Bytestream(std::string s);
+  Bytestream(std::initializer_list<Bytes> il);
 
   Bytestream(const Bytestream& rhs);
   ~Bytestream();
-
-  static Bytestream preallocated(size_t size);
 
   bool operator==(const Bytestream& other) const;
   bool operator!=(const Bytestream& other) const;
@@ -202,6 +192,26 @@ private:
 
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
+};
+
+class Bytes : private Bytestream
+{
+  friend Bytestream::Bytestream(std::initializer_list<Bytes>);
+private:
+  Bytes();
+
+public:
+  Bytes(uint8_t u);
+  Bytes(uint16_t u);
+  Bytes(uint32_t u);
+  Bytes(uint64_t u);
+  Bytes(int8_t u);
+  Bytes(int16_t u);
+  Bytes(int32_t u);
+  Bytes(int64_t u);
+  Bytes(float32_t f);
+  Bytes(float64_t f);
+  Bytes(std::string s);
 };
 
 #endif
