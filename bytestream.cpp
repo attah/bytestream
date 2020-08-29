@@ -464,7 +464,7 @@ void Bytestream::setPos(size_t pos)
   }
 }
 
-Bytestream& Bytestream::operator/(int i)
+Bytestream& Bytestream::operator/(size_t i)
 {
   setNoOfNextBytes(i);
   return *this;

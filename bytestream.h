@@ -124,7 +124,7 @@ public:
   Bytestream& operator+=(size_t i);
   Bytestream& operator-=(size_t i);
 
-  Bytestream& operator/(int i);
+  Bytestream& operator/(size_t i);
 
   Bytestream& operator<<(const uint8_t& u);
   Bytestream& operator<<(const uint16_t& u);
