@@ -68,6 +68,16 @@ Bytestream::Bytestream(std::initializer_list<Bytes> il):Bytestream()
   }
 }
 
+Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
+                      :Bytestream()
+{
+  this->setEndianness(e);
+  for(Bytes b : il)
+  {
+    *this << b;
+  }
+}
+
 Bytestream::Bytestream(const Bytestream& rhs)
 {
   _size = rhs._size;
@@ -603,18 +613,64 @@ bool Bytestream::needsSwap()
 #error
 #endif
 
-#define TYPE_CTOR(type) \
-  Bytes::Bytes(type t) \
-  { (*this) << t;}
+#define TYPE_CTOR(type, shorthand, len) \
+  TYPE_CTOR_(type##len##_t, shorthand##len)
+#define TYPE_CTOR_(typeName, shortType) \
+  Bytes::Bytes(typeName t) \
+  {type = Type::shortType;\
+   u.shortType = t;}
 
-TYPE_CTOR(uint8_t)
-TYPE_CTOR(uint16_t)
-TYPE_CTOR(uint32_t)
-TYPE_CTOR(uint64_t)
-TYPE_CTOR(int8_t)
-TYPE_CTOR(int16_t)
-TYPE_CTOR(int32_t)
-TYPE_CTOR(int64_t)
-TYPE_CTOR(float32_t)
-TYPE_CTOR(float64_t)
-TYPE_CTOR(std::string)
+TYPE_CTOR(uint, u, 8)
+TYPE_CTOR(uint, u, 16)
+TYPE_CTOR(uint, u, 32)
+TYPE_CTOR(uint, u, 64)
+TYPE_CTOR(int, i, 8)
+TYPE_CTOR(int, i, 16)
+TYPE_CTOR(int, i, 32)
+TYPE_CTOR(int, i, 64)
+TYPE_CTOR(float, f, 32)
+TYPE_CTOR(float, f, 64)
+
+Bytes::Bytes(std::string s)
+{
+  type = Type::s;
+  u.s = new std::string(s);
+}
+
+Bytes::Bytes(const Bytes& other)
+{
+  type = other.type;
+  if(type == Type::s)
+  {
+    u.s = new std::string(*other.u.s);
+  }
+  else
+  {
+    u = other.u;
+  }
+}
+
+Bytes::~Bytes()
+{
+  if(type == Type::s)
+  {
+    delete u.s;
+  }
+}
+
+Bytestream& operator<<(Bytestream& bts, const Bytes& b) {
+  switch (b.type) {
+    case Bytes::u8:  return bts << b.u.u8;
+    case Bytes::u16: return bts << b.u.u16;
+    case Bytes::u32: return bts << b.u.u32;
+    case Bytes::u64: return bts << b.u.u64;
+    case Bytes::i8:  return bts << b.u.i8;
+    case Bytes::i16: return bts << b.u.i16;
+    case Bytes::i32: return bts << b.u.i32;
+    case Bytes::i64: return bts << b.u.i64;
+    case Bytes::f32: return bts << b.u.f32;
+    case Bytes::f64: return bts << b.u.f64;
+    case Bytes::s:   return bts << *b.u.s;
+    default: throw invalid_argument("Uninitialized bytes");
+  }
+}

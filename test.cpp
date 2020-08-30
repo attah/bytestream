@@ -483,4 +483,33 @@ TEST(initializer_list)
                      (float32_t)1.1, (float64_t)2.2,
                      std::string("someString")};
   ASSERT(bts2==bts);
+
+  Bytestream bts_le({(uint8_t)1, (uint16_t)2, (uint32_t)3, (uint64_t)4,
+                     (int8_t)-1, (int16_t)-2, (int32_t)-3, (int64_t)-4,
+                     (float32_t)1.1, (float64_t)2.2,
+                     std::string("someString")}, Bytestream::LittleEndian);
+
+  ASSERT(bts_le.getEndianness() == Bytestream::LittleEndian);
+
+  Bytestream ManuallyFlipped = {(uint8_t)1, (uint16_t)0x0200,
+                                (uint32_t)0x03000000,
+                                (uint64_t)0x0400000000000000};
+
+  ASSERT(bts_le >>= ManuallyFlipped);
+
+  bts_le.setPos(0);
+
+  bts_le >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
+  bts_le >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
+  bts_le >> (float32_t)1.1 >> (float64_t)2.2;
+  bts_le >> "someString";
+
+  Bytestream bts_le2;
+  bts_le2.setEndianness(Bytestream::LittleEndian);
+  bts_le2 << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
+          << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+          << (float32_t)1.1 << (float64_t)2.2
+          << "someString";
+
+  ASSERT(bts_le == bts_le2);
 }

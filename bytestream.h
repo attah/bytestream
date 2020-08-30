@@ -39,6 +39,7 @@ public:
   Bytestream(const void* data, size_t len);
   Bytestream(const void* data, size_t len, Endianness e);
   Bytestream(std::initializer_list<Bytes> il);
+  Bytestream(std::initializer_list<Bytes> il, Endianness e);
 
   Bytestream(const Bytestream& rhs);
   ~Bytestream();
@@ -194,11 +195,9 @@ private:
   void _before(size_t bytesToRead);
 };
 
-class Bytes : private Bytestream
+class Bytes
 {
-  friend Bytestream::Bytestream(std::initializer_list<Bytes>);
-private:
-  Bytes();
+  friend Bytestream& operator<<(Bytestream& bts, const Bytes& b);
 
 public:
   Bytes(uint8_t u);
@@ -212,6 +211,43 @@ public:
   Bytes(float32_t f);
   Bytes(float64_t f);
   Bytes(std::string s);
+
+  Bytes(const Bytes& b);
+  ~Bytes();
+
+private:
+  Bytes();
+
+  enum Type {
+    u8,
+    u16,
+    u32,
+    u64,
+    i8,
+    i16,
+    i32,
+    i64,
+    f32,
+    f64,
+    s
+  } type;
+
+  union {
+    uint8_t u8;
+    uint16_t u16;
+    uint32_t u32;
+    uint64_t u64;
+    int8_t i8;
+    int16_t i16;
+    int32_t i32;
+    int64_t i64;
+    float32_t f32;
+    float64_t f64;
+    std::string* s;
+  } u;
+
 };
+
+Bytestream& operator<<(Bytestream& bts, const Bytes&);
 
 #endif
