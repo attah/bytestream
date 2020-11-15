@@ -1,7 +1,22 @@
 #include <sstream>
 
+#ifndef CODABLE_CLASS
+#define CODABLE_CLASS
+
+class Codable
+{
+public:
+  virtual void decode_from(Bytestream& bts) = 0;
+  virtual void encode_into(Bytestream& bts) = 0;
+  virtual Bytestream encode() = 0;
+  virtual size_t encoded_size() = 0;
+  virtual std::string describe() = 0;
+
+};
+#endif
+
 #define CODABLE(name) \
-class name \
+class name : public Codable\
 { \
 public:
 
@@ -52,13 +67,14 @@ public:
   }
 
   #undef CODABLE
-  #define CODABLE(name)
   #undef FIELD
   #undef DEFAULT_FIELD
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
   #undef PADDING
+
+  #define CODABLE(name)
 
   void decode_from(Bytestream& bts)
   {
@@ -97,6 +113,7 @@ public:
     encode_into(bts);
     return bts;
   }
+
   #undef FIELD
   #undef DEFAULT_FIELD
   #undef STRING
