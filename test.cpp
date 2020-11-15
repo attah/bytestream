@@ -434,7 +434,9 @@ TEST(codable)
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString" << (float32_t)1.1 << (float64_t)-2.2
          // Null padding so encoded comparison works
-      << std::string(6, 0) << "short" << std::string(5, 0) << "match";
+      << std::string(6, 0) << "short" << std::string(5, 0) << "match"
+      << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4;
+
   cod.decode_from(bts);
 
   ASSERT(bts.remaining() == 0);
@@ -455,6 +457,17 @@ TEST(codable)
   cod2.f2 = -2.2;
   cod2.s2 = "short";
 
+  // Sad, but this is the only reliable value
+  ASSERT(static_cast<uint8_t>(cod2.myEnum8) == 0);
+  ASSERT(static_cast<uint16_t>(cod2.myEnum16) == 0);
+  ASSERT(static_cast<uint32_t>(cod2.myEnum32) == 0);
+  ASSERT(static_cast<uint64_t>(cod2.myEnum64) == 0);
+
+  cod2.myEnum8 = TestCodable::Value8_1;
+  cod2.myEnum16 = TestCodable::Value16_2;
+  cod2.myEnum32 = TestCodable::Value32_3;
+  cod2.myEnum64 = TestCodable::Value64_4;
+
   ASSERT(cod2.encode() == bts);
 
   bts.setPos(0);
@@ -462,7 +475,7 @@ TEST(codable)
   ASSERT(cod3.encode() == bts);
 
   ASSERT(cod.encoded_size() == bts.size());
-  ASSERT(cod.encoded_size() == 15+15+10+4+8+6+5+5+5);
+  ASSERT(cod.encoded_size() == 15+15+10+4+8+6+5+5+5+15);
 
   Codable* cod_p = &cod3;
   ASSERT(cod_p->encode() == bts);

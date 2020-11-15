@@ -25,6 +25,9 @@ public:
   #define STRING(length, name) std::string name;
   #define CONST_STRING(name, value) const std::string name = value;
   #define DEFAULT_STRING(length, name, default) STRING(length, name)
+  #define ENUM(type, name, ...)\
+  enum __##name##_enum : type \
+  { __VA_ARGS__ } name;
   #define PADDING(length)
 
   #include CODABLE_FILE
@@ -35,6 +38,7 @@ public:
   #undef CONST_STRING
   #undef DEFAULT_STRING
   #undef CODABLE
+  #undef ENUM
 
   #define CODABLE(name) \
   name() \
@@ -44,6 +48,7 @@ public:
     #define STRING(length, name)
     #define CONST_STRING(name, value)
     #define DEFAULT_STRING(length, name, default) name = default;
+    #define ENUM(type, name, ...) name = static_cast<__##name##_enum>(type());
     #include CODABLE_FILE
   }
 
@@ -53,6 +58,7 @@ public:
   #undef CONST_STRING
   #undef DEFAULT_STRING
   #undef CODABLE
+  #undef ENUM
 
   #define CODABLE(name) \
   name(Bytestream& bts) \
@@ -62,6 +68,7 @@ public:
     #define STRING(length, name)
     #define CONST_STRING(name, value)
     #define DEFAULT_STRING(length, name, default)
+    #define ENUM(type, name, ...)
     #include CODABLE_FILE
     this->decode_from(bts);
   }
@@ -72,6 +79,7 @@ public:
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
+  #undef ENUM
   #undef PADDING
 
   #define CODABLE(name)
@@ -83,6 +91,8 @@ public:
     #define STRING(length, name) bts/length >> name;
     #define CONST_STRING(name, value) bts >> name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
+    #define ENUM(type, name, ...) \
+      { type tmp; bts >> tmp; name = static_cast<__##name##_enum>(tmp);};
     #define PADDING(length) bts += length;
 
     #include CODABLE_FILE
@@ -93,6 +103,7 @@ public:
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
+  #undef ENUM
   #undef PADDING
 
   void encode_into(Bytestream& bts)
@@ -102,6 +113,8 @@ public:
     #define STRING(length, name) name.resize(length); bts << name;
     #define CONST_STRING(name, value) bts << name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
+    #define ENUM(type, name, ...) \
+      { bts << static_cast<type>(name);};
     #define PADDING(length) {std::string tmp(length, 0); bts << tmp;}
 
     #include CODABLE_FILE
@@ -119,6 +132,7 @@ public:
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
+  #undef ENUM
   #undef PADDING
 
   size_t encoded_size()
@@ -129,6 +143,7 @@ public:
     #define STRING(length, name) size += length;
     #define CONST_STRING(name, value) size += strlen(value);
     #define DEFAULT_STRING(length, name, default) size += length;
+    #define ENUM(type, name, ...) size += sizeof(type);
     #define PADDING(length) size += length;
     #include CODABLE_FILE
     return size;
@@ -139,6 +154,7 @@ public:
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
+  #undef ENUM
   #undef PADDING
 
   std::string describe()
@@ -157,6 +173,9 @@ public:
     #define DEFAULT_STRING(length, name, default) \
                 ss << "DEFAULT_STRING " << #name << " \"" << name << "\"" \
                  << " (default: " << default << ")"<< std::endl;
+    #define ENUM(type, name, ...) \
+                ss << "ENUM " << "(" << #type << ") " << #name \
+                   << " " << static_cast<type>(name) << std::endl;
     #define PADDING(length) ss << "PADDING "<< length << std::endl;
 
     #include CODABLE_FILE
@@ -169,6 +188,7 @@ public:
   #undef STRING
   #undef CONST_STRING
   #undef DEFAULT_STRING
+  #undef ENUM
   #undef PADDING
 
 };
