@@ -411,8 +411,7 @@ TEST(mixed_eandian)
   bts >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0;
 }
 
-#define CODABLE_FILE "test_codable.h"
-#include "codable.h"
+#include "TestCodable.h"
 
 TEST(codable)
 {
