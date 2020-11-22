@@ -29,7 +29,7 @@ public:
   #define ENUM_LABEL(label) label
   #define ENUM_VALUE(label, value) label = value
   #define ENUM(type, name, ...)\
-  enum __##name##_enum : type \
+  enum name##_enum : type \
   { __VA_ARGS__ } name;
   #define PADDING(length)
 
@@ -53,7 +53,7 @@ public:
     #define STRING(length, name)
     #define CONST_STRING(name, value)
     #define DEFAULT_STRING(length, name, default) name = default;
-    #define ENUM(type, name, ...) name = static_cast<__##name##_enum>(type());
+    #define ENUM(type, name, ...) name = static_cast<name##_enum>(type());
     #include CODABLE_FILE
   }
 
@@ -97,7 +97,7 @@ public:
     #define CONST_STRING(name, value) bts >> name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
     #define ENUM(type, name, ...) \
-      { type tmp; bts >> tmp; name = static_cast<__##name##_enum>(tmp);};
+      { type tmp; bts >> tmp; name = static_cast<name##_enum>(tmp);};
     #define PADDING(length) bts += length;
 
     #include CODABLE_FILE
@@ -172,8 +172,8 @@ public:
   #define ENUM_VALUE(label, value) ENUM_LABEL(label)
 
   #define ENUM(type, name, ...) \
-  static const std::string name##ToString(__##name##_enum value) \
-  {static std::map<__##name##_enum, std::string> names \
+  static const std::string name##ToString(name##_enum value) \
+  {static std::map<name##_enum, std::string> names \
     { __VA_ARGS__ }; \
     return names.find(value) != names.end() ? names.at(value) \
                                             : "Value out of range";}
