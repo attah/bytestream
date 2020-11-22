@@ -197,9 +197,9 @@ public:
   {
     std::stringstream ss;
     #define FIELD(type, name) ss << "FIELD " << #type << " " << #name << " " \
-                                 << name << std::endl;
+                                 << +name << std::endl;
     #define DEFAULT_FIELD(type, name, default) \
-                ss << "DEFAULT_FIELD " << #type << #name << " " << name \
+                ss << "DEFAULT_FIELD " << #type << #name << " " << +name \
                 << " (default: " << default << ")" << std::endl;
     #define STRING(length, name) ss << "STRING " << #name << " \"" \
                                     << name << "\"" << std::endl;
@@ -212,7 +212,7 @@ public:
     #define ENUM(type, name, ...) \
                 ss << "ENUM " << #type << " " << #name << " "  \
                    << name##ToString(name) \
-                   << " (" << static_cast<type>(name) << ")" << std::endl;
+                   << " (" << +static_cast<type>(name) << ")" << std::endl;
     #define PADDING(length) ss << "PADDING "<< length << std::endl;
 
     #include CODABLE_FILE
