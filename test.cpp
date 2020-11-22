@@ -479,6 +479,34 @@ TEST(codable)
 
   Codable* cod_p = &cod3;
   ASSERT(cod_p->encode() == bts);
+
+  ASSERT(TestCodable::myEnum8ToString(TestCodable::Value8_1) == "Value8_1");
+  ASSERT(TestCodable::myEnum8ToString(TestCodable::Value8_2) == "Value8_2");
+  ASSERT(TestCodable::myEnum8ToString(TestCodable::Value8_3) == "Value8_3");
+  ASSERT(TestCodable::myEnum8ToString(TestCodable::Value8_4) == "Value8_4");
+
+  ASSERT(TestCodable::myEnum16ToString(TestCodable::Value16_1) == "Value16_1");
+  ASSERT(TestCodable::myEnum16ToString(TestCodable::Value16_2) == "Value16_2");
+  ASSERT(TestCodable::myEnum16ToString(TestCodable::Value16_3) == "Value16_3");
+  ASSERT(TestCodable::myEnum16ToString(TestCodable::Value16_4) == "Value16_4");
+
+  ASSERT(TestCodable::myEnum32ToString(TestCodable::Value32_1) == "Value32_1");
+  ASSERT(TestCodable::myEnum32ToString(TestCodable::Value32_2) == "Value32_2");
+  ASSERT(TestCodable::myEnum32ToString(TestCodable::Value32_3) == "Value32_3");
+  ASSERT(TestCodable::myEnum32ToString(TestCodable::Value32_4) == "Value32_4");
+
+  ASSERT(TestCodable::myEnum64ToString(TestCodable::Value64_1) == "Value64_1");
+  ASSERT(TestCodable::myEnum64ToString(TestCodable::Value64_2) == "Value64_2");
+  ASSERT(TestCodable::myEnum64ToString(TestCodable::Value64_3) == "Value64_3");
+  ASSERT(TestCodable::myEnum64ToString(TestCodable::Value64_4) == "Value64_4");
+
+  std::string descr = cod.describe();
+
+  ASSERT(descr.find("Value8_1") != std::string::npos);
+  ASSERT(descr.find("Value16_2") != std::string::npos);
+  ASSERT(descr.find("Value32_3") != std::string::npos);
+  ASSERT(descr.find("Value64_4") != std::string::npos);
+
 }
 
 TEST(initializer_list)

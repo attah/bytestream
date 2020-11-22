@@ -1,4 +1,5 @@
 #include <sstream>
+#include <map>
 
 #ifndef CODABLE_CLASS
 #define CODABLE_CLASS
@@ -25,6 +26,8 @@ public:
   #define STRING(length, name) std::string name;
   #define CONST_STRING(name, value) const std::string name = value;
   #define DEFAULT_STRING(length, name, default) STRING(length, name)
+  #define ENUM_LABEL(label) label
+  #define ENUM_VALUE(label, value) label = value
   #define ENUM(type, name, ...)\
   enum __##name##_enum : type \
   { __VA_ARGS__ } name;
@@ -39,6 +42,8 @@ public:
   #undef DEFAULT_STRING
   #undef CODABLE
   #undef ENUM
+  #undef ENUM_LABEL
+  #undef ENUM_VALUE
 
   #define CODABLE(name) \
   name() \
@@ -157,6 +162,37 @@ public:
   #undef ENUM
   #undef PADDING
 
+  #define FIELD(type, name)
+  #define DEFAULT_FIELD(type, name, default)
+  #define STRING(length, name)
+  #define CONST_STRING(name, value)
+  #define DEFAULT_STRING(length, name, default)
+
+  #define ENUM_LABEL(label) {label, #label}
+  #define ENUM_VALUE(label, value) ENUM_LABEL(label)
+
+  #define ENUM(type, name, ...) \
+  static const std::string name##ToString(__##name##_enum value) \
+  {static std::map<__##name##_enum, std::string> names \
+    { __VA_ARGS__ }; \
+    return names.find(value) != names.end() ? names.at(value) \
+                                            : "Value out of range";}
+
+
+  #define PADDING(length)
+
+  #include CODABLE_FILE
+
+  #undef FIELD
+  #undef DEFAULT_FIELD
+  #undef STRING
+  #undef CONST_STRING
+  #undef DEFAULT_STRING
+  #undef ENUM
+  #undef ENUM_LABEL
+  #undef ENUM_VALUE
+  #undef PADDING
+
   std::string describe()
   {
     std::stringstream ss;
@@ -174,8 +210,9 @@ public:
                 ss << "DEFAULT_STRING " << #name << " \"" << name << "\"" \
                  << " (default: " << default << ")"<< std::endl;
     #define ENUM(type, name, ...) \
-                ss << "ENUM " << "(" << #type << ") " << #name \
-                   << " " << static_cast<type>(name) << std::endl;
+                ss << "ENUM " << #type << " " << #name << " "  \
+                   << name##ToString(name) \
+                   << " (" << static_cast<type>(name) << ")" << std::endl;
     #define PADDING(length) ss << "PADDING "<< length << std::endl;
 
     #include CODABLE_FILE
