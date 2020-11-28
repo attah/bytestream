@@ -10,8 +10,8 @@ public:
   virtual void decode_from(Bytestream& bts) = 0;
   virtual void encode_into(Bytestream& bts) = 0;
   virtual Bytestream encode() = 0;
-  virtual size_t encoded_size() = 0;
-  virtual std::string describe() = 0;
+  virtual size_t encoded_size() const = 0;
+  virtual std::string describe() const = 0;
 
 };
 #endif
@@ -140,7 +140,7 @@ public:
   #undef ENUM
   #undef PADDING
 
-  size_t encoded_size()
+  size_t encoded_size() const
   {
     size_t size = 0;
     #define FIELD(type, name) size += sizeof(type);
@@ -193,7 +193,7 @@ public:
   #undef ENUM_VALUE
   #undef PADDING
 
-  std::string describe()
+  std::string describe() const
   {
     std::stringstream ss;
     #define FIELD(type, name) ss << "FIELD " << #type << " " << #name << " " \
