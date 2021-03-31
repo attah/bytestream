@@ -561,3 +561,16 @@ TEST(initializer_list)
 
   ASSERT(bts_le == bts_le2);
 }
+
+TEST(reset)
+{
+  Bytestream bts;
+  ASSERT(bts.size() == 0);
+  ASSERT(bts.atEnd());
+  bts << (uint64_t)42;
+  ASSERT(bts.size() == 8);
+  bts.reset();
+  ASSERT(bts.size() == 0);
+  ASSERT(bts.atEnd());
+  ASSERT_THROW(bts += 8, logic_error);
+}

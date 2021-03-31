@@ -57,6 +57,7 @@ public:
   void setPos(size_t pos);
   Endianness getEndianness() {return _endianness;}
   void setEndianness(Endianness e) {_endianness = e;}
+  void reset();
 
   uint8_t getU8();
   uint16_t getU16();

@@ -499,6 +499,13 @@ void Bytestream::setPos(size_t pos)
   }
 }
 
+void Bytestream::reset()
+{
+  _pos = 0;
+  _size = 0;
+  invalidateNoOfNextBytes();
+}
+
 Bytestream& Bytestream::operator/(size_t i)
 {
   setNoOfNextBytes(i);
