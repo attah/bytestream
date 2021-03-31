@@ -209,6 +209,13 @@ void Bytestream::getBytes(void* cs,  size_t len)
   _after(len);
 }
 
+void Bytestream::getBytes(Bytestream& other,  size_t len)
+{
+  _before(len);
+  other.putBytes(&(_data[_pos]), len);
+  _after(len);
+}
+
 
 #define PEEK(type, shorthand, len) PEEK_(type##len##_t, shorthand##len, len)
 #define PEEK_(type, shortType, len) \

@@ -74,6 +74,7 @@ public:
   std::string getString(size_t len);
   Bytestream getBytestream(size_t len);
   void getBytes(void* cs,  size_t len);
+  void getBytes(Bytestream& other,  size_t len);
 
   uint8_t peekU8();
   uint16_t peekU16();

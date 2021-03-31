@@ -88,6 +88,17 @@ TEST(get_methods)
   bts4b = bts.peekBytestream(10);
   bts4a = bts.getBytestream(10);
   ASSERT(bts4a==bts4b);
+
+  bts-=10;
+  Bytestream bts5;
+  bts.getBytes(bts5, 10);
+  ASSERT(bts5 == bts4a);
+
+  bts-=10;
+  char tmp[10];
+  bts.getBytes(tmp, 10);
+  Bytestream bts5b(tmp, 10);
+  ASSERT(bts5b == bts5);
 }
 
 TEST(const_types)
