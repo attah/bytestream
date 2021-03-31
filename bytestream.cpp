@@ -562,7 +562,20 @@ Bytestream& Bytestream::operator>>(std::string& s)
 }
 Bytestream& Bytestream::operator>>(Bytestream& other)
 {
-  other = getBytestream();
+  if(_noOfNextBytes == other._size)
+  {
+    if(!_noOfNextBytesValid)
+    {
+      throw invalid_argument("No length given");
+    }
+    other._pos=0;
+    other.invalidateNoOfNextBytes();
+    getBytes(other.raw(), _noOfNextBytes);
+  }
+  else
+  {
+    other = getBytestream();
+  }
   return *this;
 }
 
