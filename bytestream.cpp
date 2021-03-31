@@ -274,6 +274,31 @@ Bytestream Bytestream::peekBytestream(size_t len)
   return peekBytestream();
 }
 
+bool Bytestream::peekNextBytestream(Bytestream other)
+{
+  if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
+  {
+    throw logic_error("Desired length does not match const length");
+  }
+  else if(!_noOfNextBytesValid)
+  {
+    setNoOfNextBytes(other.size());
+  }
+
+  size_t noOfNextBytes = getNoOfNextBytes();
+
+  if(noOfNextBytes > remaining())
+  {
+    invalidateNoOfNextBytes();
+    return false;
+  }
+
+  bool res = memcmp(&(_data[_pos]), other.raw(), _noOfNextBytes) == 0;
+
+  invalidateNoOfNextBytes();
+  return res;
+}
+
 #define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)
 #define NEXT_(type, shortType) \
   bool Bytestream::next##shortType(type u) \

@@ -192,7 +192,12 @@ TEST(test_method)
   // inverting the comparison result should not influence length mismatch
   ASSERT_FALSE(bts.nextBytestream(bts4, false));
 
+  bts -= 10;
+  ASSERT_FALSE(bts.peekNextBytestream(bts3));
+  ASSERT_FALSE(bts.atEnd());
 
+  ASSERT(bts.peekNextBytestream(bts2));
+  ASSERT_FALSE(bts.atEnd());
 }
 
 #define HIBIT(sign, suffix) \

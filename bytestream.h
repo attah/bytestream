@@ -89,6 +89,8 @@ public:
   std::string peekString(size_t len);
   Bytestream peekBytestream(size_t len);
 
+  bool peekNextBytestream(Bytestream other);
+
   bool nextU8(uint8_t);
   bool nextU16(uint16_t);
   bool nextU32(uint32_t);
