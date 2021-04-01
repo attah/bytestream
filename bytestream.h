@@ -33,13 +33,11 @@ public:
     LittleEndian
   };
 
-  Bytestream();
-  Bytestream(size_t size);
-  Bytestream(int pattern, size_t len);
-  Bytestream(const void* data, size_t len);
-  Bytestream(const void* data, size_t len, Endianness e);
-  Bytestream(std::initializer_list<Bytes> il);
-  Bytestream(std::initializer_list<Bytes> il, Endianness e);
+  Bytestream(Endianness e = BigEndian);
+  Bytestream(size_t size, Endianness e = BigEndian);
+  Bytestream(int pattern, size_t len, Endianness e = BigEndian);
+  Bytestream(const void* data, size_t len, Endianness e = BigEndian);
+  Bytestream(std::initializer_list<Bytes> il, Endianness e = BigEndian);
 
   Bytestream(const Bytestream& rhs);
   ~Bytestream();

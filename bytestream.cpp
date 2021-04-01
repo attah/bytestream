@@ -4,17 +4,17 @@
 #include <cstring>
 using namespace std;
 
-Bytestream::Bytestream()
+Bytestream::Bytestream(Endianness e)
 {
   _size = 0;
   _allocated = 0;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = BigEndian;
+  _endianness = e;
 }
 
-Bytestream::Bytestream(size_t size)
+Bytestream::Bytestream(size_t size, Endianness e)
 {
   _size = size;
   _allocated  = size;
@@ -22,10 +22,10 @@ Bytestream::Bytestream(size_t size)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = BigEndian;
+  _endianness = e;
 }
 
-Bytestream::Bytestream(int pattern, size_t len)
+Bytestream::Bytestream(int pattern, size_t len, Endianness e)
 {
   _size = len;
   _allocated  = len;
@@ -34,20 +34,9 @@ Bytestream::Bytestream(int pattern, size_t len)
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
-  _endianness = BigEndian;
+  _endianness = e;
 }
 
-Bytestream::Bytestream(const void* data, size_t len)
-{
-  _size = len;
-  _allocated  = _size;
-  _data = new uint8_t[_size];
-  memcpy(_data, data, _size);
-  _pos = 0;
-  _noOfNextBytes = 0;
-  _noOfNextBytesValid = false;
-  _endianness = BigEndian;
-}
 Bytestream::Bytestream(const void* data, size_t len, Endianness e)
 {
   _size = len;
@@ -58,14 +47,6 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
-}
-
-Bytestream::Bytestream(std::initializer_list<Bytes> il):Bytestream()
-{
-  for(Bytes b : il)
-  {
-    *this << b;
-  }
 }
 
 Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
