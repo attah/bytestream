@@ -37,6 +37,7 @@ public:
   Bytestream(size_t size, Endianness e = BigEndian);
   Bytestream(int pattern, size_t len, Endianness e = BigEndian);
   Bytestream(const void* data, size_t len, Endianness e = BigEndian);
+  Bytestream(std::istream& is, size_t len, Endianness e = BigEndian);
   Bytestream(std::initializer_list<Bytes> il, Endianness e = BigEndian);
 
   Bytestream(const Bytestream& rhs);
@@ -46,6 +47,9 @@ public:
   bool operator!=(const Bytestream& other) const;
 
   Bytestream& operator=(const Bytestream& other);
+
+  void initFrom(const void* data, size_t len);
+  void initFrom(std::istream& is, size_t len);
 
   uint8_t* raw() const {return _data;}
   size_t size() const {return _size;}
@@ -196,6 +200,8 @@ private:
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
 };
+
+std::ostream& operator<<(std::ostream& os, Bytestream& bts);
 
 class Bytes
 {

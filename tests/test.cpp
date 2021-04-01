@@ -585,3 +585,43 @@ TEST(reset)
   ASSERT(bts.atEnd());
   ASSERT_THROW(bts += 8, logic_error);
 }
+
+TEST(iostream)
+{
+  // Bytestream bts;
+  stringstream ss;
+  ss << "StringStream";
+  // ss >> bts;
+  Bytestream bts(ss, 12);
+  ASSERT(bts>>="StringStream");
+
+  stringstream out;
+  out << bts;
+  ASSERT(out.str()==ss.str());
+
+  string troll = "trololololol";
+  bts.initFrom(troll.c_str(), 12);
+
+  Bytestream bts2;
+  bts2.initFrom(troll.c_str(), 12);
+  ASSERT(bts == bts2);
+
+  bts.setEndianness(Bytestream::LittleEndian);
+
+  stringstream sst;
+  sst << "lolbolltroll";
+  bts.initFrom(sst, 12);
+  ASSERT(bts>>="lolbolltroll");
+
+  // Endianness survives copy re-init
+  ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
+
+  stringstream sst2;
+  sst2 << "lolbolltroll" << "!!";
+  bts.initFrom(sst2, 14);
+  ASSERT(bts.size() == 14);
+  ASSERT(bts>>="lolbolltroll!!");
+
+  // Endianness survives full re-init
+  ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
+}

@@ -49,6 +49,18 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _endianness = e;
 }
 
+Bytestream::Bytestream(std::istream& is, size_t len, Endianness e)
+{
+  _size = len;
+  _allocated  = _size;
+  _data = new uint8_t[_size];
+  is.read((char*)_data, _size);
+  _pos = 0;
+  _noOfNextBytes = 0;
+  _noOfNextBytesValid = false;
+  _endianness = e;
+}
+
 Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
                       :Bytestream()
 {
@@ -108,6 +120,33 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
   _data = new uint8_t[_size];
   memcpy(_data, other.raw(), _size);
   return *this;
+}
+
+void Bytestream::initFrom(const void* data, size_t len)
+{
+  if(len == _size)
+  {
+    _pos=0;
+    invalidateNoOfNextBytes();
+    memcpy(_data, data, _size);
+  }
+  else
+  {
+    *this = Bytestream(data, len, _endianness);
+  }
+}
+void Bytestream::initFrom(std::istream& is, size_t len)
+{
+  if(len == _size)
+  {
+    _pos=0;
+    invalidateNoOfNextBytes();
+    is.read((char*)_data, _size);
+  }
+  else
+  {
+    *this = Bytestream(is, len, _endianness);
+  }
 }
 
 template <typename T>
@@ -645,6 +684,12 @@ bool Bytestream::needsSwap()
 #else
 #error
 #endif
+
+std::ostream& operator<<(std::ostream& os, Bytestream& bts)
+{
+  os.write((char*)bts.raw(), bts.size());
+  return os;
+}
 
 #define TYPE_CTOR(type, shorthand, len) \
   TYPE_CTOR_(type##len##_t, shorthand##len)
