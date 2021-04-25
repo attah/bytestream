@@ -8,8 +8,8 @@ class Codable
 {
 public:
   virtual void decode_from(Bytestream& bts) = 0;
-  virtual void encode_into(Bytestream& bts) = 0;
-  virtual Bytestream encode() = 0;
+  virtual void encode_into(Bytestream& bts) const = 0;
+  virtual Bytestream encode() const = 0;
   virtual size_t encoded_size() const = 0;
   virtual std::string describe() const = 0;
 
@@ -111,11 +111,12 @@ public:
   #undef ENUM
   #undef PADDING
 
-  void encode_into(Bytestream& bts)
+  void encode_into(Bytestream& bts) const
   {
     #define FIELD(type, name) bts << name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
-    #define STRING(length, name) name.resize(length); bts << name;
+    #define STRING(length, name) {std::string __tmp(name); \
+                                  __tmp.resize(length); bts << __tmp;}
     #define CONST_STRING(name, value) bts << name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
     #define ENUM(type, name, ...) \
@@ -125,7 +126,7 @@ public:
     #include CODABLE_FILE
   }
 
-  Bytestream encode()
+  Bytestream encode() const
   {
     Bytestream bts;
     encode_into(bts);

@@ -57,7 +57,7 @@ public:
   size_t remaining() const {return _size - _pos;}
   bool atEnd() const {return _pos >= _size;}
   void setPos(size_t pos);
-  Endianness getEndianness() {return _endianness;}
+  Endianness getEndianness() const {return _endianness;}
   void setEndianness(Endianness e) {_endianness = e;}
   void reset();
 
@@ -95,16 +95,16 @@ public:
 
   bool peekNextBytestream(Bytestream other);
 
-  bool nextU8(uint8_t);
-  bool nextU16(uint16_t);
-  bool nextU32(uint32_t);
-  bool nextU64(uint64_t);
-  bool nextS8(int8_t);
-  bool nextS16(int16_t);
-  bool nextS32(int32_t);
-  bool nextS64(int64_t);
-  bool nextF32(float32_t);
-  bool nextF64(float64_t);
+  bool nextU8(const uint8_t&);
+  bool nextU16(const uint16_t&);
+  bool nextU32(const uint32_t&);
+  bool nextU64(const uint64_t&);
+  bool nextS8(const int8_t&);
+  bool nextS16(const int16_t&);
+  bool nextS32(const int32_t&);
+  bool nextS64(const int64_t&);
+  bool nextF32(const float32_t&);
+  bool nextF64(const float64_t&);
   bool nextString(const std::string& bts);
   bool nextBytestream(const Bytestream& bts, bool compareEqual=true);
 
@@ -124,7 +124,7 @@ public:
 
   void setNoOfNextBytes(size_t n);
   void invalidateNoOfNextBytes();
-  size_t getNoOfNextBytes() {return _noOfNextBytes;}
+  size_t getNoOfNextBytes() const {return _noOfNextBytes;}
   bool noOfNextBytesValid() const {return _noOfNextBytesValid;}
 
   Bytestream operator[](size_t i);
@@ -195,7 +195,7 @@ private:
 
   Endianness _endianness;
 
-  bool needsSwap();
+  bool needsSwap() const;
 
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
@@ -208,17 +208,17 @@ class Bytes
   friend Bytestream& operator<<(Bytestream& bts, const Bytes& b);
 
 public:
-  Bytes(uint8_t u);
-  Bytes(uint16_t u);
-  Bytes(uint32_t u);
-  Bytes(uint64_t u);
-  Bytes(int8_t u);
-  Bytes(int16_t u);
-  Bytes(int32_t u);
-  Bytes(int64_t u);
-  Bytes(float32_t f);
-  Bytes(float64_t f);
-  Bytes(std::string s);
+  Bytes(const uint8_t&);
+  Bytes(const uint16_t&);
+  Bytes(const uint32_t&);
+  Bytes(const uint64_t&);
+  Bytes(const int8_t&);
+  Bytes(const int16_t&);
+  Bytes(const int32_t&);
+  Bytes(const int64_t&);
+  Bytes(const float32_t&);
+  Bytes(const float64_t&);
+  Bytes(const std::string&);
 
   Bytes(const Bytes& b);
   ~Bytes();

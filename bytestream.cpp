@@ -328,7 +328,7 @@ bool Bytestream::peekNextBytestream(Bytestream other)
 
 #define NEXT(type, shorthand, len) NEXT_(type##len##_t, shorthand##len)
 #define NEXT_(type, shortType) \
-  bool Bytestream::next##shortType(type u) \
+  bool Bytestream::next##shortType(const type& u) \
   {if(remaining() < sizeof(type)) \
      {return false;} \
    else if(u == get##shortType())\
@@ -670,13 +670,13 @@ bool Bytestream::operator>>=(const Bytestream& other)
 }
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-bool Bytestream::needsSwap()
+bool Bytestream::needsSwap() const
 {
   return _endianness != Endianness::NativeEndian
       && _endianness != Endianness::LittleEndian;
 }
 #elif __BYTE_ORDER == __BIG_ENDIAN
-bool Bytestream::needsSwap()
+bool Bytestream::needsSwap() const
 {
   return _endianness != Endianness::NativeEndian
       && _endianness != Endianness::BigEndian;
@@ -694,7 +694,7 @@ std::ostream& operator<<(std::ostream& os, Bytestream& bts)
 #define TYPE_CTOR(type, shorthand, len) \
   TYPE_CTOR_(type##len##_t, shorthand##len)
 #define TYPE_CTOR_(typeName, shortType) \
-  Bytes::Bytes(typeName t) \
+  Bytes::Bytes(const typeName& t) \
   {type = Type::shortType;\
    u.shortType = t;}
 
@@ -709,7 +709,7 @@ TYPE_CTOR(int, i, 64)
 TYPE_CTOR(float, f, 32)
 TYPE_CTOR(float, f, 64)
 
-Bytes::Bytes(std::string s)
+Bytes::Bytes(const std::string& s)
 {
   type = Type::s;
   u.s = new std::string(s);
