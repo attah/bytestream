@@ -1,3 +1,3 @@
-# bytestream
+# Bytestream
 
-An attempt at vaguely Erlang-like binary-handling for C++
+An attempt at vaguely Erlang-like binary handling for C++
