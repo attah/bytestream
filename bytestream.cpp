@@ -49,6 +49,16 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
   _endianness = e;
 }
 
+Bytestream::Bytestream(std::istream& is) : Bytestream()
+{
+  size_t bytesRead;
+  char buffer[4096];
+  while((bytesRead = is.readsome(buffer, sizeof(buffer))))
+  {
+    putBytes(buffer, bytesRead);
+  }
+}
+
 Bytestream::Bytestream(std::istream& is, size_t len, Endianness e)
 {
   _size = len;

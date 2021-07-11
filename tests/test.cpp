@@ -591,9 +591,16 @@ TEST(iostream)
   // Bytestream bts;
   stringstream ss;
   ss << "StringStream";
-  // ss >> bts;
-  Bytestream bts(ss, 12);
+
+  Bytestream bts(ss);
   ASSERT(bts>>="StringStream");
+
+  // Re-init stringstream
+  ss = stringstream();
+  ss << "StringStream";
+
+  Bytestream bts2(ss, 12);
+  ASSERT(bts2==bts);
 
   stringstream out;
   out << bts;
@@ -602,9 +609,9 @@ TEST(iostream)
   string troll = "trololololol";
   bts.initFrom(troll.c_str(), 12);
 
-  Bytestream bts2;
-  bts2.initFrom(troll.c_str(), 12);
-  ASSERT(bts == bts2);
+  Bytestream bts3;
+  bts3.initFrom(troll.c_str(), 12);
+  ASSERT(bts3==bts);
 
   bts.setEndianness(Bytestream::LittleEndian);
 
