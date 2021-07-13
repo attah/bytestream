@@ -10,6 +10,8 @@
 #define float32_t float
 #define float64_t double
 
+#define BS_REASONABLE_FILE_SIZE 4096
+
 class Bytes;
 
 class Bytestream
@@ -197,6 +199,8 @@ private:
   Endianness _endianness;
 
   bool needsSwap() const;
+
+  void maybeResize(size_t new_size);
 
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);

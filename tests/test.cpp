@@ -632,3 +632,13 @@ TEST(iostream)
   // Endianness survives full re-init
   ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
 }
+
+TEST(large_iostream)
+{
+  Bytestream large('A', BS_REASONABLE_FILE_SIZE*1.5);
+  stringstream ss;
+  ss << large;
+
+  Bytestream bts(ss);
+  ASSERT(bts == large);
+}
