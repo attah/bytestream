@@ -101,7 +101,7 @@ Bytestream::~Bytestream()
 {
   if(_size != 0)
   {
-    delete _data;
+    delete[] _data;
   }
 }
 
@@ -484,7 +484,7 @@ void Bytestream::maybeResize(size_t new_size)
     if (_size != 0)
     {
       memcpy(_data, old, _size);
-      delete old;
+      delete[] old;
     }
   }
 }

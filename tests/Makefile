@@ -9,3 +9,6 @@ test:
 .PHONY: clean
 clean:
 	rm -f test
+
+analyze:
+	clang++ --analyze ../bytestream.cpp
