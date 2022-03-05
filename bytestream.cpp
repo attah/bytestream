@@ -2,7 +2,8 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
-using namespace std;
+#include <sstream>
+#include <iomanip>
 
 Bytestream::Bytestream(Endianness e)
 {
@@ -550,6 +551,50 @@ void Bytestream::reset()
   _size = 0;
   invalidateNoOfNextBytes();
 }
+
+std::string Bytestream::hexdump(size_t length)
+{
+  std::stringstream ss;
+  uint32_t addr = 0;
+
+  Bytestream tmp = peekBytestream(std::min(remaining(), length));
+  while(tmp.remaining())
+  {
+    std::stringstream hex;
+    std::stringstream ascii;
+    ss << std::setfill('0') << std::setw(8) << std::hex << addr << ": ";
+
+    for (size_t i = 0; i < 16; i++)
+    {
+      uint8_t b = tmp.getU8();
+      hex << std::setfill('0') << std::setw(2) << std::hex << +b;
+      ascii << ((b < '!' || b > '~') ? '.' : (char)b);
+
+      if(i%2==1)
+      {
+        hex << " ";
+      }
+      if(i==7 && tmp.remaining())
+      {
+        hex << " ";
+        ascii << " ";
+      }
+
+      if(!tmp.remaining())
+      {
+        break;
+      }
+    }
+
+    ss << hex.str()
+       << std::setfill(' ') << std::setw(42 - hex.str().length()) << " "
+       << ascii.str() << std::endl;
+    addr += 16;
+  }
+
+  return ss.str();
+}
+
 
 Bytestream& Bytestream::operator/(size_t i)
 {

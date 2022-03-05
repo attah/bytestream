@@ -642,3 +642,68 @@ TEST(large_iostream)
   Bytestream bts(ss);
   ASSERT(bts == large);
 }
+
+TEST(hexdump)
+{
+  Bytestream bts;
+  bts << (uint8_t)0x00 << (uint8_t)0x01 << (uint8_t)0x02 << (uint8_t)0x03
+      << (uint8_t)0x04 << (uint8_t)0x05 << (uint8_t)0x06 << (uint8_t)0x07
+      << (uint8_t)0x08 << (uint8_t)0x09 << (uint8_t)0x0a << (uint8_t)0x0b
+      << (uint8_t)0x0c << (uint8_t)0x0d << (uint8_t)0x0e << (uint8_t)0x0f
+      << (uint8_t)0x00 << (uint8_t)0x11 << (uint8_t)0x22 << (uint8_t)0x33
+      << (uint8_t)0x44 << (uint8_t)0x55 << (uint8_t)0x66 << (uint8_t)0x77
+      << (uint8_t)0x88 << (uint8_t)0x99 << (uint8_t)0xaa << (uint8_t)0xbb
+      << (uint8_t)0xcc << (uint8_t)0xdd << (uint8_t)0xee << (uint8_t)0xff;
+
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d 0e0f  ........ ........\n"
+         == bts.hexdump(16));
+
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d 0e0f  ........ ........\n"
+         "00000010: 0011 2233 4455 6677  8899 aabb ccdd eeff  ..\"3DUfw ........\n"
+         == bts.hexdump(32));
+  // Asking for more than all gives all there is
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d 0e0f  ........ ........\n"
+         "00000010: 0011 2233 4455 6677  8899 aabb ccdd eeff  ..\"3DUfw ........\n"
+         == bts.hexdump(666));
+
+  ASSERT("00000000: 00                                        .\n"
+         == bts.hexdump(1));
+  ASSERT("00000000: 0001                                      ..\n"
+         == bts.hexdump(2));
+  ASSERT("00000000: 0001 02                                   ...\n"
+         == bts.hexdump(3));
+  ASSERT("00000000: 0001 0203                                 ....\n"
+         == bts.hexdump(4));
+  ASSERT("00000000: 0001 0203 04                              .....\n"
+         == bts.hexdump(5));
+  ASSERT("00000000: 0001 0203 0405                            ......\n"
+         == bts.hexdump(6));
+  ASSERT("00000000: 0001 0203 0405 06                         .......\n"
+         == bts.hexdump(7));
+  ASSERT("00000000: 0001 0203 0405 0607                       ........\n"
+         == bts.hexdump(8));
+  ASSERT("00000000: 0001 0203 0405 0607  08                   ........ .\n"
+         == bts.hexdump(9));
+  ASSERT("00000000: 0001 0203 0405 0607  0809                 ........ ..\n"
+         == bts.hexdump(10));
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a              ........ ...\n"
+         == bts.hexdump(11));
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b            ........ ....\n"
+         == bts.hexdump(12));
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c         ........ .....\n"
+         == bts.hexdump(13));
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d       ........ ......\n"
+         == bts.hexdump(14));
+  ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d 0e    ........ .......\n"
+         == bts.hexdump(15));
+
+  // Hexdump starts from current read position
+  bts+=16;
+  ASSERT("00000000: 0011 2233 4455 6677  8899 aabb ccdd eeff  ..\"3DUfw ........\n"
+         == bts.hexdump(16));
+  // ... and with asking for too much and not giving a whole line.
+  bts+=8;
+  ASSERT("00000000: 8899 aabb ccdd eeff                       ........\n"
+         == bts.hexdump(16));
+
+}

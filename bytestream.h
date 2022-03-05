@@ -63,6 +63,7 @@ public:
   Endianness getEndianness() const {return _endianness;}
   void setEndianness(Endianness e) {_endianness = e;}
   void reset();
+  std::string hexdump(size_t length);
 
   uint8_t getU8();
   uint16_t getU16();
