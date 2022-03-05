@@ -195,12 +195,12 @@ std::string Bytestream::getString()
 {
   if(!_noOfNextBytesValid)
   {
-    throw invalid_argument("No length given");
+    throw std::invalid_argument("No length given");
   }
   char* cs = new char[_noOfNextBytes+1];
   cs[_noOfNextBytes] = 0;
   getBytes(cs, _noOfNextBytes);
-  string s = std::string(cs, _noOfNextBytes);
+  std::string s(cs, _noOfNextBytes);
   delete[] cs;
   return s;
 }
@@ -208,7 +208,7 @@ Bytestream Bytestream::getBytestream()
 {
   if(!_noOfNextBytesValid)
   {
-    throw invalid_argument("No length given");
+    throw std::invalid_argument("No length given");
   }
   Bytestream other = Bytestream(0, _noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
@@ -218,7 +218,7 @@ std::string Bytestream::getString(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw logic_error("Desired lengths does not match");
+    throw std::logic_error("Desired lengths does not match");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -230,7 +230,7 @@ Bytestream Bytestream::getBytestream(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw logic_error("Desired lengths does not match");
+    throw std::logic_error("Desired lengths does not match");
   }
   setNoOfNextBytes(len);
   return getBytestream();
@@ -272,12 +272,12 @@ std::string Bytestream::peekString()
 {
   if(!_noOfNextBytesValid)
   {
-    throw invalid_argument("No length given");
+    throw std::invalid_argument("No length given");
   }
   char* cs = new char[_noOfNextBytes+1];
   cs[_noOfNextBytes] = 0;
   getBytes(cs, _noOfNextBytes);
-  string s = std::string(cs, _noOfNextBytes);
+  std::string s(cs, _noOfNextBytes);
   delete[] cs;
   (*this) -= _noOfNextBytes;
   return s;
@@ -286,7 +286,7 @@ Bytestream Bytestream::peekBytestream()
 {
   if(!_noOfNextBytesValid)
   {
-    throw invalid_argument("No length given");
+    throw std::invalid_argument("No length given");
   }
   Bytestream other = Bytestream(0, _noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
@@ -297,7 +297,7 @@ std::string Bytestream::peekString(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw logic_error("Desired lengths does not match");
+    throw std::logic_error("Desired lengths does not match");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -309,7 +309,7 @@ Bytestream Bytestream::peekBytestream(size_t len)
 {
   if(_noOfNextBytesValid && len != _noOfNextBytes)
   {
-    throw logic_error("Desired lengths does not match");
+    throw std::logic_error("Desired lengths does not match");
   }
   setNoOfNextBytes(len);
   return peekBytestream();
@@ -319,7 +319,7 @@ bool Bytestream::peekNextBytestream(Bytestream other)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
   {
-    throw logic_error("Desired length does not match const length");
+    throw std::logic_error("Desired length does not match const length");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -366,7 +366,7 @@ bool Bytestream::nextString(const std::string& s)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != s.length())
   {
-    throw logic_error("Desired length does not match const length");
+    throw std::logic_error("Desired length does not match const length");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -395,7 +395,7 @@ bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
 {
   if(_noOfNextBytesValid && getNoOfNextBytes() != other.size())
   {
-    throw logic_error("Desired length does not match const length");
+    throw std::logic_error("Desired length does not match const length");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -494,7 +494,7 @@ void Bytestream::_before(size_t bytesToRead)
   if(bytesToRead > remaining())
   {
     invalidateNoOfNextBytes();
-    throw out_of_range("Tried to read past end");
+    throw std::out_of_range("Tried to read past end");
   }
 }
 
@@ -515,7 +515,7 @@ Bytestream& Bytestream::operator+=(size_t i)
   if((_pos+i) > _size)
   {
     invalidateNoOfNextBytes();
-    throw out_of_range("Tried to address data past end");
+    throw std::out_of_range("Tried to address data past end");
   }
   _pos += i;
   return *this;
@@ -526,7 +526,7 @@ Bytestream& Bytestream::operator-=(size_t i)
   if(i > _pos)
   {
     invalidateNoOfNextBytes();
-    throw out_of_range("Tried to address data before start");
+    throw std::out_of_range("Tried to address data before start");
   }
   _pos -= i;
   return *this;
@@ -611,7 +611,7 @@ Bytestream& Bytestream::operator>>(Bytestream& other)
   {
     if(!_noOfNextBytesValid)
     {
-      throw invalid_argument("No length given");
+      throw std::invalid_argument("No length given");
     }
     other._pos=0;
     other.invalidateNoOfNextBytes();
@@ -648,7 +648,7 @@ Bytestream& Bytestream::operator>>(const std::string& s)
 {
   if (_noOfNextBytesValid && getNoOfNextBytes() != s.length())
   {
-    throw logic_error("Desired length does not match const length");
+    throw std::logic_error("Desired length does not match const length");
   }
   else if(!_noOfNextBytesValid)
   {
@@ -767,6 +767,6 @@ Bytestream& operator<<(Bytestream& bts, const Bytes& b) {
     case Bytes::f32: return bts << b.u.f32;
     case Bytes::f64: return bts << b.u.f64;
     case Bytes::s:   return bts << *b.u.s;
-    default: throw invalid_argument("Uninitialized bytes");
+    default: throw std::invalid_argument("Uninitialized bytes");
   }
 }
