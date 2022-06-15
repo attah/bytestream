@@ -127,7 +127,7 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
 {
   if(_size != 0)
   {
-    delete _data;
+    delete[] _data;
   }
   _pos = other.pos();
   _size = other.size();
@@ -798,6 +798,14 @@ Bytes::~Bytes()
     delete u.s;
   }
 }
+
+Bytes& Bytes::operator=(const Bytes& other)
+{
+  Bytes tmp(other);
+  std::swap(*this, tmp);
+  return *this;
+}
+
 
 Bytestream& operator<<(Bytestream& bts, const Bytes& b) {
   switch (b.type) {

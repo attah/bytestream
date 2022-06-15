@@ -573,6 +573,21 @@ TEST(initializer_list)
   ASSERT(bts_le == bts_le2);
 }
 
+TEST(bytes)
+{
+  Bytes b1((uint8_t)1);
+  Bytes b2(b1);
+  Bytes b3 = b2;
+
+  Bytes bs1("someString");
+  Bytes bs2(bs1);
+  Bytes bs3 = bs2;
+
+  Bytestream bts({b1, b2, b3, bs1, bs2, bs3});
+  bts >> (uint8_t)1 >> (uint8_t)1 >> (uint8_t)1
+      >> "someString" >> "someString" >> "someString";
+}
+
 TEST(reset)
 {
   Bytestream bts;

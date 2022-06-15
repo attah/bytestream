@@ -214,6 +214,8 @@ class Bytes
   friend Bytestream& operator<<(Bytestream& bts, const Bytes& b);
 
 public:
+  Bytes() = delete;
+
   Bytes(const uint8_t&);
   Bytes(const uint16_t&);
   Bytes(const uint32_t&);
@@ -229,8 +231,9 @@ public:
   Bytes(const Bytes& b);
   ~Bytes();
 
+  Bytes& operator=(const Bytes& other);
+
 private:
-  Bytes();
 
   enum Type {
     u8,
