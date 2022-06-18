@@ -801,11 +801,17 @@ Bytes::~Bytes()
 
 Bytes& Bytes::operator=(const Bytes& other)
 {
-  Bytes tmp(other);
-  std::swap(*this, tmp);
+  type = other.type;
+  if(type == Type::s)
+  {
+    u.s = new std::string(*other.u.s);
+  }
+  else
+  {
+    u = other.u;
+  }
   return *this;
 }
-
 
 Bytestream& operator<<(Bytestream& bts, const Bytes& b) {
   switch (b.type) {
