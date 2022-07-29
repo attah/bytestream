@@ -52,13 +52,11 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e)
 
 Bytestream::Bytestream(std::istream& is) : Bytestream()
 {
-  size_t new_size;
   size_t bytesRead;
 
   do
   {
-    new_size = _size + BS_REASONABLE_FILE_SIZE;
-    maybeResize(new_size);
+    preallocate(BS_REASONABLE_FILE_SIZE);
     bytesRead = is.readsome((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
     _size += bytesRead;
   } while (bytesRead && !is.eof());
@@ -453,8 +451,7 @@ void Bytestream::putBytestream(const Bytestream& other)
 
 void Bytestream::putBytes(const void* c, size_t len)
 {
-  size_t new_size = _size + len;
-  maybeResize(new_size);
+  preallocate(len);
 
   memcpy((_data+_size), c, len);
   _size += len;
@@ -472,12 +469,13 @@ void Bytestream::invalidateNoOfNextBytes()
     _noOfNextBytesValid = false;
 }
 
-void Bytestream::maybeResize(size_t new_size)
+void Bytestream::preallocate(size_t extra)
 {
+  size_t new_size = _size+extra;
   if(new_size > _allocated)
   {
     uint8_t* old = _data;
-    size_t next_size = new_size > 2*_allocated ? new_size : 2*_allocated;
+    size_t next_size = std::max(2*_allocated, new_size);
 
     _data = new uint8_t[next_size];
     _allocated = next_size;

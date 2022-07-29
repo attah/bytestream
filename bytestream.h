@@ -188,6 +188,7 @@ public:
   bool operator>>=(const std::string& s);
   bool operator>>=(const Bytestream& other);
 
+  void preallocate(size_t extra);
 
 private:
   uint8_t* _data;
@@ -200,8 +201,6 @@ private:
   Endianness _endianness;
 
   bool needsSwap() const;
-
-  void maybeResize(size_t new_size);
 
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);

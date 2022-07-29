@@ -113,6 +113,7 @@ public:
 
   void encode_into(Bytestream& bts) const
   {
+    bts.preallocate(encoded_size());
     #define FIELD(type, name) bts << name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
     #define STRING(length, name) {std::string __tmp(name); \
