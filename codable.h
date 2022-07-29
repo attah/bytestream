@@ -7,10 +7,10 @@
 class Codable
 {
 public:
-  virtual void decode_from(Bytestream& bts) = 0;
-  virtual void encode_into(Bytestream& bts) const = 0;
+  virtual void decodeFrom(Bytestream& bts) = 0;
+  virtual void encodeInto(Bytestream& bts) const = 0;
   virtual Bytestream encode() const = 0;
-  virtual size_t encoded_size() const = 0;
+  virtual size_t encodedSize() const = 0;
   virtual std::string describe() const = 0;
 
 };
@@ -75,7 +75,7 @@ public:
     #define DEFAULT_STRING(length, name, default)
     #define ENUM(type, name, ...)
     #include CODABLE_FILE
-    this->decode_from(bts);
+    decodeFrom(bts);
   }
 
   #undef CODABLE
@@ -89,7 +89,7 @@ public:
 
   #define CODABLE(name)
 
-  void decode_from(Bytestream& bts)
+  void decodeFrom(Bytestream& bts)
   {
     #define FIELD(type, name) bts >> name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
@@ -111,9 +111,9 @@ public:
   #undef ENUM
   #undef PADDING
 
-  void encode_into(Bytestream& bts) const
+  void encodeInto(Bytestream& bts) const
   {
-    bts.preallocate(encoded_size());
+    bts.preallocate(encodedSize());
     #define FIELD(type, name) bts << name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
     #define STRING(length, name) {std::string __tmp(name); \
@@ -130,7 +130,7 @@ public:
   Bytestream encode() const
   {
     Bytestream bts;
-    encode_into(bts);
+    encodeInto(bts);
     return bts;
   }
 
@@ -142,7 +142,7 @@ public:
   #undef ENUM
   #undef PADDING
 
-  size_t encoded_size() const
+  size_t encodedSize() const
   {
     size_t size = 0;
     #define FIELD(type, name) size += sizeof(type);

@@ -453,7 +453,7 @@ TEST(codable)
       << std::string(6, 0) << "short" << std::string(5, 0) << "match"
       << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4;
 
-  cod.decode_from(bts);
+  cod.decodeFrom(bts);
 
   ASSERT(bts.remaining() == 0);
 
@@ -490,8 +490,8 @@ TEST(codable)
   TestCodable cod3(bts);
   ASSERT(cod3.encode() == bts);
 
-  ASSERT(cod.encoded_size() == bts.size());
-  ASSERT(cod.encoded_size() == 15+15+10+4+8+6+5+5+5+15);
+  ASSERT(cod.encodedSize() == bts.size());
+  ASSERT(cod.encodedSize() == 15+15+10+4+8+6+5+5+5+15);
 
   Codable* cod_p = &cod3;
   ASSERT(cod_p->encode() == bts);
