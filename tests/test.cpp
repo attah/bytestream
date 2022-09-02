@@ -334,7 +334,7 @@ TEST(exceptions)
 
 TEST(constructors)
 {
-  Bytestream bts(0, 15);
+  Bytestream bts(15, 0);
   ASSERT(bts.size()==15);
   ASSERT(bts.pos()==0);
   bts >> (uint8_t)0 >> (uint16_t)0 >> (uint32_t)0 >> (uint64_t)0;

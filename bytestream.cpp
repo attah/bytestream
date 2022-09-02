@@ -26,10 +26,10 @@ Bytestream::Bytestream(size_t size, Endianness e)
   _endianness = e;
 }
 
-Bytestream::Bytestream(int pattern, size_t len, Endianness e)
+Bytestream::Bytestream(size_t size, int pattern, Endianness e)
 {
-  _size = len;
-  _allocated  = len;
+  _size = size;
+  _allocated  = size;
   _data = new uint8_t[_allocated];
   memset(_data, pattern, _allocated);
   _pos = 0;
@@ -209,7 +209,7 @@ Bytestream Bytestream::getBytestream()
   {
     throw std::invalid_argument("No length given");
   }
-  Bytestream other = Bytestream(0, _noOfNextBytes);
+  Bytestream other = Bytestream(_noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
   return other;
 }
@@ -287,7 +287,7 @@ Bytestream Bytestream::peekBytestream()
   {
     throw std::invalid_argument("No length given");
   }
-  Bytestream other = Bytestream(0, _noOfNextBytes);
+  Bytestream other = Bytestream(_noOfNextBytes);
   getBytes(other.raw(), _noOfNextBytes);
   (*this) -= _noOfNextBytes;
   return other;
