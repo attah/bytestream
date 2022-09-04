@@ -322,6 +322,8 @@ TEST(exceptions)
   ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts.getString(2), out_of_range);
   ASSERT(bts.noOfNextBytesValid()==false);
+  ASSERT_THROW(bts.peekString(2), out_of_range);
+  ASSERT(bts.noOfNextBytesValid()==false);
 
   bts << "test";
   ASSERT(bts.noOfNextBytesValid()==false);

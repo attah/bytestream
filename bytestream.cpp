@@ -191,11 +191,9 @@ std::string Bytestream::getString()
   {
     throw std::invalid_argument("No length given");
   }
-  char* cs = new char[_noOfNextBytes+1];
-  cs[_noOfNextBytes] = 0;
-  getBytes(cs, _noOfNextBytes);
-  std::string s(cs, _noOfNextBytes);
-  delete[] cs;
+  _before(_noOfNextBytes);
+  std::string s((char*)(&(_data[_pos])), _noOfNextBytes);
+  _after(_noOfNextBytes);
   return s;
 }
 Bytestream Bytestream::getBytestream()
@@ -268,12 +266,9 @@ std::string Bytestream::peekString()
   {
     throw std::invalid_argument("No length given");
   }
-  char* cs = new char[_noOfNextBytes+1];
-  cs[_noOfNextBytes] = 0;
-  getBytes(cs, _noOfNextBytes);
-  std::string s(cs, _noOfNextBytes);
-  delete[] cs;
-  (*this) -= _noOfNextBytes;
+  _before(_noOfNextBytes);
+  std::string s((char*)(&(_data[_pos])), _noOfNextBytes);
+  _after(0); // Pretend like we didn't read anything
   return s;
 }
 Bytestream Bytestream::peekBytestream()
