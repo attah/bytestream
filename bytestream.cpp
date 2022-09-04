@@ -9,6 +9,7 @@ Bytestream::Bytestream(Endianness e)
 {
   _size = 0;
   _allocated = 0;
+  _data = nullptr;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -98,10 +99,7 @@ Bytestream::Bytestream(const Bytestream& rhs)
 
 Bytestream::~Bytestream()
 {
-  if(_size != 0)
-  {
-    delete[] _data;
-  }
+  delete[] _data;
 }
 
 bool Bytestream::operator==(const Bytestream& other) const
@@ -123,10 +121,7 @@ bool Bytestream::operator!=(const Bytestream& other) const
 
 Bytestream& Bytestream::operator=(const Bytestream& other)
 {
-  if(_size != 0)
-  {
-    delete[] _data;
-  }
+  delete[] _data;
   _pos = other.pos();
   _size = other.size();
   _allocated = _size;
@@ -480,11 +475,12 @@ void Bytestream::preallocate(size_t extra)
     _data = new uint8_t[next_size];
     _allocated = next_size;
 
-    if (_size != 0)
+    if(_size != 0)
     {
       memcpy(_data, old, _size);
-      delete[] old;
     }
+    delete[] old;
+
   }
 }
 
