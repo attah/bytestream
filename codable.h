@@ -28,9 +28,7 @@ public:
   #define DEFAULT_STRING(length, name, default) STRING(length, name)
   #define ENUM_LABEL(label) label
   #define ENUM_VALUE(label, value) label = value
-  #define ENUM(type, name, ...)\
-  enum name##_enum : type \
-  { __VA_ARGS__ } name;
+  #define ENUM(type, name, ...) enum name##_enum : type { __VA_ARGS__ } name;
   #define PADDING(length)
 
   #include CODABLE_FILE
@@ -96,8 +94,9 @@ public:
     #define STRING(length, name) bts/length >> name;
     #define CONST_STRING(name, value) bts >> name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
-    #define ENUM(type, name, ...) \
-      { type tmp; bts >> tmp; name = static_cast<name##_enum>(tmp);};
+    #define ENUM(type, name, ...) {type tmp; \
+                                   bts >> tmp; \
+                                   name = static_cast<name##_enum>(tmp);};
     #define PADDING(length) bts += length;
 
     #include CODABLE_FILE
@@ -116,12 +115,12 @@ public:
     bts.preallocate(encodedSize());
     #define FIELD(type, name) bts << name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
-    #define STRING(length, name) {std::string __tmp(name); \
-                                  __tmp.resize(length); bts << __tmp;}
+    #define STRING(length, name) {std::string tmp(name); \
+                                  tmp.resize(length); \
+                                  bts << tmp;}
     #define CONST_STRING(name, value) bts << name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
-    #define ENUM(type, name, ...) \
-      { bts << static_cast<type>(name);};
+    #define ENUM(type, name, ...) bts << static_cast<type>(name);
     #define PADDING(length) {Bytestream tmp(length, 0); bts << tmp;}
 
     #include CODABLE_FILE
@@ -175,10 +174,9 @@ public:
 
   #define ENUM(type, name, ...) \
   static const std::string name##ToString(name##_enum value) \
-  {static std::map<name##_enum, std::string> names \
-    { __VA_ARGS__ }; \
-    return names.find(value) != names.end() ? names.at(value) \
-                                            : "Value out of range";}
+  {static std::map<name##_enum, std::string> names { __VA_ARGS__ }; \
+   return names.find(value) != names.end() ? names.at(value) \
+                                           : "Value out of range";}
 
 
   #define PADDING(length)
@@ -198,19 +196,20 @@ public:
   std::string describe() const
   {
     std::stringstream ss;
-    #define FIELD(type, name) ss << "FIELD " << #type << " " << #name << " " \
-                                 << +name << std::endl;
+    #define FIELD(type, name) \
+                ss << "FIELD " << #type << " " << #name << " " \
+                   << +name << std::endl;
     #define DEFAULT_FIELD(type, name, default) \
                 ss << "DEFAULT_FIELD " << #type << #name << " " << +name \
-                << " (default: " << default << ")" << std::endl;
-    #define STRING(length, name) ss << "STRING " << #name << " \"" \
-                                    << name << "\"" << std::endl;
+                   << " (default: " << default << ")" << std::endl;
+    #define STRING(length, name) \
+                ss << "STRING " << #name << " \"" << name << "\"" << std::endl;
     #define CONST_STRING(name, value) \
                 ss << "CONST_STRING " << #name << " \"" << name << "\"" \
-                 << " (vaule: " << value << ")"<< std::endl;
+                   << " (vaule: " << value << ")"<< std::endl;
     #define DEFAULT_STRING(length, name, default) \
                 ss << "DEFAULT_STRING " << #name << " \"" << name << "\"" \
-                 << " (default: " << default << ")"<< std::endl;
+                   << " (default: " << default << ")"<< std::endl;
     #define ENUM(type, name, ...) \
                 ss << "ENUM " << #type << " " << #name << " "  \
                    << name##ToString(name) \
