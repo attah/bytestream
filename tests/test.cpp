@@ -376,13 +376,12 @@ TEST(endianness)
   bts >> (uint64_t)0x0807060504030201 >> (uint32_t)0x14131211
       >> (uint16_t)0x2221 >> (uint8_t)0x31 >> "test";
 
-  uint32_t sample = 0x11223344;
-  Bytestream bts2(&sample, sizeof(uint32_t), Bytestream::LittleEndian);
-  bts2 << sample;
-  bts2 >> (uint32_t)0x11223344 >> (uint32_t)0x11223344;
+  uint8_t sample[4] = {0x44, 0x33, 0x22, 0x11};
+  Bytestream bts2(sample, 4, Bytestream::LittleEndian);
+  bts2 >> (uint32_t)0x11223344;
   bts2.setPos(0);
   bts2.setEndianness(Bytestream::BigEndian);
-  bts2 >> (uint32_t)0x44332211 >> (uint32_t)0x44332211;
+  bts2 >> (uint32_t)0x44332211;
 
   std::string text = "test";
   Bytestream bts3(text.c_str(), text.length(), Bytestream::LittleEndian);
