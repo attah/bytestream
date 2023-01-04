@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <byteswap.h>
 #ifndef __STDC_IEC_559__
-#error "Double must be IEEE 754"
+  #ifndef TRUST_ME_I_HAVE_GOOD_FLOATS
+    #error "Double must be IEEE 754"
+  #endif
 #endif
 #define float32_t float
 #define float64_t double
