@@ -5,46 +5,42 @@
 #include <sstream>
 #include <iomanip>
 
-Bytestream::Bytestream(Endianness e)
+Bytestream::Bytestream(Endianness e) : _data(nullptr)
 {
   _size = 0;
   _allocated = 0;
-  _data = nullptr;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
 }
 
-Bytestream::Bytestream(size_t size, Endianness e)
+Bytestream::Bytestream(size_t size, Endianness e) : _data(new uint8_t[size])
 {
   _size = size;
   _allocated  = size;
-  _data = new uint8_t[size];
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
 }
 
-Bytestream::Bytestream(size_t size, int pattern, Endianness e)
+Bytestream::Bytestream(size_t size, int pattern, Endianness e) : _data(new uint8_t[size])
 {
   _size = size;
   _allocated  = size;
-  _data = new uint8_t[_allocated];
-  memset(_data, pattern, _allocated);
+  memset(_data.get(), pattern, _allocated);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
 }
 
-Bytestream::Bytestream(const void* data, size_t len, Endianness e)
+Bytestream::Bytestream(const void* data, size_t len, Endianness e) : _data(new uint8_t[len])
 {
   _size = len;
   _allocated  = _size;
-  _data = new uint8_t[_size];
-  memcpy(_data, data, _size);
+  memcpy(_data.get(), data, _size);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -58,17 +54,16 @@ Bytestream::Bytestream(std::istream& is) : Bytestream()
   do
   {
     preallocate(BS_REASONABLE_FILE_SIZE);
-    bytesRead = is.readsome((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
+    bytesRead = is.readsome((char*)(_data.get()+_size), BS_REASONABLE_FILE_SIZE);
     _size += bytesRead;
   } while (bytesRead && !is.eof());
 }
 
-Bytestream::Bytestream(std::istream& is, size_t len, Endianness e)
+Bytestream::Bytestream(std::istream& is, size_t len, Endianness e) : _data(new uint8_t[len])
 {
   _size = len;
   _allocated  = _size;
-  _data = new uint8_t[_size];
-  is.read((char*)_data, _size);
+  is.read((char*)_data.get(), _size);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -85,12 +80,11 @@ Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
   }
 }
 
-Bytestream::Bytestream(const Bytestream& rhs)
+Bytestream::Bytestream(const Bytestream& rhs) : _data(new uint8_t [rhs._size])
 {
   _size = rhs._size;
   _allocated  = _size;
-  _data = new uint8_t[_size];
-  memcpy(_data, rhs._data, _size);
+  memcpy(_data.get(), rhs._data.get(), _size);
   _pos = rhs._pos;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -99,7 +93,6 @@ Bytestream::Bytestream(const Bytestream& rhs)
 
 Bytestream::~Bytestream()
 {
-  delete[] _data;
 }
 
 bool Bytestream::operator==(const Bytestream& other) const
@@ -108,7 +101,7 @@ bool Bytestream::operator==(const Bytestream& other) const
   {
     return false;
   }
-  return memcmp(_data, other.raw(), _size) == 0;
+  return memcmp(_data.get(), other.raw(), _size) == 0;
 }
 bool Bytestream::operator!=(const Bytestream& other) const
 {
@@ -116,17 +109,17 @@ bool Bytestream::operator!=(const Bytestream& other) const
   {
     return true;
   }
-  return memcmp(_data, other.raw(), _size) != 0;
+  return memcmp(_data.get(), other.raw(), _size) != 0;
 }
 
 Bytestream& Bytestream::operator=(const Bytestream& other)
 {
-  delete[] _data;
   _pos = other.pos();
   _size = other.size();
   _allocated = _size;
-  _data = new uint8_t[_size];
-  memcpy(_data, other.raw(), _size);
+  std::unique_ptr<uint8_t> tmp(new uint8_t[_size]);
+  _data.swap(tmp);
+  memcpy(_data.get(), other.raw(), _size);
   return *this;
 }
 
@@ -136,7 +129,7 @@ void Bytestream::initFrom(const void* data, size_t len)
   {
     _pos=0;
     invalidateNoOfNextBytes();
-    memcpy(_data, data, _size);
+    memcpy(_data.get(), data, _size);
   }
   else
   {
@@ -149,7 +142,7 @@ void Bytestream::initFrom(std::istream& is, size_t len)
   {
     _pos=0;
     invalidateNoOfNextBytes();
-    is.read((char*)_data, _size);
+    is.read((char*)_data.get(), _size);
   }
   else
   {
@@ -192,7 +185,7 @@ std::string Bytestream::getString()
     throw std::invalid_argument("No length given");
   }
   _before(_noOfNextBytes);
-  std::string s((char*)(&(_data[_pos])), _noOfNextBytes);
+  std::string s((char*)(&(_data.get()[_pos])), _noOfNextBytes);
   _after(_noOfNextBytes);
   return s;
 }
@@ -231,14 +224,14 @@ Bytestream Bytestream::getBytestream(size_t len)
 void Bytestream::getBytes(void* cs,  size_t len)
  {
   _before(len);
-  memcpy(cs, &(_data[_pos]), len);
+  memcpy(cs, &(_data.get()[_pos]), len);
   _after(len);
 }
 
 void Bytestream::getBytes(Bytestream& other,  size_t len)
 {
   _before(len);
-  other.putBytes(&(_data[_pos]), len);
+  other.putBytes(&(_data.get()[_pos]), len);
   _after(len);
 }
 
@@ -267,7 +260,7 @@ std::string Bytestream::peekString()
     throw std::invalid_argument("No length given");
   }
   _before(_noOfNextBytes);
-  std::string s((char*)(&(_data[_pos])), _noOfNextBytes);
+  std::string s((char*)(&(_data.get()[_pos])), _noOfNextBytes);
   _after(0); // Pretend like we didn't read anything
   return s;
 }
@@ -323,7 +316,7 @@ bool Bytestream::peekNextBytestream(Bytestream other)
     return false;
   }
 
-  bool res = memcmp(&(_data[_pos]), other.raw(), _noOfNextBytes) == 0;
+  bool res = memcmp(&(_data.get()[_pos]), other.raw(), _noOfNextBytes) == 0;
 
   invalidateNoOfNextBytes();
   return res;
@@ -399,7 +392,7 @@ bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
     return false;
   }
 
-  bool res = memcmp(&(_data[_pos]), other.raw(), _noOfNextBytes) == 0;
+  bool res = memcmp(&(_data.get()[_pos]), other.raw(), _noOfNextBytes) == 0;
 
   if(res == compareEqual)
   {
@@ -443,7 +436,7 @@ void Bytestream::putBytes(const void* c, size_t len)
 {
   preallocate(len);
 
-  memcpy((_data+_size), c, len);
+  memcpy((_data.get()+_size), c, len);
   _size += len;
 }
 
@@ -464,18 +457,16 @@ void Bytestream::preallocate(size_t extra)
   size_t new_size = _size+extra;
   if(new_size > _allocated)
   {
-    uint8_t* old = _data;
     size_t next_size = std::max(2*_allocated, new_size);
 
-    _data = new uint8_t[next_size];
+    std::unique_ptr<uint8_t> tmp(new uint8_t[next_size]);
+    _data.swap(tmp);
     _allocated = next_size;
 
     if(_size != 0)
     {
-      memcpy(_data, old, _size);
+      memcpy(_data.get(), tmp.get(), _size);
     }
-    delete[] old;
-
   }
 }
 
@@ -496,7 +487,7 @@ void Bytestream::_after(size_t bytesRead)
 
 Bytestream Bytestream::operator[](size_t i)
 {
-  Bytestream tmp(_data+i, _size-i);
+  Bytestream tmp(_data.get()+i, _size-i);
   return tmp;
 }
 

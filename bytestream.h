@@ -3,6 +3,7 @@
 #include <string>
 #include <stdexcept>
 #include <stdint.h>
+#include <memory>
 #include <byteswap.h>
 #ifndef __STDC_IEC_559__
   #ifndef TRUST_ME_I_HAVE_GOOD_FLOATS
@@ -56,7 +57,7 @@ public:
   void initFrom(const void* data, size_t len);
   void initFrom(std::istream& is, size_t len);
 
-  uint8_t* raw() const {return _data;}
+  uint8_t* raw() const {return _data.get();}
   size_t size() const {return _size;}
   size_t pos() const {return _pos;}
   size_t remaining() const {return _size - _pos;}
@@ -193,7 +194,7 @@ public:
   void preallocate(size_t extra);
 
 private:
-  uint8_t* _data;
+  std::unique_ptr<uint8_t> _data;
   size_t _size;
   size_t _allocated;
   size_t _pos;
