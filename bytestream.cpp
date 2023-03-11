@@ -9,29 +9,26 @@ Bytestream::Bytestream(Endianness e)
 {
   _size = 0;
   _allocated = 0;
-  _data = nullptr;
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
 }
 
-Bytestream::Bytestream(size_t size, Endianness e)
+Bytestream::Bytestream(size_t size, Endianness e) : _data(size)
 {
   _size = size;
   _allocated  = size;
-  _data = new uint8_t[size];
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
   _endianness = e;
 }
 
-Bytestream::Bytestream(size_t size, int pattern, Endianness e)
+Bytestream::Bytestream(size_t size, int pattern, Endianness e) : _data(size)
 {
   _size = size;
   _allocated  = size;
-  _data = new uint8_t[_allocated];
   memset(_data, pattern, _allocated);
   _pos = 0;
   _noOfNextBytes = 0;
@@ -39,11 +36,10 @@ Bytestream::Bytestream(size_t size, int pattern, Endianness e)
   _endianness = e;
 }
 
-Bytestream::Bytestream(const void* data, size_t len, Endianness e)
+Bytestream::Bytestream(const void* data, size_t len, Endianness e) : _data(len)
 {
   _size = len;
   _allocated  = _size;
-  _data = new uint8_t[_size];
   memcpy(_data, data, _size);
   _pos = 0;
   _noOfNextBytes = 0;
@@ -63,12 +59,11 @@ Bytestream::Bytestream(std::istream& is) : Bytestream()
   } while (bytesRead && !is.eof());
 }
 
-Bytestream::Bytestream(std::istream& is, size_t len, Endianness e)
+Bytestream::Bytestream(std::istream& is, size_t len, Endianness e) : _data(len)
 {
   _size = len;
   _allocated  = _size;
-  _data = new uint8_t[_size];
-  is.read((char*)_data, _size);
+  is.read((char*)(_data.get()), _size);
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;
@@ -85,11 +80,10 @@ Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
   }
 }
 
-Bytestream::Bytestream(const Bytestream& rhs)
+Bytestream::Bytestream(const Bytestream& rhs) : _data(rhs._size)
 {
   _size = rhs._size;
   _allocated  = _size;
-  _data = new uint8_t[_size];
   memcpy(_data, rhs._data, _size);
   _pos = rhs._pos;
   _noOfNextBytes = 0;
@@ -99,7 +93,6 @@ Bytestream::Bytestream(const Bytestream& rhs)
 
 Bytestream::~Bytestream()
 {
-  delete[] _data;
 }
 
 bool Bytestream::operator==(const Bytestream& other) const
@@ -121,11 +114,11 @@ bool Bytestream::operator!=(const Bytestream& other) const
 
 Bytestream& Bytestream::operator=(const Bytestream& other)
 {
-  delete[] _data;
   _pos = other.pos();
   _size = other.size();
   _allocated = _size;
-  _data = new uint8_t[_size];
+  Array<uint8_t> tmp(_size);
+  _data.swap(tmp);
   memcpy(_data, other.raw(), _size);
   return *this;
 }
@@ -149,7 +142,7 @@ void Bytestream::initFrom(std::istream& is, size_t len)
   {
     _pos=0;
     invalidateNoOfNextBytes();
-    is.read((char*)_data, _size);
+    is.read((char*)(_data.get()), _size);
   }
   else
   {
@@ -464,18 +457,16 @@ void Bytestream::preallocate(size_t extra)
   size_t new_size = _size+extra;
   if(new_size > _allocated)
   {
-    uint8_t* old = _data;
     size_t next_size = std::max(2*_allocated, new_size);
 
-    _data = new uint8_t[next_size];
+    Array<uint8_t> tmp(next_size);
+    _data.swap(tmp);
     _allocated = next_size;
 
     if(_size != 0)
     {
-      memcpy(_data, old, _size);
+      memcpy(_data, tmp, _size);
     }
-    delete[] old;
-
   }
 }
 

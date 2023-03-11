@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <stdint.h>
 #include <byteswap.h>
+#include "array.h"
 #ifndef __STDC_IEC_559__
   #ifndef TRUST_ME_I_HAVE_GOOD_FLOATS
     #error "Double must be IEEE 754"
@@ -193,7 +194,7 @@ public:
   void preallocate(size_t extra);
 
 private:
-  uint8_t* _data;
+  Array<uint8_t> _data;
   size_t _size;
   size_t _allocated;
   size_t _pos;
