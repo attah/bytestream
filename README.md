@@ -15,3 +15,7 @@ See [tests](tests/test.cpp) for examples.
 `__attribute__((packed))` on steroids, implemented with Bytestream.
 
 Used in https://github.com/attah/ppm2pwg for file/page headers.
+
+### Array
+
+Wrapper for std::unique_ptr to get nicer syntax for arrays.
