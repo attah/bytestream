@@ -1,5 +1,6 @@
 #include <sstream>
 #include <map>
+#include "bytestream.h"
 
 #ifndef CODABLE_CLASS
 #define CODABLE_CLASS
@@ -7,6 +8,8 @@
 class Codable
 {
 public:
+  virtual ~Codable() = default;
+
   virtual void decodeFrom(Bytestream& bts) = 0;
   virtual void encodeInto(Bytestream& bts) const = 0;
   virtual Bytestream encode() const = 0;
