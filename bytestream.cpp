@@ -49,14 +49,12 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e) : _data(len)
 
 Bytestream::Bytestream(std::istream& is) : Bytestream()
 {
-  size_t bytesRead;
-
-  do
+  while(!is.eof())
   {
     preallocate(BS_REASONABLE_FILE_SIZE);
-    bytesRead = is.readsome((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
-    _size += bytesRead;
-  } while (bytesRead && !is.eof());
+    is.read((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
+    _size += is.gcount();
+  }
 }
 
 Bytestream::Bytestream(std::istream& is, size_t len, Endianness e) : _data(len)
