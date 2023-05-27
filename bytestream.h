@@ -192,6 +192,8 @@ public:
   bool operator>>=(const Bytestream& other);
 
   void preallocate(size_t extra);
+  size_t allocated();
+  Array<uint8_t> eject(bool prealloc = false);
 
 private:
   Array<uint8_t> _data;

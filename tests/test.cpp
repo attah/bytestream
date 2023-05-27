@@ -428,6 +428,40 @@ TEST(mixed_eandian)
   bts >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0;
 }
 
+TEST(eject)
+{
+  Bytestream bts;
+  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
+      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+      << "someString";
+
+  Bytestream bts2 = bts;
+  size_t size = bts.size();
+  Array<uint8_t> data = bts.eject();
+  ASSERT(bts.size() == 0);
+  ASSERT(bts.allocated() == 0);
+  ASSERT(bts != bts2);
+  bts = Bytestream(data, size);
+  ASSERT(bts == bts2);
+
+  size = bts.size();
+  bts.preallocate(42);
+  size_t allocated = bts.allocated();
+  data = bts.eject(true);
+  ASSERT(bts.size() == 0);
+  ASSERT(bts.allocated() == allocated);
+  ASSERT(bts != bts2);
+  bts = Bytestream(data, size);
+  ASSERT(bts == bts2);
+
+  uint8_t* data_ptr = bts.eject().release();
+  ASSERT(bts.size() == 0);
+  ASSERT(bts != bts2);
+  bts = Bytestream(data, size);
+  delete[] data_ptr;
+  ASSERT(bts == bts2);
+}
+
 #include "TestCodable.h"
 
 TEST(codable)

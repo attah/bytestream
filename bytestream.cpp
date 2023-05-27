@@ -131,7 +131,8 @@ void Bytestream::initFrom(const void* data, size_t len)
   }
   else
   {
-    *this = Bytestream(data, len, _endianness);
+    Bytestream tmp(data, len, _endianness);
+    std::swap(*this, tmp);
   }
 }
 void Bytestream::initFrom(std::istream& is, size_t len)
@@ -144,7 +145,8 @@ void Bytestream::initFrom(std::istream& is, size_t len)
   }
   else
   {
-    *this = Bytestream(is, len, _endianness);
+    Bytestream tmp(is, len, _endianness);
+    std::swap(*this, tmp);
   }
 }
 
@@ -466,6 +468,25 @@ void Bytestream::preallocate(size_t extra)
       memcpy(_data, tmp, _size);
     }
   }
+}
+
+size_t Bytestream::allocated()
+{
+  return _allocated;
+}
+
+Array<uint8_t> Bytestream::eject(bool prealloc)
+{
+  size_t oldAllocation = _allocated;
+  Array<uint8_t> tmp;
+  std::swap(_data, tmp);
+  _allocated = 0;
+  reset();
+  if(prealloc)
+  {
+    preallocate(oldAllocation);
+  }
+  return tmp;
 }
 
 void Bytestream::_before(size_t bytesToRead)
