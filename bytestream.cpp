@@ -121,35 +121,6 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
   return *this;
 }
 
-void Bytestream::initFrom(const void* data, size_t len)
-{
-  if(len == _size)
-  {
-    _pos=0;
-    invalidateNoOfNextBytes();
-    memcpy(_data, data, _size);
-  }
-  else
-  {
-    Bytestream tmp(data, len, _endianness);
-    std::swap(*this, tmp);
-  }
-}
-void Bytestream::initFrom(std::istream& is, size_t len)
-{
-  if(len == _size)
-  {
-    _pos=0;
-    invalidateNoOfNextBytes();
-    is.read((char*)(_data.get()), _size);
-  }
-  else
-  {
-    Bytestream tmp(is, len, _endianness);
-    std::swap(*this, tmp);
-  }
-}
-
 template <typename T>
 T bswap(T u)
 {

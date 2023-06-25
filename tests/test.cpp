@@ -656,32 +656,6 @@ TEST(iostream)
   out << bts;
   ASSERT(out.str()==ss.str());
 
-  string troll = "trololololol";
-  bts.initFrom(troll.c_str(), 12);
-
-  Bytestream bts3;
-  bts3.initFrom(troll.c_str(), 12);
-  ASSERT(bts3==bts);
-
-  bts.setEndianness(Bytestream::LittleEndian);
-
-  stringstream sst;
-  sst << "lolbolltroll";
-  bts.initFrom(sst, 12);
-  ASSERT(bts>>="lolbolltroll");
-
-  // Endianness survives copy re-init
-  ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
-
-  stringstream sst2;
-  sst2 << "lolbolltroll" << "!!";
-  bts.initFrom(sst2, 14);
-  ASSERT(bts.size() == 14);
-  ASSERT(bts>>="lolbolltroll!!");
-
-  // Endianness survives full re-init
-  ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
-
   // Size is correct if short
   stringstream sst3;
   Bytestream bts4(sst3);

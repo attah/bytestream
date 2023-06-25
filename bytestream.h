@@ -54,9 +54,6 @@ public:
 
   Bytestream& operator=(const Bytestream& other);
 
-  void initFrom(const void* data, size_t len);
-  void initFrom(std::istream& is, size_t len);
-
   uint8_t* raw() const {return _data;}
   size_t size() const {return _size;}
   size_t pos() const {return _pos;}
