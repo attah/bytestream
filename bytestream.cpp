@@ -59,9 +59,9 @@ Bytestream::Bytestream(std::istream& is) : Bytestream()
 
 Bytestream::Bytestream(std::istream& is, size_t len, Endianness e) : _data(len)
 {
-  _size = len;
   _allocated  = _size;
-  is.read((char*)(_data.get()), _size);
+  is.read((char*)(_data.get()), len);
+  _size = is.gcount();
   _pos = 0;
   _noOfNextBytes = 0;
   _noOfNextBytesValid = false;

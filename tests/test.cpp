@@ -681,6 +681,18 @@ TEST(iostream)
 
   // Endianness survives full re-init
   ASSERT(bts.getEndianness() == Bytestream::LittleEndian);
+
+  // Size is correct if short
+  stringstream sst3;
+  Bytestream bts4(sst3);
+  ASSERT(bts4.size() == 0);
+  Bytestream bts5(sst3, 42);
+  ASSERT(bts5.size() == 0);
+
+  stringstream sst4;
+  sst4 << "1234";
+  Bytestream bts6(sst4, 42);
+  ASSERT(bts6.size() == 4);
 }
 
 TEST(large_iostream)
