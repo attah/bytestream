@@ -188,6 +188,8 @@ public:
   bool operator>>=(const std::string& s);
   bool operator>>=(const Bytestream& other);
 
+  void putZeroes(size_t len);
+
   void preallocate(size_t extra);
   size_t allocated();
   Array<uint8_t> eject(bool prealloc = false);

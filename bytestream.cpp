@@ -423,6 +423,13 @@ void Bytestream::invalidateNoOfNextBytes()
     _noOfNextBytesValid = false;
 }
 
+void Bytestream::putZeroes(size_t len)
+{
+  preallocate(len);
+  memset(_data+_size, 0, len);
+  _size += len;
+}
+
 void Bytestream::preallocate(size_t extra)
 {
   size_t new_size = _size+extra;

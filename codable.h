@@ -124,7 +124,7 @@ public:
     #define CONST_STRING(name, value) bts << name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
     #define ENUM(type, name, ...) bts << static_cast<type>(name);
-    #define PADDING(length) {Bytestream tmp(length, 0); bts << tmp;}
+    #define PADDING(length) bts.putZeroes(length);
 
     #include CODABLE_FILE
   }
