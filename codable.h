@@ -1,5 +1,6 @@
 #include <sstream>
 #include <map>
+#include <set>
 #include "bytestream.h"
 
 #ifndef CODABLE_CLASS
@@ -179,8 +180,37 @@ public:
   static const std::string name##ToString(name##_enum value) \
   {static std::map<name##_enum, std::string> names { __VA_ARGS__ }; \
    return names.find(value) != names.end() ? names.at(value) \
-                                           : "Value out of range";}
+                                           : "Value not in enum";}
 
+
+  #define PADDING(length)
+
+  #include CODABLE_FILE
+
+  #undef FIELD
+  #undef DEFAULT_FIELD
+  #undef STRING
+  #undef CONST_STRING
+  #undef DEFAULT_STRING
+  #undef ENUM
+  #undef ENUM_LABEL
+  #undef ENUM_VALUE
+  #undef PADDING
+
+  #define FIELD(type, name)
+  #define DEFAULT_FIELD(type, name, default)
+  #define STRING(length, name)
+  #define CONST_STRING(name, value)
+  #define DEFAULT_STRING(length, name, default)
+
+  #define ENUM_LABEL(label) label
+  #define ENUM_VALUE(label, value) ENUM_LABEL(label)
+
+  #define ENUM(type, name, ...) \
+  void set##name(type value) \
+  {static std::set<type> names { __VA_ARGS__ }; \
+   if(names.find(value) != names.end()) name = static_cast<name##_enum>(value); \
+   else throw std::logic_error("Value not in enum");}
 
   #define PADDING(length)
 

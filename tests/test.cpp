@@ -558,6 +558,17 @@ TEST(codable)
   ASSERT(descr.find("Value32_3") != std::string::npos);
   ASSERT(descr.find("Value64_4") != std::string::npos);
 
+  TestCodable cod4;
+  cod4.setmyEnum8(1);
+  cod4.setmyEnum16(2);
+  cod4.setmyEnum32(3);
+  cod4.setmyEnum64(4);
+  ASSERT(cod4.myEnum8 == TestCodable::Value8_1);
+  ASSERT(cod4.myEnum16 == TestCodable::Value16_2);
+  ASSERT(cod4.myEnum32 == TestCodable::Value32_3);
+  ASSERT(cod4.myEnum64 == TestCodable::Value64_4);
+
+  ASSERT_THROW(cod4.setmyEnum8(42), logic_error);
 }
 
 TEST(initializer_list)
