@@ -124,12 +124,12 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
 template <typename T>
 T bswap(T u)
 {
-    uint8_t* const p = reinterpret_cast<uint8_t*>(&u);
-    for (size_t i = 0; i < sizeof(T) / 2; i++)
-    {
-        std::swap(p[i], p[sizeof(T) - i - 1]);
-    }
-    return u;
+  uint8_t* const p = reinterpret_cast<uint8_t*>(&u);
+  for(size_t i = 0; i < sizeof(T) / 2; i++)
+  {
+    std::swap(p[i], p[sizeof(T) - i - 1]);
+  }
+  return u;
 }
 
 #define GET(type, shorthand, len) GET_(type##len##_t, shorthand##len, len)
@@ -541,7 +541,7 @@ std::string Bytestream::hexdump(size_t length)
     std::stringstream ascii;
     ss << std::setfill('0') << std::setw(8) << std::hex << addr << ": ";
 
-    for (size_t i = 0; i < 16; i++)
+    for(size_t i = 0; i < 16; i++)
     {
       uint8_t b = tmp.getU8();
       hex << std::setfill('0') << std::setw(2) << std::hex << +b;
@@ -668,7 +668,7 @@ GETOP_CONST(float, F, 64)
 
 Bytestream& Bytestream::operator>>(const std::string& s)
 {
-  if (_noOfNextBytesValid && getNoOfNextBytes() != s.length())
+  if(_noOfNextBytesValid && getNoOfNextBytes() != s.length())
   {
     throw std::logic_error("Desired length does not match const length");
   }
