@@ -1,5 +1,5 @@
 LDFLAGS = -ldl -Wl,--export-dynamic
-CXXFLAGS = -std=c++11 -g -pedantic -Wall -Werror -Wextra
+CXXFLAGS = -std=c++17 -g -pedantic -Wall -Werror -Wextra
 
 .PHONY: test
 # test.cpp listed explicitly since changing test.h would go unnoticed otherwise
@@ -11,4 +11,4 @@ clean:
 	rm -f test
 
 analyze:
-	clang++ --analyze ../bytestream.cpp
+	clang++ $(CXXFLAGS) --analyze ../bytestream.cpp

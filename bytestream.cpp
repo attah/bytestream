@@ -74,7 +74,7 @@ Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
   this->setEndianness(e);
   for(Bytes b : il)
   {
-    *this << b;
+    this->putBytes(b);
   }
 }
 
@@ -731,78 +731,55 @@ std::ostream& operator<<(std::ostream& os, Bytestream& bts)
   return os;
 }
 
-#define TYPE_CTOR(type, shorthand, len) \
-  TYPE_CTOR_(type##len##_t, shorthand##len)
-#define TYPE_CTOR_(typeName, shortType) \
-  Bytes::Bytes(const typeName& t) \
-  {type = Type::shortType;\
-   u.shortType = t;}
 
-TYPE_CTOR(uint, u, 8)
-TYPE_CTOR(uint, u, 16)
-TYPE_CTOR(uint, u, 32)
-TYPE_CTOR(uint, u, 64)
-TYPE_CTOR(int, i, 8)
-TYPE_CTOR(int, i, 16)
-TYPE_CTOR(int, i, 32)
-TYPE_CTOR(int, i, 64)
-TYPE_CTOR(float, f, 32)
-TYPE_CTOR(float, f, 64)
-
-Bytes::Bytes(const std::string& s)
+void Bytestream::putBytes(const Bytes& b)
 {
-  type = Type::s;
-  u.s = new std::string(s);
-}
-
-Bytes::Bytes(const Bytes& other)
-{
-  type = other.type;
-  if(type == Type::s)
+  if(std::holds_alternative<uint8_t>(b))
   {
-    u.s = new std::string(*other.u.s);
+    *this << std::get<uint8_t>(b);
+  }
+  else if(std::holds_alternative<uint16_t>(b))
+  {
+    *this << std::get<uint16_t>(b);
+  }
+  else if(std::holds_alternative<uint32_t>(b))
+  {
+    *this << std::get<uint32_t>(b);
+  }
+  else if(std::holds_alternative<uint64_t>(b))
+  {
+    *this << std::get<uint64_t>(b);
+  }
+  else if(std::holds_alternative<int8_t>(b))
+  {
+    *this << std::get<int8_t>(b);
+  }
+  else if(std::holds_alternative<int16_t>(b))
+  {
+    *this << std::get<int16_t>(b);
+  }
+  else if(std::holds_alternative<int32_t>(b))
+  {
+    *this << std::get<int32_t>(b);
+  }
+  else if(std::holds_alternative<int64_t>(b))
+  {
+    *this << std::get<int64_t>(b);
+  }
+  else if(std::holds_alternative<float32_t>(b))
+  {
+    *this << std::get<float32_t>(b);
+  }
+  else if(std::holds_alternative<float64_t>(b))
+  {
+    *this << std::get<float64_t>(b);
+  }
+  else if(std::holds_alternative<std::string>(b))
+  {
+    *this << std::get<std::string>(b);
   }
   else
   {
-    u = other.u;
-  }
-}
-
-Bytes::~Bytes()
-{
-  if(type == Type::s)
-  {
-    delete u.s;
-  }
-}
-
-Bytes& Bytes::operator=(const Bytes& other)
-{
-  type = other.type;
-  if(type == Type::s)
-  {
-    u.s = new std::string(*other.u.s);
-  }
-  else
-  {
-    u = other.u;
-  }
-  return *this;
-}
-
-Bytestream& operator<<(Bytestream& bts, const Bytes& b) {
-  switch (b.type) {
-    case Bytes::u8:  return bts << b.u.u8;
-    case Bytes::u16: return bts << b.u.u16;
-    case Bytes::u32: return bts << b.u.u32;
-    case Bytes::u64: return bts << b.u.u64;
-    case Bytes::i8:  return bts << b.u.i8;
-    case Bytes::i16: return bts << b.u.i16;
-    case Bytes::i32: return bts << b.u.i32;
-    case Bytes::i64: return bts << b.u.i64;
-    case Bytes::f32: return bts << b.u.f32;
-    case Bytes::f64: return bts << b.u.f64;
-    case Bytes::s:   return bts << *b.u.s;
-    default: throw std::invalid_argument("Uninitialized bytes");
+    throw std::logic_error("Invalid bytes");
   }
 }

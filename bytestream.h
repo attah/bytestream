@@ -2,6 +2,7 @@
 #define  BYTESTREAM_H
 #include <string>
 #include <stdexcept>
+#include <variant>
 #include <stdint.h>
 #include <byteswap.h>
 #include "array.h"
@@ -208,66 +209,20 @@ private:
 
   void _after(size_t bytesRead);
   void _before(size_t bytesToRead);
+
+  void putBytes(const Bytes& b);
 };
 
 std::ostream& operator<<(std::ostream& os, Bytestream& bts);
 
-class Bytes
+class Bytes: public std::variant<uint8_t, uint16_t, uint32_t, uint64_t,
+                                 int8_t, int16_t, int32_t, int64_t,
+                                 float32_t, float64_t, std::string>
 {
-  friend Bytestream& operator<<(Bytestream& bts, const Bytes& b);
-
-public:
-  Bytes() = delete;
-
-  Bytes(const uint8_t&);
-  Bytes(const uint16_t&);
-  Bytes(const uint32_t&);
-  Bytes(const uint64_t&);
-  Bytes(const int8_t&);
-  Bytes(const int16_t&);
-  Bytes(const int32_t&);
-  Bytes(const int64_t&);
-  Bytes(const float32_t&);
-  Bytes(const float64_t&);
-  Bytes(const std::string&);
-
-  Bytes(const Bytes& b);
-  ~Bytes();
-
-  Bytes& operator=(const Bytes& other);
-
-private:
-
-  enum Type {
-    u8,
-    u16,
-    u32,
-    u64,
-    i8,
-    i16,
-    i32,
-    i64,
-    f32,
-    f64,
-    s
-  } type;
-
-  union {
-    uint8_t u8;
-    uint16_t u16;
-    uint32_t u32;
-    uint64_t u64;
-    int8_t i8;
-    int16_t i16;
-    int32_t i32;
-    int64_t i64;
-    float32_t f32;
-    float64_t f64;
-    std::string* s;
-  } u;
+  using std::variant<uint8_t, uint16_t, uint32_t, uint64_t,
+                     int8_t, int16_t, int32_t, int64_t,
+                     float32_t, float64_t, std::string>::variant;
 
 };
-
-Bytestream& operator<<(Bytestream& bts, const Bytes&);
 
 #endif
