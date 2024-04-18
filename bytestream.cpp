@@ -47,6 +47,11 @@ Bytestream::Bytestream(const void* data, size_t len, Endianness e) : _data(len)
   _endianness = e;
 }
 
+Bytestream::Bytestream(const std::string& s) : Bytestream()
+{
+  putString(s);
+}
+
 Bytestream::Bytestream(std::istream& is) : Bytestream()
 {
   while(!is.eof())

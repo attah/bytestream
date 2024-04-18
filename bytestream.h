@@ -43,6 +43,7 @@ public:
   Bytestream(size_t size, Endianness e = BigEndian);
   Bytestream(size_t size, int pattern, Endianness e = BigEndian);
   Bytestream(const void* data, size_t len, Endianness e = BigEndian);
+  Bytestream(const std::string& s);
   Bytestream(std::istream& is);
   Bytestream(std::istream& is, size_t len, Endianness e = BigEndian);
   Bytestream(std::initializer_list<Bytes> il, Endianness e = BigEndian);

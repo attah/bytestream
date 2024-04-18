@@ -352,6 +352,9 @@ TEST(constructors)
   Bytestream bts3 = Bytestream(7);
   ASSERT(bts3.size()==7);
   ASSERT(bts3.pos()==0);
+
+  Bytestream bts4 = Bytestream("someString");
+  ASSERT(bts4 >>= "someString");
 }
 
 TEST(floats)
