@@ -49,12 +49,14 @@ public:
   Bytestream(std::initializer_list<Bytes> il, Endianness e = BigEndian);
 
   Bytestream(const Bytestream& rhs);
+  Bytestream(Bytestream&& rhs);
   ~Bytestream();
 
   bool operator==(const Bytestream& other) const;
   bool operator!=(const Bytestream& other) const;
 
   Bytestream& operator=(const Bytestream& other);
+  Bytestream& operator=(Bytestream&& other);
 
   uint8_t* raw() const {return _data;}
   size_t size() const {return _size;}

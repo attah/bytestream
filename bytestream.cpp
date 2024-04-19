@@ -94,6 +94,20 @@ Bytestream::Bytestream(const Bytestream& rhs) : _data(rhs._size)
   _endianness = rhs._endianness;
 }
 
+Bytestream::Bytestream(Bytestream&& rhs)
+{
+  _data = Array<uint8_t>(0);
+  _data.swap(rhs._data);
+  _size = rhs._size;
+  _allocated  = rhs._allocated;
+  _pos = rhs._pos;
+  invalidateNoOfNextBytes();
+  _endianness = rhs._endianness;
+
+  rhs._allocated = 0;
+  rhs.reset();
+}
+
 Bytestream::~Bytestream()
 {
 }
@@ -123,6 +137,21 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
   Array<uint8_t> tmp(_size);
   _data.swap(tmp);
   memcpy(_data, other.raw(), _size);
+  invalidateNoOfNextBytes();
+  return *this;
+}
+
+Bytestream& Bytestream::operator=(Bytestream&& other)
+{
+  _data = Array<uint8_t>(0);
+  _data.swap(other._data);
+  _pos = other._pos;
+  _size = other._size;
+  _allocated = other._allocated;
+  invalidateNoOfNextBytes();
+
+  other._allocated = 0;
+  other.reset();
   return *this;
 }
 

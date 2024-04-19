@@ -357,6 +357,26 @@ TEST(constructors)
   ASSERT(bts4 >>= "someString");
 }
 
+TEST(move_semanticcs)
+{
+  Bytestream bts1("some contents");
+  Bytestream bts2(std::move(bts1));
+  ASSERT(bts1.size() == 0);
+  ASSERT(bts1.pos() == 0);
+  ASSERT(bts1.raw() == nullptr);
+  ASSERT(bts2 >>= "some contents");
+
+  Bytestream bts3;
+  bts3 = std::move(bts2);
+  ASSERT(bts2.size() == 0);
+  ASSERT(bts2.pos() == 0);
+  ASSERT(bts2.raw() == nullptr);
+
+  ASSERT(bts3.pos() == 13);
+  bts3.setPos(0);
+  ASSERT(bts3 >>= "some contents");
+}
+
 TEST(floats)
 {
   Bytestream bts;
