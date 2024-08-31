@@ -55,7 +55,7 @@ public:
     #define STRING(length, name)
     #define CONST_STRING(name, value)
     #define DEFAULT_STRING(length, name, default) name = default;
-    #define ENUM(type, name, ...) name = static_cast<name##_enum>(type());
+    #define ENUM(type, name, ...) name = name##_enum();
     #include CODABLE_FILE
   }
 
@@ -246,7 +246,7 @@ public:
     #define ENUM(type, name, ...) \
                 ss << "ENUM " << #type << " " << #name << " "  \
                    << name##ToString(name) \
-                   << " (" << +static_cast<type>(name) << ")" << std::endl;
+                   << " (" << +name << ")" << std::endl;
     #define PADDING(length) ss << "PADDING "<< length << std::endl;
 
     #include CODABLE_FILE
