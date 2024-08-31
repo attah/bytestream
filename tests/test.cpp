@@ -576,10 +576,10 @@ TEST(codable)
 
   std::string descr = cod.describe();
 
-  ASSERT(descr.find("Value8_1") != std::string::npos);
-  ASSERT(descr.find("Value16_2") != std::string::npos);
-  ASSERT(descr.find("Value32_3") != std::string::npos);
-  ASSERT(descr.find("Value64_4") != std::string::npos);
+  ASSERT(descr.find("Value8_1 (1)") != std::string::npos);
+  ASSERT(descr.find("Value16_2 (2)") != std::string::npos);
+  ASSERT(descr.find("Value32_3 (3)") != std::string::npos);
+  ASSERT(descr.find("Value64_4 (4)") != std::string::npos);
 
   TestCodable cod4;
   cod4.setmyEnum8(1);
