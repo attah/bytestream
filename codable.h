@@ -238,8 +238,7 @@ public:
     #define STRING(length, name) \
                 ss << "STRING " << #name << " \"" << name << "\"" << std::endl;
     #define CONST_STRING(name, value) \
-                ss << "CONST_STRING " << #name << " \"" << name << "\"" \
-                   << " (vaule: " << value << ")"<< std::endl;
+                ss << "CONST_STRING " << #name << " \"" << name << "\"" << std::endl;
     #define DEFAULT_STRING(length, name, default) \
                 ss << "DEFAULT_STRING " << #name << " \"" << name << "\"" \
                    << " (default: " << default << ")"<< std::endl;
