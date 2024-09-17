@@ -95,7 +95,7 @@ public:
   {
     #define FIELD(type, name) bts >> name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
-    #define STRING(length, name) bts/length >> name;
+    #define STRING(length, name) name = bts.getString(length);
     #define CONST_STRING(name, value) bts >> name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
     #define ENUM(type, name, ...) {type tmp; \
@@ -125,7 +125,7 @@ public:
     #define CONST_STRING(name, value) bts << name;
     #define DEFAULT_STRING(length, name, default) STRING(length, name)
     #define ENUM(type, name, ...) bts << static_cast<type>(name);
-    #define PADDING(length) bts.putZeroes(length);
+    #define PADDING(length) bts.putPattern(length, 0);
 
     #include CODABLE_FILE
   }

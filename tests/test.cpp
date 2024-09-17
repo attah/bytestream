@@ -21,10 +21,10 @@ TEST(get_operator)
   std::string s;
 
   bts >> a >> b >> c >> d >> e >> f >> g >> h;
-  bts/10 >> s;
+  s = bts.getString(10);
   Bytestream bts2;
   bts-=10;
-  bts/10 >> bts2;
+  bts2 = bts.getBytestream(10);
 
   ASSERT(a==1);
   ASSERT(b==2);
@@ -45,31 +45,23 @@ TEST(get_methods)
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
 
-  ASSERT(bts.peekU8()==1);
-  ASSERT(bts.getU8()==1);
-  ASSERT(bts.peekU16()==2);
-  ASSERT(bts.getU16()==2);
-  ASSERT(bts.peekU32()==3);
-  ASSERT(bts.getU32()==3);
-  ASSERT(bts.peekU64()==4);
-  ASSERT(bts.getU64()==4);
-  ASSERT(bts.peekS8()==-1);
-  ASSERT(bts.getS8()==-1);
-  ASSERT(bts.peekS16()==-2);
-  ASSERT(bts.getS16()==-2);
-  ASSERT(bts.peekS32()==-3);
-  ASSERT(bts.getS32()==-3);
-  ASSERT(bts.peekS64()==-4);
-  ASSERT(bts.getS64()==-4);
+  ASSERT(bts.peek<uint8_t>()==1);
+  ASSERT(bts.get<uint8_t>()==1);
+  ASSERT(bts.peek<uint16_t>()==2);
+  ASSERT(bts.get<uint16_t>()==2);
+  ASSERT(bts.peek<uint32_t>()==3);
+  ASSERT(bts.get<uint32_t>()==3);
+  ASSERT(bts.peek<uint64_t>()==4);
+  ASSERT(bts.get<uint64_t>()==4);
+  ASSERT(bts.peek<int8_t>()==-1);
+  ASSERT(bts.get<int8_t>()==-1);
+  ASSERT(bts.peek<int16_t>()==-2);
+  ASSERT(bts.get<int16_t>()==-2);
+  ASSERT(bts.peek<int32_t>()==-3);
+  ASSERT(bts.get<int32_t>()==-3);
+  ASSERT(bts.peek<int64_t>()==-4);
+  ASSERT(bts.get<int64_t>()==-4);
 
-  ASSERT((bts/10).peekString()=="someString");
-  ASSERT((bts/10).getString()=="someString");
-  bts-=10;
-  Bytestream bts2a = (bts/10).peekBytestream();
-  Bytestream bts2b = (bts/10).getBytestream();
-  ASSERT(bts2a==bts2b);
-  ASSERT(bts2b>>="someString");
-  bts-=10;
   ASSERT(bts.peekString(10)=="someString");
   ASSERT(bts.getString(10)=="someString");
   bts-=10;
@@ -81,10 +73,6 @@ TEST(get_methods)
   bts-=10;
   Bytestream bts4a;
   Bytestream bts4b;
-  bts.setNoOfNextBytes(7);
-  ASSERT_THROW(bts4a = bts.getBytestream(10), logic_error);
-  ASSERT_THROW(bts4a = bts.peekBytestream(10), logic_error);
-  bts.setNoOfNextBytes(10);
   bts4b = bts.peekBytestream(10);
   bts4a = bts.getBytestream(10);
   ASSERT(bts4a==bts4b);
@@ -111,8 +99,6 @@ TEST(const_types)
   bts >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
   bts >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
   bts >> "someString";
-  bts -= 10;
-  bts/10 >> "someString";
 }
 
 TEST(test_operator)
@@ -144,8 +130,6 @@ TEST(test_operator)
   // what would have been reading past end should still return false
   ASSERT_FALSE(bts >>= "notSomeString");
   ASSERT(bts >>= "someString");
-  bts -= 10;
-  ASSERT(bts/10 >>= "someString");
 
   bts -= 10;
   Bytestream bts2;
@@ -164,22 +148,22 @@ TEST(test_method)
       << "someString";
 
   // Non-matches should not advance the read offset, matches should
-  ASSERT_FALSE(bts.nextU8(0));
-  ASSERT(bts.nextU8(1));
-  ASSERT_FALSE(bts.nextU16(0));
-  ASSERT(bts.nextU16(2));
-  ASSERT_FALSE(bts.nextU32(0));
-  ASSERT(bts.nextU32(3));
-  ASSERT_FALSE(bts.nextU64(0));
-  ASSERT(bts.nextU64(4));
-  ASSERT_FALSE(bts.nextS8(0));
-  ASSERT(bts.nextS8(-1));
-  ASSERT_FALSE(bts.nextS16(0));
-  ASSERT(bts.nextS16(-2));
-  ASSERT_FALSE(bts.nextS32(0));
-  ASSERT(bts.nextS32(-3));
-  ASSERT_FALSE(bts.nextS64(0));
-  ASSERT(bts.nextS64(-4));
+  ASSERT_FALSE(bts.next<uint8_t>(0));
+  ASSERT(bts.next<uint8_t>(1));
+  ASSERT_FALSE(bts.next<uint16_t>(0));
+  ASSERT(bts.next<uint16_t>(2));
+  ASSERT_FALSE(bts.next<uint32_t>(0));
+  ASSERT(bts.next<uint32_t>(3));
+  ASSERT_FALSE(bts.next<uint64_t>(0));
+  ASSERT(bts.next<uint64_t>(4));
+  ASSERT_FALSE(bts.next<int8_t>(0));
+  ASSERT(bts.next<int8_t>(-1));
+  ASSERT_FALSE(bts.next<int16_t>(0));
+  ASSERT(bts.next<int16_t>(-2));
+  ASSERT_FALSE(bts.next<int32_t>(0));
+  ASSERT(bts.next<int32_t>(-3));
+  ASSERT_FALSE(bts.next<int64_t>(0));
+  ASSERT(bts.next<int64_t>(-4));
 
   ASSERT_FALSE(bts.nextString("smoeString"));
   // what would have been reading past end should still return false
@@ -191,24 +175,7 @@ TEST(test_method)
   ASSERT(bts.nextBytestream(bts2));
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
 
-  bts -= 10;
-  Bytestream bts3, bts4;
-  bts3 << "sooomeString";
-  bts4 << "someStrong";
-  // inverting the comparison result should not influence length mismatch
-  ASSERT_FALSE(bts.nextBytestream(bts3, false));
-  // ...only advance the read position if the bytestreams aren't equal
-  ASSERT(bts.nextBytestream(bts4, false));
   ASSERT(bts.atEnd());
-  // inverting the comparison result should not influence length mismatch
-  ASSERT_FALSE(bts.nextBytestream(bts4, false));
-
-  bts -= 10;
-  ASSERT_FALSE(bts.peekNextBytestream(bts3));
-  ASSERT_FALSE(bts.atEnd());
-
-  ASSERT(bts.peekNextBytestream(bts2));
-  ASSERT_FALSE(bts.atEnd());
 }
 
 #define HIBIT(sign, suffix) \
@@ -297,16 +264,11 @@ TEST(partials)
       << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
       << "someString";
 
-  Bytestream bts2;
-  bts/bts.size() >> bts2;
+  Bytestream bts2 = bts.getBytestream(bts.size());
   ASSERT(bts2==bts);
 
   bts-=10;
   ASSERT(bts>>="someString");
-  bts-=10;
-  Bytestream bts3;
-  bts/10 >> bts3;
-  ASSERT(bts3>>="someString");
 }
 
 TEST(exceptions)
@@ -317,20 +279,14 @@ TEST(exceptions)
   ASSERT_THROW(bts >> (uint16_t)1, out_of_range);
   ASSERT_THROW(bts >> (uint8_t)2, Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
-  ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts.getBytestream(17), logic_error);
-  ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts.getString(2), out_of_range);
-  ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts.peekString(2), out_of_range);
-  ASSERT(bts.noOfNextBytesValid()==false);
 
   bts << "test";
-  ASSERT(bts.noOfNextBytesValid()==false);
   ASSERT_THROW(bts >> "fest", Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
 
-  ASSERT_THROW(bts/3 >> "fest", logic_error);
   ASSERT_THROW(bts.getBytestream(17), logic_error);
 }
 
@@ -383,7 +339,7 @@ TEST(floats)
   bts << (float64_t)0.0F << (float64_t)1 << (float64_t)1.1 << (float64_t)12.7
       << 0.01171875 << 3.14159F;
   bts << 0x4037000000000000;
-  bts.putF64((float64_t)666.777);
+  bts.put<float64_t>((float64_t)666.777);
   bts >> (float64_t)0.0F >> (float64_t)1  >> (float64_t)(1.1) >> (float64_t)12.7
       >> (3.0/256) >> (float32_t)3.14159;
   bts >> (float64_t)23.0 >> 666.777;
