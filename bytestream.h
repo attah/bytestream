@@ -67,7 +67,7 @@ public:
   Endianness getEndianness() const {return _endianness;}
   void setEndianness(Endianness e) {_endianness = e;}
   void reset();
-  std::string hexdump(size_t length);
+  std::string hexdump(size_t length) const;
 
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
   T get()
@@ -80,19 +80,22 @@ public:
 
   std::string getString(size_t len);
   Bytestream getBytestream(size_t len);
-  void getBytes(void* cs,  size_t len);
+  void getBytes(void* cs, size_t len);
   void getBytes(Bytestream& other,  size_t len);
+  void peekBytes(void* cs, size_t len) const ;
+  void peekBytes(Bytestream& other, size_t len) const;
 
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
-  T peek()
+  T peek() const
   {
-    T tmp = get<T>();
-    (*this) -= sizeof(T);
+    T tmp;
+    peekBytes(&tmp, sizeof(T));
+    maybeByteSwap(tmp);
     return tmp;
   }
 
-  std::string peekString(size_t len);
-  Bytestream peekBytestream(size_t len);
+  std::string peekString(size_t len) const;
+  Bytestream peekBytestream(size_t len) const;
 
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
   bool next(const T& u)
@@ -101,13 +104,13 @@ public:
     {
       return false;
     }
-    else if(u == get<T>())
+    else if(u == peek<T>())
     {
+      _after(sizeof(T));
       return true;
     }
     else
     {
-      (*this) -= sizeof(T);
       return false;
     }
   }
@@ -188,8 +191,8 @@ private:
   size_t _pos = 0;
   Endianness _endianness = BigEndian;
 
+  void _before(size_t bytesToRead) const;
   void _after(size_t bytesRead);
-  void _before(size_t bytesToRead);
 
   void putBytes(const Bytes& b);
 
