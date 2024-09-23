@@ -115,8 +115,8 @@ public:
     }
   }
 
-  bool nextString(const std::string& bts);
-  bool nextBytestream(const Bytestream& bts);
+  bool nextString(const std::string& bts, bool compareEqual=true);
+  bool nextBytestream(const Bytestream& bts, bool compareEqual=true);
 
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
   void put(T u)
