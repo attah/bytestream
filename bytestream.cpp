@@ -143,19 +143,29 @@ void Bytestream::getBytes(Bytestream& other, size_t len)
   _after(len);
 }
 
-std::string Bytestream::peekString(size_t len)
+void Bytestream::peekBytes(void* cs, size_t len) const
+ {
+  _before(len);
+  memcpy(cs, &(_data[_pos]), len);
+}
+
+void Bytestream::peekBytes(Bytestream& other, size_t len) const
+{
+  _before(len);
+  other.putBytes(&(_data[_pos]), len);
+}
+
+std::string Bytestream::peekString(size_t len) const
 {
   _before(len);
   std::string s((char*)(&(_data[_pos])), len);
-  _after(0); // Pretend like we didn't read anything
   return s;
 }
 
-Bytestream Bytestream::peekBytestream(size_t len)
+Bytestream Bytestream::peekBytestream(size_t len) const
 {
   Bytestream other = Bytestream(len);
-  getBytes(other.raw(), len);
-  (*this) -= len;
+  peekBytes(other.raw(), len);
   return other;
 }
 
@@ -168,13 +178,13 @@ bool Bytestream::nextString(const std::string& s)
     return false;
   }
 
-  if(getString(noOfNextBytes) == s)
+  if(peekString(noOfNextBytes) == s)
   {
+    _after(noOfNextBytes);
     return true;
   }
   else
   {
-    (*this) -= noOfNextBytes;
     return false;
   }
 }
@@ -251,19 +261,6 @@ Array<uint8_t> Bytestream::eject(bool prealloc)
   return tmp;
 }
 
-void Bytestream::_before(size_t bytesToRead)
-{
-  if(bytesToRead > remaining())
-  {
-    throw std::out_of_range("Tried to read past end");
-  }
-}
-
-void Bytestream::_after(size_t bytesRead)
-{
-  _pos += bytesRead;
-}
-
 Bytestream Bytestream::operator[](size_t i)
 {
   Bytestream tmp(_data+i, _size-i);
@@ -308,7 +305,7 @@ void Bytestream::reset()
   _size = 0;
 }
 
-std::string Bytestream::hexdump(size_t length)
+std::string Bytestream::hexdump(size_t length) const
 {
   std::stringstream ss;
   uint32_t addr = 0;
@@ -364,12 +361,12 @@ Bytestream& Bytestream::operator<<(const Bytestream& other)
 
 Bytestream& Bytestream::operator>>(const std::string& s)
 {
-  std::string sv = getString(s.length());
+  std::string sv = peekString(s.length());
   if(sv != s)
   {
-    (*this) -= s.length();
     throw Badmatch("Does not match const", sv, s);
   }
+  _after(s.length());
   return *this;
 }
 
@@ -386,6 +383,19 @@ std::ostream& operator<<(std::ostream& os, Bytestream& bts)
 {
   os.write((char*)bts.raw(), bts.size());
   return os;
+}
+
+void Bytestream::_before(size_t bytesToRead) const
+{
+  if(bytesToRead > remaining())
+  {
+    throw std::out_of_range("Tried to read past end");
+  }
+}
+
+void Bytestream::_after(size_t bytesRead)
+{
+  _pos += bytesRead;
 }
 
 void Bytestream::putBytes(const Bytes& b)
