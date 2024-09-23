@@ -169,7 +169,7 @@ Bytestream Bytestream::peekBytestream(size_t len) const
   return other;
 }
 
-bool Bytestream::nextString(const std::string& s)
+bool Bytestream::nextString(const std::string& s, bool compareEqual)
 {
   size_t noOfNextBytes = s.length();
 
@@ -178,7 +178,8 @@ bool Bytestream::nextString(const std::string& s)
     return false;
   }
 
-  if(peekString(noOfNextBytes) == s)
+  bool res = peekString(noOfNextBytes) == s;
+  if(res == compareEqual)
   {
     _after(noOfNextBytes);
     return true;
@@ -188,7 +189,8 @@ bool Bytestream::nextString(const std::string& s)
     return false;
   }
 }
-bool Bytestream::nextBytestream(const Bytestream& other)
+
+bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
 {
   size_t noOfNextBytes = other.size();
 
@@ -198,11 +200,15 @@ bool Bytestream::nextBytestream(const Bytestream& other)
   }
 
   bool res = memcmp(&(_data[_pos]), other.raw(), noOfNextBytes) == 0;
-  if(res)
+  if(res == compareEqual)
   {
-    *this += noOfNextBytes;
+    _after(noOfNextBytes);
+    return true;
   }
-  return res;
+  else
+  {
+    return false;
+  }
 }
 
 void Bytestream::putString(const std::string& s)

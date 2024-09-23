@@ -175,7 +175,25 @@ TEST(test_method)
   ASSERT(bts.nextBytestream(bts2));
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
 
+  bts -= 10;
+  Bytestream bts3, bts4;
+  bts3 << "sooomeString";
+  bts4 << "someStrong";
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextBytestream(bts3, false));
+  // ...only advance the read position if the bytestreams aren't equal
+  ASSERT(bts.nextBytestream(bts4, false));
   ASSERT(bts.atEnd());
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextBytestream(bts4, false));
+  bts -= 10;
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextString("sooomeString", false));
+  // ...only advance the read position if the bytestreams aren't equal
+  ASSERT(bts.nextString("someStrong", false));
+  ASSERT(bts.atEnd());
+  // inverting the comparison result should not influence length mismatch
+  ASSERT_FALSE(bts.nextString("someStrong", false));
 }
 
 #define HIBIT(sign, suffix) \
@@ -313,7 +331,7 @@ TEST(constructors)
   ASSERT(bts4 >>= "someString");
 }
 
-TEST(move_semanticcs)
+TEST(move_semantics)
 {
   Bytestream bts1("some contents");
   Bytestream bts2(std::move(bts1));
