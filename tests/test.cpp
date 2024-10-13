@@ -751,3 +751,11 @@ TEST(hexdump)
          == bts.hexdump(16));
 
 }
+
+TEST(bool_operator)
+{
+  Bytestream bts;
+  ASSERT_FALSE(bts);
+  bts << (uint32_t)0;
+  ASSERT(bts);
+}

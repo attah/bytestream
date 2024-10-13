@@ -69,6 +69,8 @@ public:
   void reset();
   std::string hexdump(size_t length) const;
 
+  operator bool();
+
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
   T get()
   {
@@ -79,6 +81,18 @@ public:
   }
 
   std::string getString(size_t len);
+
+  template<typename T, typename std::enable_if_t<std::is_integral<T>::value, bool> = true>
+  std::string getPascalString()
+  {
+    T len = get<T>();
+    if(remaining() < len)
+    {
+
+    }
+    return getString(len);
+  }
+
   Bytestream getBytestream(size_t len);
   void getBytes(void* cs, size_t len);
   void getBytes(Bytestream& other,  size_t len);

@@ -122,6 +122,7 @@ std::string Bytestream::getString(size_t len)
   _after(len);
   return s;
 }
+
 Bytestream Bytestream::getBytestream(size_t len)
 {
   Bytestream other = Bytestream(len);
@@ -352,6 +353,11 @@ std::string Bytestream::hexdump(size_t length) const
   }
 
   return ss.str();
+}
+
+Bytestream::operator bool()
+{
+  return _size != 0;
 }
 
 Bytestream& Bytestream::operator<<(const std::string& s)
