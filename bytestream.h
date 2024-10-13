@@ -69,6 +69,8 @@ public:
   void reset();
   std::string hexdump(size_t length) const;
 
+  operator bool();
+
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
   T get()
   {
