@@ -358,7 +358,7 @@ TEST(floats)
       << 0.01171875 << 3.14159F;
   bts << 0x4037000000000000;
   bts.put<float64_t>((float64_t)666.777);
-  bts >> (float64_t)0.0F >> (float64_t)1  >> (float64_t)(1.1) >> (float64_t)12.7
+  bts >> (float64_t)0.0F >> (float64_t)1 >> (float64_t)(1.1) >> (float64_t)12.7
       >> (3.0/256) >> (float32_t)3.14159;
   bts >> (float64_t)23.0 >> 666.777;
 }

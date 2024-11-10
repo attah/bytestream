@@ -83,8 +83,8 @@ public:
   std::string getString(size_t len);
   Bytestream getBytestream(size_t len);
   void getBytes(void* cs, size_t len);
-  void getBytes(Bytestream& other,  size_t len);
-  void peekBytes(void* cs, size_t len) const ;
+  void getBytes(Bytestream& other, size_t len);
+  void peekBytes(void* cs, size_t len) const;
   void peekBytes(Bytestream& other, size_t len) const;
 
   template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>

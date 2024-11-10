@@ -243,7 +243,7 @@ public:
                 ss << "DEFAULT_STRING " << #name << " \"" << name << "\"" \
                    << " (default: " << default << ")"<< std::endl;
     #define ENUM(type, name, ...) \
-                ss << "ENUM " << #type << " " << #name << " "  \
+                ss << "ENUM " << #type << " " << #name << " " \
                    << name##ToString(name) \
                    << " (" << +name << ")" << std::endl;
     #define PADDING(length) ss << "PADDING "<< length << std::endl;
