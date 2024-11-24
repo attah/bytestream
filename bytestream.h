@@ -4,15 +4,23 @@
 #include <stdexcept>
 #include <variant>
 #include <cstdint>
-#include <byteswap.h>
 #include "array.h"
-#ifndef __STDC_IEC_559__
-  #ifndef TRUST_ME_I_HAVE_GOOD_FLOATS
-    #error "Double must be IEEE 754"
-  #endif
-#endif
-#define float32_t float
-#define float64_t double
+
+#define float32_t _Float32
+#define float64_t _Float64
+
+#define FOR_FIXED_WIDTH(T) typename std::enable_if<std::disjunction<std::is_same<T, uint8_t>, \
+                                                                    std::is_same<T, uint16_t>, \
+                                                                    std::is_same<T, uint32_t>, \
+                                                                    std::is_same<T, uint64_t>, \
+                                                                    std::is_same<T, int8_t>, \
+                                                                    std::is_same<T, int16_t>, \
+                                                                    std::is_same<T, int32_t>, \
+                                                                    std::is_same<T, int64_t>, \
+                                                                    std::is_same<T, float32_t>, \
+                                                                    std::is_same<T, float64_t> \
+                                                                   >::value>::type* = nullptr
+
 
 #define BS_REASONABLE_FILE_SIZE 4096
 
@@ -71,7 +79,7 @@ public:
 
   operator bool();
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   T get()
   {
     T tmp;
@@ -87,7 +95,7 @@ public:
   void peekBytes(void* cs, size_t len) const;
   void peekBytes(Bytestream& other, size_t len) const;
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   T peek() const
   {
     T tmp;
@@ -99,7 +107,7 @@ public:
   std::string peekString(size_t len) const;
   Bytestream peekBytestream(size_t len) const;
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   bool next(const T& u)
   {
     if(remaining() < sizeof(T))
@@ -120,7 +128,7 @@ public:
   bool nextString(const std::string& bts, bool compareEqual=true);
   bool nextBytestream(const Bytestream& bts, bool compareEqual=true);
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   void put(T u)
   {
     maybeByteSwap(u);
@@ -135,7 +143,7 @@ public:
   Bytestream& operator+=(size_t i);
   Bytestream& operator-=(size_t i);
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   Bytestream& operator<<(T u)
   {
     put<T>(u);
@@ -144,7 +152,7 @@ public:
   Bytestream& operator<<(const std::string& s);
   Bytestream& operator<<(const Bytestream& other);
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   Bytestream& operator>>(T& u)
   {
     u = get<T>();
@@ -153,7 +161,7 @@ public:
   Bytestream& operator>>(std::string& s);
   Bytestream& operator>>(Bytestream& other);
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   Bytestream& operator>>(const T& u)
   {
     T v = get<T>();
@@ -169,7 +177,7 @@ public:
   }
   Bytestream& operator>>(const std::string& s);
 
-  template<typename T, typename std::enable_if_t<std::is_arithmetic<T>::value, bool> = true>
+  template <typename T, FOR_FIXED_WIDTH(T)>
   bool operator>>=(const T& u)
   {
     return next<T>(u);
