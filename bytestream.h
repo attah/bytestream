@@ -6,8 +6,8 @@
 #include <cstdint>
 #include "array.h"
 
-#define float32_t _Float32
-#define float64_t _Float64
+#define float32_t float
+#define float64_t double
 
 #define FOR_FIXED_WIDTH(T) typename std::enable_if<std::disjunction<std::is_same<T, uint8_t>, \
                                                                     std::is_same<T, uint16_t>, \
@@ -28,6 +28,9 @@ class Bytes;
 
 class Bytestream
 {
+  static_assert(sizeof(float32_t) == 4);
+  static_assert(sizeof(float64_t) == 8);
+
 public:
 
   class Badmatch : public std::invalid_argument::invalid_argument
@@ -209,10 +212,10 @@ private:
   template <typename T>
   void maybeByteSwap(T& u) const
   {
-    #if __BYTE_ORDER == __LITTLE_ENDIAN
+    #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     bool needsSwap = _endianness == Endianness::BigEndian;
-    #elif __BYTE_ORDER == __BIG_ENDIAN
-    bool needsSwap = endianness == Endianness::LittleEndian;
+    #elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+    bool needsSwap = _endianness == Endianness::LittleEndian;
     #else
     #error
     #endif
