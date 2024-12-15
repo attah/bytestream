@@ -4,55 +4,55 @@
 #include <sstream>
 #include <iomanip>
 
-Bytestream::Bytestream(Endianness e)
-: _endianness(e)
+Bytestream::Bytestream(Endianness endianness)
+: _endianness(endianness)
 {}
 
-Bytestream::Bytestream(size_t size, Endianness e)
-: _data(size), _size(size), _allocated(size), _endianness(e)
+Bytestream::Bytestream(size_t size, Endianness endianness)
+: _data(size), _size(size), _allocated(size), _endianness(endianness)
 {
 }
 
-Bytestream::Bytestream(size_t size, int pattern, Endianness e)
-: _data(size), _size(size), _allocated(size), _endianness(e)
+Bytestream::Bytestream(size_t size, int pattern, Endianness endianness)
+: _data(size), _size(size), _allocated(size), _endianness(endianness)
 {
   memset(_data, pattern, _allocated);
 }
 
-Bytestream::Bytestream(const void* data, size_t len, Endianness e)
-: _data(len), _size(len), _allocated(len), _endianness(e)
+Bytestream::Bytestream(const void* data, size_t len, Endianness endianness)
+: _data(len), _size(len), _allocated(len), _endianness(endianness)
 {
   memcpy(_data, data, len);
 }
 
-Bytestream::Bytestream(const std::string& s)
+Bytestream::Bytestream(const std::string& str)
 {
-  putString(s);
+  putString(str);
 }
 
-Bytestream::Bytestream(std::istream& is)
+Bytestream::Bytestream(std::istream& istream)
 {
-  while(!is.eof())
+  while(!istream.eof())
   {
     preallocate(BS_REASONABLE_FILE_SIZE);
-    is.read((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
-    _size += is.gcount();
+    istream.read((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
+    _size += istream.gcount();
   }
 }
 
-Bytestream::Bytestream(std::istream& is, size_t len, Endianness e)
-: _data(len), _endianness(e)
+Bytestream::Bytestream(std::istream& istream, size_t len, Endianness endianness)
+: _data(len), _endianness(endianness)
 {
-  is.read((char*)(_data.get()), len);
-  _size = is.gcount();
+  istream.read((char*)(_data.get()), len);
+  _size = istream.gcount();
 }
 
-Bytestream::Bytestream(std::initializer_list<Bytes> il, Endianness e)
+Bytestream::Bytestream(std::initializer_list<Bytes> bytesList, Endianness endianness)
 {
-  this->setEndianness(e);
-  for(Bytes b : il)
+  this->setEndianness(endianness);
+  for(const Bytes& bytes : bytesList)
   {
-    this->putBytes(b);
+    this->putBytes(bytes);
   }
 }
 
@@ -62,16 +62,12 @@ Bytestream::Bytestream(const Bytestream& rhs)
   memcpy(_data, rhs._data, _size);
 }
 
-Bytestream::Bytestream(Bytestream&& rhs)
+Bytestream::Bytestream(Bytestream&& rhs) noexcept
 : _size(rhs._size), _allocated(rhs._allocated), _pos(rhs._pos), _endianness(rhs._endianness)
 {
   _data.swap(rhs._data);
   rhs._allocated = 0;
   rhs.reset();
-}
-
-Bytestream::~Bytestream()
-{
 }
 
 bool Bytestream::operator==(const Bytestream& other) const
@@ -102,7 +98,7 @@ Bytestream& Bytestream::operator=(const Bytestream& other)
   return *this;
 }
 
-Bytestream& Bytestream::operator=(Bytestream&& other)
+Bytestream& Bytestream::operator=(Bytestream&& other) noexcept
 {
   _data = Array<uint8_t>(0);
   _data.swap(other._data);
@@ -118,9 +114,9 @@ Bytestream& Bytestream::operator=(Bytestream&& other)
 std::string Bytestream::getString(size_t len)
 {
   _before(len);
-  std::string s((char*)(&(_data[_pos])), len);
+  std::string str((char*)(&(_data[_pos])), len);
   _after(len);
-  return s;
+  return str;
 }
 
 Bytestream Bytestream::getBytestream(size_t len)
@@ -130,10 +126,10 @@ Bytestream Bytestream::getBytestream(size_t len)
   return other;
 }
 
-void Bytestream::getBytes(void* cs, size_t len)
+void Bytestream::getBytes(void* data, size_t len)
  {
   _before(len);
-  memcpy(cs, &(_data[_pos]), len);
+  memcpy(data, &(_data[_pos]), len);
   _after(len);
 }
 
@@ -144,10 +140,10 @@ void Bytestream::getBytes(Bytestream& other, size_t len)
   _after(len);
 }
 
-void Bytestream::peekBytes(void* cs, size_t len) const
+void Bytestream::peekBytes(void* data, size_t len) const
  {
   _before(len);
-  memcpy(cs, &(_data[_pos]), len);
+  memcpy(data, &(_data[_pos]), len);
 }
 
 void Bytestream::peekBytes(Bytestream& other, size_t len) const
@@ -159,8 +155,8 @@ void Bytestream::peekBytes(Bytestream& other, size_t len) const
 std::string Bytestream::peekString(size_t len) const
 {
   _before(len);
-  std::string s((char*)(&(_data[_pos])), len);
-  return s;
+  std::string str((char*)(&(_data[_pos])), len);
+  return str;
 }
 
 Bytestream Bytestream::peekBytestream(size_t len) const
@@ -170,16 +166,16 @@ Bytestream Bytestream::peekBytestream(size_t len) const
   return other;
 }
 
-bool Bytestream::nextString(const std::string& s, bool compareEqual)
+bool Bytestream::nextString(const std::string& str, bool compareEqual)
 {
-  size_t noOfNextBytes = s.length();
+  size_t noOfNextBytes = str.length();
 
   if(noOfNextBytes > remaining())
   {
     return false;
   }
 
-  bool res = peekString(noOfNextBytes) == s;
+  bool res = peekString(noOfNextBytes) == str;
   if(res == compareEqual)
   {
     _after(noOfNextBytes);
@@ -191,16 +187,16 @@ bool Bytestream::nextString(const std::string& s, bool compareEqual)
   }
 }
 
-bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
+bool Bytestream::nextBytestream(const Bytestream& bts, bool compareEqual)
 {
-  size_t noOfNextBytes = other.size();
+  size_t noOfNextBytes = bts.size();
 
   if(noOfNextBytes > remaining())
   {
     return false;
   }
 
-  bool res = memcmp(&(_data[_pos]), other.raw(), noOfNextBytes) == 0;
+  bool res = memcmp(&(_data[_pos]), bts.raw(), noOfNextBytes) == 0;
   if(res == compareEqual)
   {
     _after(noOfNextBytes);
@@ -212,20 +208,20 @@ bool Bytestream::nextBytestream(const Bytestream& other, bool compareEqual)
   }
 }
 
-void Bytestream::putString(const std::string& s)
+void Bytestream::putString(const std::string& str)
 {
-  putBytes(s.c_str(), s.length());
+  putBytes(str.c_str(), str.length());
 }
 void Bytestream::putBytestream(const Bytestream& other)
 {
   putBytes(other.raw(), other.size());
 }
 
-void Bytestream::putBytes(const void* c, size_t len)
+void Bytestream::putBytes(const void* data, size_t len)
 {
   preallocate(len);
 
-  memcpy((_data+_size), c, len);
+  memcpy((_data+_size), data, len);
   _size += len;
 }
 
@@ -268,29 +264,29 @@ Array<uint8_t> Bytestream::eject(bool prealloc)
   return tmp;
 }
 
-Bytestream Bytestream::operator[](size_t i)
+Bytestream Bytestream::operator[](size_t offset)
 {
-  Bytestream tmp(_data+i, _size-i);
+  Bytestream tmp(_data+offset, _size-offset);
   return tmp;
 }
 
-Bytestream& Bytestream::operator+=(size_t i)
+Bytestream& Bytestream::operator+=(size_t offset)
 {
-  if((_pos+i) > _size)
+  if((_pos+offset) > _size)
   {
     throw std::out_of_range("Tried to address data past end");
   }
-  _pos += i;
+  _pos += offset;
   return *this;
 }
 
-Bytestream& Bytestream::operator-=(size_t i)
+Bytestream& Bytestream::operator-=(size_t offset)
 {
-  if(i > _pos)
+  if(offset > _pos)
   {
     throw std::out_of_range("Tried to address data before start");
   }
-  _pos -= i;
+  _pos -= offset;
   return *this;
 }
 
@@ -314,7 +310,7 @@ void Bytestream::reset()
 
 std::string Bytestream::hexdump(size_t length) const
 {
-  std::stringstream ss;
+  std::stringstream out;
   uint32_t addr = 0;
 
   Bytestream tmp = peekBytestream(std::min(remaining(), length));
@@ -322,13 +318,13 @@ std::string Bytestream::hexdump(size_t length) const
   {
     std::stringstream hex;
     std::stringstream ascii;
-    ss << std::setfill('0') << std::setw(8) << std::hex << addr << ": ";
+    out << std::setfill('0') << std::setw(8) << std::hex << addr << ": ";
 
     for(size_t i = 0; i < 16; i++)
     {
-      uint8_t b = tmp.get<uint8_t>();
-      hex << std::setfill('0') << std::setw(2) << std::hex << +b;
-      ascii << ((b < '!' || b > '~') ? '.' : (char)b);
+      uint8_t byte = tmp.get<uint8_t>();
+      hex << std::setfill('0') << std::setw(2) << std::hex << +byte;
+      ascii << ((byte < '!' || byte > '~') ? '.' : (char)byte);
 
       if(i%2==1)
       {
@@ -346,23 +342,23 @@ std::string Bytestream::hexdump(size_t length) const
       }
     }
 
-    ss << hex.str()
-       << std::setfill(' ') << std::setw(42 - hex.str().length()) << " "
-       << ascii.str() << std::endl;
+    out << hex.str()
+        << std::setfill(' ') << std::setw(42 - hex.str().length()) << " "
+        << ascii.str() << std::endl;
     addr += 16;
   }
 
-  return ss.str();
+  return out.str();
 }
 
-Bytestream::operator bool()
+Bytestream::operator bool() const
 {
   return _size != 0;
 }
 
-Bytestream& Bytestream::operator<<(const std::string& s)
+Bytestream& Bytestream::operator<<(const std::string& str)
 {
-  putString(s);
+  putString(str);
   return *this;
 }
 Bytestream& Bytestream::operator<<(const Bytestream& other)
@@ -371,30 +367,30 @@ Bytestream& Bytestream::operator<<(const Bytestream& other)
   return *this;
 }
 
-Bytestream& Bytestream::operator>>(const std::string& s)
+Bytestream& Bytestream::operator>>(const std::string& str)
 {
-  std::string sv = peekString(s.length());
-  if(sv != s)
+  std::string value = peekString(str.length());
+  if(value != str)
   {
-    throw Badmatch("Does not match const", sv, s);
+    throw Badmatch("Does not match const", value, str);
   }
-  _after(s.length());
+  _after(str.length());
   return *this;
 }
 
-bool Bytestream::operator>>=(const std::string& s)
+bool Bytestream::operator>>=(const std::string& str)
 {
-  return nextString(s);
+  return nextString(str);
 }
 bool Bytestream::operator>>=(const Bytestream& other)
 {
   return nextBytestream(other);
 }
 
-std::ostream& operator<<(std::ostream& os, Bytestream& bts)
+std::ostream& operator<<(std::ostream& ostream, Bytestream& bts)
 {
-  os.write((char*)bts.raw(), bts.size());
-  return os;
+  ostream.write((char*)bts.raw(), bts.size());
+  return ostream;
 }
 
 void Bytestream::_before(size_t bytesToRead) const
@@ -410,51 +406,51 @@ void Bytestream::_after(size_t bytesRead)
   _pos += bytesRead;
 }
 
-void Bytestream::putBytes(const Bytes& b)
+void Bytestream::putBytes(const Bytes& bytes)
 {
-  if(std::holds_alternative<uint8_t>(b))
+  if(std::holds_alternative<uint8_t>(bytes))
   {
-    *this << std::get<uint8_t>(b);
+    *this << std::get<uint8_t>(bytes);
   }
-  else if(std::holds_alternative<uint16_t>(b))
+  else if(std::holds_alternative<uint16_t>(bytes))
   {
-    *this << std::get<uint16_t>(b);
+    *this << std::get<uint16_t>(bytes);
   }
-  else if(std::holds_alternative<uint32_t>(b))
+  else if(std::holds_alternative<uint32_t>(bytes))
   {
-    *this << std::get<uint32_t>(b);
+    *this << std::get<uint32_t>(bytes);
   }
-  else if(std::holds_alternative<uint64_t>(b))
+  else if(std::holds_alternative<uint64_t>(bytes))
   {
-    *this << std::get<uint64_t>(b);
+    *this << std::get<uint64_t>(bytes);
   }
-  else if(std::holds_alternative<int8_t>(b))
+  else if(std::holds_alternative<int8_t>(bytes))
   {
-    *this << std::get<int8_t>(b);
+    *this << std::get<int8_t>(bytes);
   }
-  else if(std::holds_alternative<int16_t>(b))
+  else if(std::holds_alternative<int16_t>(bytes))
   {
-    *this << std::get<int16_t>(b);
+    *this << std::get<int16_t>(bytes);
   }
-  else if(std::holds_alternative<int32_t>(b))
+  else if(std::holds_alternative<int32_t>(bytes))
   {
-    *this << std::get<int32_t>(b);
+    *this << std::get<int32_t>(bytes);
   }
-  else if(std::holds_alternative<int64_t>(b))
+  else if(std::holds_alternative<int64_t>(bytes))
   {
-    *this << std::get<int64_t>(b);
+    *this << std::get<int64_t>(bytes);
   }
-  else if(std::holds_alternative<float32_t>(b))
+  else if(std::holds_alternative<float32_t>(bytes))
   {
-    *this << std::get<float32_t>(b);
+    *this << std::get<float32_t>(bytes);
   }
-  else if(std::holds_alternative<float64_t>(b))
+  else if(std::holds_alternative<float64_t>(bytes))
   {
-    *this << std::get<float64_t>(b);
+    *this << std::get<float64_t>(bytes);
   }
-  else if(std::holds_alternative<std::string>(b))
+  else if(std::holds_alternative<std::string>(bytes))
   {
-    *this << std::get<std::string>(b);
+    *this << std::get<std::string>(bytes);
   }
   else
   {
