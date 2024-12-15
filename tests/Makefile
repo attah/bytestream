@@ -1,6 +1,8 @@
 LDFLAGS = -Wl,--export-dynamic
 CXXFLAGS = -std=c++17 -g -pedantic -Wall -Werror -Wextra
 
+CLANG_TIDY ?= clang-tidy
+
 ifeq ($(shell uname -s),Linux)
 	LDFLAGS += -ldl
 endif
@@ -14,5 +16,5 @@ test:
 clean:
 	rm -f test
 
-analyze:
-	clang++ $(CXXFLAGS) --analyze ../bytestream.cpp
+tidy:
+	$(CLANG_TIDY) ../bytestream.cpp -- $(CXXFLAGS)
