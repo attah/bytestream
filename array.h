@@ -3,6 +3,7 @@
 
 #include <memory>
 
+// NOLINTBEGIN(*-avoid-c-arrays)
 template<typename T>
 class Array : public std::unique_ptr<T[]>
 {
@@ -15,4 +16,5 @@ public:
   }
 };
 
+// NOLINTEND(*-avoid-c-arrays)
 #endif //ARRAY_H

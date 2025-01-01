@@ -9,17 +9,18 @@
 #define float32_t float
 #define float64_t double
 
-#define FOR_FIXED_WIDTH(T) typename std::enable_if<std::disjunction<std::is_same<T, uint8_t>, \
-                                                                    std::is_same<T, uint16_t>, \
-                                                                    std::is_same<T, uint32_t>, \
-                                                                    std::is_same<T, uint64_t>, \
-                                                                    std::is_same<T, int8_t>, \
-                                                                    std::is_same<T, int16_t>, \
-                                                                    std::is_same<T, int32_t>, \
-                                                                    std::is_same<T, int64_t>, \
-                                                                    std::is_same<T, float32_t>, \
-                                                                    std::is_same<T, float64_t> \
-                                                                   >::value>::type* = nullptr
+#define FOR_FIXED_WIDTH(T) \
+  typename std::enable_if_t<std::disjunction_v<std::is_same<T, uint8_t>, \
+                                               std::is_same<T, uint16_t>, \
+                                               std::is_same<T, uint32_t>, \
+                                               std::is_same<T, uint64_t>, \
+                                               std::is_same<T, int8_t>, \
+                                               std::is_same<T, int16_t>, \
+                                               std::is_same<T, int32_t>, \
+                                               std::is_same<T, int64_t>, \
+                                               std::is_same<T, float32_t>, \
+                                               std::is_same<T, float64_t> \
+                                               >>* = nullptr
 
 
 #define BS_REASONABLE_FILE_SIZE 4096
@@ -36,10 +37,10 @@ public:
   class Badmatch : public std::invalid_argument::invalid_argument
   {
   public:
-    Badmatch(std::string str, std::string value, std::string expected) :
+    Badmatch(const std::string& str, const std::string& value, const std::string& expected) :
         invalid_argument(str+": "+value+" != "+expected) {}
     template<typename T>
-    Badmatch(std::string str, T value, T expected) :
+    Badmatch(const std::string& str, T value, T expected) :
         invalid_argument(str+": "+std::to_string(value)+" != "+std::to_string(expected)) {}
 
   };
@@ -207,7 +208,7 @@ private:
   void _before(size_t bytesToRead) const;
   void _after(size_t bytesRead);
 
-  void putBytes(const Bytes& b);
+  void putBytes(const Bytes& bytes);
 
   template <typename T>
   void maybeByteSwap(T& value) const
@@ -221,10 +222,10 @@ private:
     #endif
     if(needsSwap)
     {
-      uint8_t* const p = reinterpret_cast<uint8_t*>(&value);
+      uint8_t* const ptr = reinterpret_cast<uint8_t*>(&value);
       for(size_t i = 0; i < sizeof(T) / 2; i++)
       {
-        std::swap(p[i], p[sizeof(T) - i - 1]);
+        std::swap(ptr[i], ptr[sizeof(T) - i - 1]);
       }
     }
   }
@@ -233,7 +234,7 @@ private:
 
 };
 
-std::ostream& operator<<(std::ostream& os, Bytestream& bts);
+std::ostream& operator<<(std::ostream& ostream, Bytestream& bts);
 
 class Bytes: public std::variant<uint8_t, uint16_t, uint32_t, uint64_t,
                                  int8_t, int16_t, int32_t, int64_t,
