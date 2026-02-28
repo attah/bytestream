@@ -35,7 +35,7 @@ Bytestream::Bytestream(std::istream& istream)
   while(!istream.eof())
   {
     preallocate(BS_REASONABLE_FILE_SIZE);
-    istream.read((char*)(_data+_size), BS_REASONABLE_FILE_SIZE);
+    istream.read(reinterpret_cast<char*>(_data+_size), BS_REASONABLE_FILE_SIZE);
     _size += istream.gcount();
   }
 }
@@ -43,7 +43,7 @@ Bytestream::Bytestream(std::istream& istream)
 Bytestream::Bytestream(std::istream& istream, size_t len, Endianness endianness)
 : _data(len), _endianness(endianness)
 {
-  istream.read((char*)(_data.get()), len);
+  istream.read(reinterpret_cast<char*>(_data.get()), len);
   _size = istream.gcount();
 }
 
@@ -114,7 +114,7 @@ Bytestream& Bytestream::operator=(Bytestream&& other) noexcept
 std::string Bytestream::getString(size_t len)
 {
   _before(len);
-  std::string str((char*)(&(_data[_pos])), len);
+  std::string str(reinterpret_cast<char*>(&(_data[_pos])), len);
   _after(len);
   return str;
 }
@@ -155,7 +155,7 @@ void Bytestream::peekBytes(Bytestream& other, size_t len) const
 std::string Bytestream::peekString(size_t len) const
 {
   _before(len);
-  std::string str((char*)(&(_data[_pos])), len);
+  std::string str(reinterpret_cast<char*>(&(_data[_pos])), len);
   return str;
 }
 
@@ -324,7 +324,7 @@ std::string Bytestream::hexdump(size_t length) const
     {
       uint8_t byte = tmp.get<uint8_t>();
       hex << std::setfill('0') << std::setw(2) << std::hex << +byte;
-      ascii << ((byte < '!' || byte > '~') ? '.' : (char)byte);
+      ascii << ((byte < '!' || byte > '~') ? '.' : static_cast<char>(byte));
 
       if(i%2==1)
       {
@@ -389,7 +389,7 @@ bool Bytestream::operator>>=(const Bytestream& other)
 
 std::ostream& operator<<(std::ostream& ostream, Bytestream& bts)
 {
-  ostream.write((char*)bts.raw(), bts.size());
+  ostream.write(reinterpret_cast<char*>(bts.raw()), bts.size());
   return ostream;
 }
 

@@ -91,7 +91,7 @@ public:
 
   #define CODABLE(name)
 
-  void decodeFrom(Bytestream& bts)
+  void decodeFrom(Bytestream& bts) override
   {
     #define FIELD(type, name) bts >> name;
     #define DEFAULT_FIELD(type, name, default) FIELD(type, name)
@@ -114,7 +114,7 @@ public:
   #undef ENUM
   #undef PADDING
 
-  void encodeInto(Bytestream& bts) const
+  void encodeInto(Bytestream& bts) const override
   {
     bts.preallocate(encodedSize());
     #define FIELD(type, name) bts << name;
@@ -130,7 +130,7 @@ public:
     #include CODABLE_FILE
   }
 
-  Bytestream encode() const
+  Bytestream encode() const override
   {
     Bytestream bts;
     encodeInto(bts);
@@ -145,7 +145,7 @@ public:
   #undef ENUM
   #undef PADDING
 
-  size_t encodedSize() const
+  size_t encodedSize() const override
   {
     size_t size = 0;
     #define FIELD(type, name) size += sizeof(type);
@@ -226,7 +226,7 @@ public:
   #undef ENUM_VALUE
   #undef PADDING
 
-  std::string describe() const
+  std::string describe() const override
   {
     std::stringstream ss;
     #define FIELD(type, name) \

@@ -6,8 +6,8 @@ using namespace std;
 TEST(get_operator)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   uint8_t a = 0;
@@ -41,8 +41,8 @@ TEST(get_operator)
 TEST(get_methods)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   ASSERT(bts.peek<uint8_t>()==1);
@@ -92,39 +92,39 @@ TEST(get_methods)
 TEST(const_types)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
-  bts >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
-  bts >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
+  bts >> uint8_t{1} >> uint16_t{2} >> uint32_t{3} >> uint64_t{4};
+  bts >> int8_t{-1} >> int16_t{-2} >> int32_t{-3} >> int64_t{-4};
   bts >> "someString";
 }
 
 TEST(test_operator)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   // Non-matches should not advance the read offset, matches should
-  ASSERT_FALSE(bts >>= (uint8_t)0);
-  ASSERT(bts >>= (uint8_t)1);
-  ASSERT_FALSE(bts >>= (uint16_t)0);
-  ASSERT(bts >>= (uint16_t)2);
-  ASSERT_FALSE(bts >>= (uint32_t)0);
-  ASSERT(bts >>= (uint32_t)3);
-  ASSERT_FALSE(bts >>= (uint64_t)0);
-  ASSERT(bts >>= (uint64_t)4);
-  ASSERT_FALSE(bts >>= (int8_t)0);
-  ASSERT(bts >>= (int8_t)-1);
-  ASSERT_FALSE(bts >>= (int16_t)0);
-  ASSERT(bts >>= (int16_t)-2);
-  ASSERT_FALSE(bts >>= (int32_t)0);
-  ASSERT(bts >>= (int32_t)-3);
-  ASSERT_FALSE(bts >>= (int64_t)0);
-  ASSERT(bts >>= (int64_t)-4);
+  ASSERT_FALSE(bts >>= uint8_t{0});
+  ASSERT(bts >>= uint8_t{1});
+  ASSERT_FALSE(bts >>= uint16_t{0});
+  ASSERT(bts >>= uint16_t{2});
+  ASSERT_FALSE(bts >>= uint32_t{0});
+  ASSERT(bts >>= uint32_t{3});
+  ASSERT_FALSE(bts >>= uint64_t{0});
+  ASSERT(bts >>= uint64_t{4});
+  ASSERT_FALSE(bts >>= int8_t{0});
+  ASSERT(bts >>= int8_t{-1});
+  ASSERT_FALSE(bts >>= int16_t{0});
+  ASSERT(bts >>= int16_t{-2});
+  ASSERT_FALSE(bts >>= int32_t{0});
+  ASSERT(bts >>= int32_t{-3});
+  ASSERT_FALSE(bts >>= int64_t{0});
+  ASSERT(bts >>= int64_t{-4});
 
   ASSERT_FALSE(bts >>= "smoeString");
   // what would have been reading past end should still return false
@@ -136,15 +136,15 @@ TEST(test_operator)
   bts2 << "someString";
   ASSERT(bts >>= bts2);
   ASSERT_FALSE(bts >>= bts2); // already consumed
-  ASSERT_FALSE(bts >>= (uint8_t)1); // empty
+  ASSERT_FALSE(bts >>= uint8_t{1}); // empty
 
 }
 
 TEST(test_method)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   // Non-matches should not advance the read offset, matches should
@@ -176,7 +176,8 @@ TEST(test_method)
   ASSERT_FALSE(bts.nextBytestream(bts2)); // already consumed
 
   bts -= 10;
-  Bytestream bts3, bts4;
+  Bytestream bts3;
+  Bytestream bts4;
   bts3 << "sooomeString";
   bts4 << "someStrong";
   // inverting the comparison result should not influence length mismatch
@@ -197,24 +198,22 @@ TEST(test_method)
 }
 
 #define HIBIT(sign, suffix) \
-  (sign##suffix)((uint##suffix)1<<(sizeof(sign##suffix)*8-1))
+  (sign##suffix)((uint##suffix)1<<((sizeof(sign##suffix)*8)-1))
 
 TEST(limits)
 {
   Bytestream bts;
       // 0xff...
-  bts << (uint8_t)255 << (uint16_t)65535 << (uint32_t)4294967295UL
-      << (uint64_t)18446744073709551615ULL
-      << (int8_t)-1 << (int16_t)-1 << (int32_t)-1 << (int64_t)-1
+  bts << uint8_t{255} << uint16_t{65535} << uint32_t{4294967295}
+      << uint64_t{18446744073709551615ULL}
+      << int8_t{-1} << int16_t{-1} << int32_t{-1} << int64_t{-1}
       // 0x80...
-      << (int8_t)-128 << (int16_t)-32768 << (int32_t)-2147483648UL
-      << (int64_t)-9223372036854775808ULL;
+      << int8_t{-128} << int16_t{-32768} << int32_t{-2147483648}
+      << int64_t{-9223372036854775807 - 1}; // Well, this is stupid
 
       // 0xff...
-  bts >> (uint8_t)~0 >> (uint16_t)~0 >> (uint32_t)~0 >> (uint64_t)~0;
-  bts >> (int8_t)~0 >> (int16_t)~0 >> (int32_t)~0 >> (int64_t)~0;
-  bts -= 15;
-  bts >> (uint8_t)~0 >> (uint16_t)~0 >> (uint32_t)~0 >> (uint64_t)~0;
+  bts >> uint8_t{0xff} >> uint16_t{0xffff} >> uint32_t{0xffffffff} >> uint64_t{0xffffffffffffffff};
+  bts >> uint8_t{0xff} >> uint16_t{0xffff} >> uint32_t{0xffffffff} >> uint64_t{0xffffffffffffffff};
 
       // 0x80...
   bts >> HIBIT(int,8_t) >> HIBIT(int,16_t) >> HIBIT(int,32_t)
@@ -227,14 +226,14 @@ TEST(limits)
 TEST(position_arithmetics)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   bts += 15;
-  ASSERT(bts >>= (int8_t)-1);
+  ASSERT(bts >>= int8_t{-1});
   bts -= 9;
-  bts >> (uint64_t)4;
+  bts >> uint64_t{4};
   bts = bts[30];
   ASSERT(bts.pos()==0);
   ASSERT(bts.size()==10);
@@ -254,8 +253,8 @@ TEST(position_arithmetics)
 TEST(copying)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
   Bytestream bts2(bts);
   ASSERT(bts2==bts);
@@ -278,8 +277,8 @@ TEST(copying)
 TEST(partials)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   Bytestream bts2 = bts.getBytestream(bts.size());
@@ -292,10 +291,10 @@ TEST(partials)
 TEST(exceptions)
 {
   Bytestream bts;
-  bts << (uint8_t)1;
+  bts << uint8_t{1};
   size_t pos_before = bts.pos();
-  ASSERT_THROW(bts >> (uint16_t)1, out_of_range);
-  ASSERT_THROW(bts >> (uint8_t)2, Bytestream::Badmatch);
+  ASSERT_THROW(bts >> uint16_t{1}, out_of_range);
+  ASSERT_THROW(bts >> uint8_t{2}, Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
   ASSERT_THROW(bts.getBytestream(17), logic_error);
   ASSERT_THROW(bts.getString(2), out_of_range);
@@ -313,7 +312,7 @@ TEST(constructors)
   Bytestream bts(15, 0);
   ASSERT(bts.size()==15);
   ASSERT(bts.pos()==0);
-  bts >> (uint8_t)0 >> (uint16_t)0 >> (uint32_t)0 >> (uint64_t)0;
+  bts >> uint8_t{0} >> uint16_t{0} >> uint32_t{0} >> uint64_t{0};
   ASSERT(bts.atEnd());
 
   const char* cs = "someString";
@@ -354,31 +353,31 @@ TEST(move_semantics)
 TEST(floats)
 {
   Bytestream bts;
-  bts << (float64_t)0.0 << (float64_t)1 << (float64_t)1.1 << (float64_t)12.7
-      << (float64_t)0.01171875 << (float32_t)3.14159;
+  bts << float64_t{0.0} << float64_t{1} << float64_t{1.1} << float64_t{12.7}
+      << float64_t{0.01171875} << float32_t{3.14159};
   bts << 0x4037000000000000;
-  bts.put<float64_t>((float64_t)666.777);
-  bts >> (float64_t)0.0 >> (float64_t)1 >> (float64_t)(1.1) >> (float64_t)12.7
-      >> (float64_t)(3.0/256) >> (float32_t)3.14159;
-  bts >> (float64_t)23.0 >> (float64_t)666.777;
+  bts.put<float64_t>(float64_t{666.777});
+  bts >> float64_t{0.0} >> float64_t{1} >> float64_t{1.1} >> float64_t{12.7}
+      >> float64_t{3.0/256} >> float32_t{3.14159};
+  bts >> float64_t{23.0} >> float64_t{666.777};
 }
 
 TEST(endianness)
 {
   Bytestream bts;
   ASSERT(bts.getEndianness()==Bytestream::BigEndian);
-  bts << (uint64_t)0x0102030405060708 << (uint32_t)0x11121314
-      << (uint16_t)0x2122 << (uint8_t)0x31 << "test";
+  bts << uint64_t{0x0102030405060708} << uint32_t{0x11121314}
+      << uint16_t{0x2122} << uint8_t{0x31} << "test";
   bts.setEndianness(Bytestream::LittleEndian);
-  bts >> (uint64_t)0x0807060504030201 >> (uint32_t)0x14131211
-      >> (uint16_t)0x2221 >> (uint8_t)0x31 >> "test";
+  bts >> uint64_t{0x0807060504030201} >> uint32_t{0x14131211}
+      >> uint16_t{0x2221} >> uint8_t{0x31} >> "test";
 
   uint8_t sample[4] = {0x44, 0x33, 0x22, 0x11};
   Bytestream bts2(sample, 4, Bytestream::LittleEndian);
-  bts2 >> (uint32_t)0x11223344;
+  bts2 >> uint32_t{0x11223344};
   bts2.setPos(0);
   bts2.setEndianness(Bytestream::BigEndian);
-  bts2 >> (uint32_t)0x44332211;
+  bts2 >> uint32_t{0x44332211};
 
   std::string text = "test";
   Bytestream bts3(text.c_str(), text.length(), Bytestream::LittleEndian);
@@ -408,8 +407,8 @@ TEST(mixed_eandian)
 
   Bytestream bts(shp, 100);
 
-  bts >> (int32_t)0x0000270a;
-  bts >> (int32_t)0 >> (int32_t)0 >> (int32_t)0 >> (int32_t)0 >> (int32_t)0;
+  bts >> int32_t{0x0000270a};
+  bts >> int32_t{0} >> int32_t{0} >> int32_t{0} >> int32_t{0} >> int32_t{0};
 
   const int32_t length = 92582;
   const int32_t version = 1000;
@@ -420,16 +419,16 @@ TEST(mixed_eandian)
   bts.setEndianness(Bytestream::LittleEndian);
   bts >> version >> shape_type;
 
-  bts >> (float64_t)465767.471 >> (float64_t)6395322.414
-      >> (float64_t)631000.000 >> (float64_t)6542410.613;
-  bts >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0 >> (float64_t)0.0;
+  bts >> float64_t{465767.471} >> float64_t{6395322.414}
+      >> float64_t{631000.000} >> float64_t{6542410.613};
+  bts >> float64_t{0.0} >> float64_t{0.0} >> float64_t{0.0} >> float64_t{0.0};
 }
 
 TEST(eject)
 {
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
       << "someString";
 
   Bytestream bts2 = bts;
@@ -478,12 +477,12 @@ TEST(codable)
   ASSERT(cod.s2 == "");
 
   Bytestream bts;
-  bts << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-      << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
-      << "someString" << (float32_t)1.1 << (float64_t)-2.2
+  bts << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+      << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
+      << "someString" << float32_t{1.1} << float64_t{-2.2}
          // Null padding so encoded comparison works
       << std::string(6, 0) << "short" << std::string(5, 0) << "match"
-      << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4;
+      << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4};
 
   cod.decodeFrom(bts);
 
@@ -501,7 +500,7 @@ TEST(codable)
   cod2.g = -3;
   cod2.h = -4;
   cod2.s = "someString";
-  cod2.f1 = (float32_t)1.1;
+  cod2.f1 = float32_t{1.1};
   cod2.f2 = -2.2;
   cod2.s2 = "short";
 
@@ -570,47 +569,47 @@ TEST(codable)
 
 TEST(initializer_list)
 {
-  Bytestream bts({(uint8_t)1, (uint16_t)2, (uint32_t)3, (uint64_t)4,
-                  (int8_t)-1, (int16_t)-2, (int32_t)-3, (int64_t)-4,
-                  (float32_t)1.1, (float64_t)2.2,
+  Bytestream bts({uint8_t{1}, uint16_t{2}, uint32_t{3}, uint64_t{4},
+                  int8_t{-1}, int16_t{-2}, int32_t{-3}, int64_t{-4},
+                  float32_t{1.1}, float64_t{2.2},
                   std::string("someString")});
 
-  bts >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
-  bts >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
-  bts >> (float32_t)1.1 >> (float64_t)2.2;
+  bts >> uint8_t{1} >> uint16_t{2} >> uint32_t{3} >> uint64_t{4};
+  bts >> int8_t{-1} >> int16_t{-2} >> int32_t{-3} >> int64_t{-4};
+  bts >> float32_t{1.1} >> float64_t{2.2};
   bts >> "someString";
 
-  Bytestream bts2 = {(uint8_t)1, (uint16_t)2, (uint32_t)3, (uint64_t)4,
-                     (int8_t)-1, (int16_t)-2, (int32_t)-3, (int64_t)-4,
-                     (float32_t)1.1, (float64_t)2.2,
+  Bytestream bts2 = {uint8_t{1}, uint16_t{2}, uint32_t{3}, uint64_t{4},
+                     int8_t{-1}, int16_t{-2}, int32_t{-3}, int64_t{-4},
+                     float32_t{1.1}, float64_t{2.2},
                      std::string("someString")};
   ASSERT(bts2==bts);
 
-  Bytestream bts_le({(uint8_t)1, (uint16_t)2, (uint32_t)3, (uint64_t)4,
-                     (int8_t)-1, (int16_t)-2, (int32_t)-3, (int64_t)-4,
-                     (float32_t)1.1, (float64_t)2.2,
+  Bytestream bts_le({uint8_t{1}, uint16_t{2}, uint32_t{3}, uint64_t{4},
+                     int8_t{-1}, int16_t{-2}, int32_t{-3}, int64_t{-4},
+                     float32_t{1.1}, float64_t{2.2},
                      std::string("someString")}, Bytestream::LittleEndian);
 
   ASSERT(bts_le.getEndianness() == Bytestream::LittleEndian);
 
-  Bytestream ManuallyFlipped = {(uint8_t)1, (uint16_t)0x0200,
-                                (uint32_t)0x03000000,
-                                (uint64_t)0x0400000000000000};
+  Bytestream ManuallyFlipped = {uint8_t{1}, uint16_t{0x0200},
+                                uint32_t{0x03000000},
+                                uint64_t{0x0400000000000000}};
 
   ASSERT(bts_le >>= ManuallyFlipped);
 
   bts_le.setPos(0);
 
-  bts_le >> (uint8_t)1 >> (uint16_t)2 >> (uint32_t)3 >> (uint64_t)4;
-  bts_le >> (int8_t)-1 >> (int16_t)-2 >> (int32_t)-3 >> (int64_t)-4;
-  bts_le >> (float32_t)1.1 >> (float64_t)2.2;
+  bts_le >> uint8_t{1} >> uint16_t{2} >> uint32_t{3} >> uint64_t{4};
+  bts_le >> int8_t{-1} >> int16_t{-2} >> int32_t{-3} >> int64_t{-4};
+  bts_le >> float32_t{1.1} >> float64_t{2.2};
   bts_le >> "someString";
 
   Bytestream bts_le2;
   bts_le2.setEndianness(Bytestream::LittleEndian);
-  bts_le2 << (uint8_t)1 << (uint16_t)2 << (uint32_t)3 << (uint64_t)4
-          << (int8_t)-1 << (int16_t)-2 << (int32_t)-3 << (int64_t)-4
-          << (float32_t)1.1 << (float64_t)2.2
+  bts_le2 << uint8_t{1} << uint16_t{2} << uint32_t{3} << uint64_t{4}
+          << int8_t{-1} << int16_t{-2} << int32_t{-3} << int64_t{-4}
+          << float32_t{1.1} << float64_t{2.2}
           << "someString";
 
   ASSERT(bts_le == bts_le2);
@@ -618,7 +617,7 @@ TEST(initializer_list)
 
 TEST(bytes)
 {
-  Bytes b1((uint8_t)1);
+  Bytes b1(uint8_t{1});
   Bytes b2(b1);
   Bytes b3 = b2;
 
@@ -627,7 +626,7 @@ TEST(bytes)
   Bytes bs3 = bs2;
 
   Bytestream bts({b1, b2, b3, bs1, bs2, bs3});
-  bts >> (uint8_t)1 >> (uint8_t)1 >> (uint8_t)1
+  bts >> uint8_t{1} >> uint8_t{1} >> uint8_t{1}
       >> "someString" >> "someString" >> "someString";
 }
 
@@ -636,7 +635,7 @@ TEST(reset)
   Bytestream bts;
   ASSERT(bts.size() == 0);
   ASSERT(bts.atEnd());
-  bts << (uint64_t)42;
+  bts << uint64_t{42};
   ASSERT(bts.size() == 8);
   bts.reset();
   ASSERT(bts.size() == 0);
@@ -690,14 +689,14 @@ TEST(large_iostream)
 TEST(hexdump)
 {
   Bytestream bts;
-  bts << (uint8_t)0x00 << (uint8_t)0x01 << (uint8_t)0x02 << (uint8_t)0x03
-      << (uint8_t)0x04 << (uint8_t)0x05 << (uint8_t)0x06 << (uint8_t)0x07
-      << (uint8_t)0x08 << (uint8_t)0x09 << (uint8_t)0x0a << (uint8_t)0x0b
-      << (uint8_t)0x0c << (uint8_t)0x0d << (uint8_t)0x0e << (uint8_t)0x0f
-      << (uint8_t)0x00 << (uint8_t)0x11 << (uint8_t)0x22 << (uint8_t)0x33
-      << (uint8_t)0x44 << (uint8_t)0x55 << (uint8_t)0x66 << (uint8_t)0x77
-      << (uint8_t)0x88 << (uint8_t)0x99 << (uint8_t)0xaa << (uint8_t)0xbb
-      << (uint8_t)0xcc << (uint8_t)0xdd << (uint8_t)0xee << (uint8_t)0xff;
+  bts << uint8_t{0x00} << uint8_t{0x01} << uint8_t{0x02} << uint8_t{0x03}
+      << uint8_t{0x04} << uint8_t{0x05} << uint8_t{0x06} << uint8_t{0x07}
+      << uint8_t{0x08} << uint8_t{0x09} << uint8_t{0x0a} << uint8_t{0x0b}
+      << uint8_t{0x0c} << uint8_t{0x0d} << uint8_t{0x0e} << uint8_t{0x0f}
+      << uint8_t{0x00} << uint8_t{0x11} << uint8_t{0x22} << uint8_t{0x33}
+      << uint8_t{0x44} << uint8_t{0x55} << uint8_t{0x66} << uint8_t{0x77}
+      << uint8_t{0x88} << uint8_t{0x99} << uint8_t{0xaa} << uint8_t{0xbb}
+      << uint8_t{0xcc} << uint8_t{0xdd} << uint8_t{0xee} << uint8_t{0xff};
 
   ASSERT("00000000: 0001 0203 0405 0607  0809 0a0b 0c0d 0e0f  ........ ........\n"
          == bts.hexdump(16));
@@ -756,6 +755,6 @@ TEST(bool_operator)
 {
   Bytestream bts;
   ASSERT_FALSE(bts);
-  bts << (uint32_t)0;
+  bts << uint32_t{0};
   ASSERT(bts);
 }
