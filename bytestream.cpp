@@ -314,7 +314,7 @@ std::string Bytestream::hexdump(size_t length) const
   uint32_t addr = 0;
 
   Bytestream tmp = peekBytestream(std::min(remaining(), length));
-  while(tmp.remaining())
+  while(!tmp.atEnd())
   {
     std::stringstream hex;
     std::stringstream ascii;
@@ -330,13 +330,13 @@ std::string Bytestream::hexdump(size_t length) const
       {
         hex << " ";
       }
-      if(i==7 && tmp.remaining())
+      if(i==7 && !tmp.atEnd())
       {
         hex << " ";
         ascii << " ";
       }
 
-      if(!tmp.remaining())
+      if(tmp.atEnd())
       {
         break;
       }
