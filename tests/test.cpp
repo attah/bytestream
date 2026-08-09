@@ -296,15 +296,15 @@ TEST(exceptions)
   ASSERT_THROW(bts >> uint16_t{1}, out_of_range);
   ASSERT_THROW(bts >> uint8_t{2}, Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
-  ASSERT_THROW(bts.getBytestream(17), logic_error);
-  ASSERT_THROW(bts.getString(2), out_of_range);
-  ASSERT_THROW(bts.peekString(2), out_of_range);
+  ASSERT_THROW((void)bts.getBytestream(17), logic_error);
+  ASSERT_THROW((void)bts.getString(2), out_of_range);
+  ASSERT_THROW((void)bts.peekString(2), out_of_range);
 
   bts << "test";
   ASSERT_THROW(bts >> "fest", Bytestream::Badmatch);
   ASSERT(bts.pos()==pos_before);
 
-  ASSERT_THROW(bts.getBytestream(17), logic_error);
+  ASSERT_THROW((void)bts.getBytestream(17), logic_error);
 }
 
 TEST(constructors)
