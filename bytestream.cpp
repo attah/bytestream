@@ -114,7 +114,7 @@ Bytestream& Bytestream::operator=(Bytestream&& other) noexcept
 std::string Bytestream::getString(size_t len)
 {
   _before(len);
-  std::string str(reinterpret_cast<char*>(&(_data[_pos])), len);
+  std::string str(reinterpret_cast<char*>(&_data[_pos]), len);
   _after(len);
   return str;
 }
@@ -129,33 +129,33 @@ Bytestream Bytestream::getBytestream(size_t len)
 void Bytestream::getBytes(void* data, size_t len)
  {
   _before(len);
-  memcpy(data, &(_data[_pos]), len);
+  memcpy(data, &_data[_pos], len);
   _after(len);
 }
 
 void Bytestream::getBytes(Bytestream& other, size_t len)
 {
   _before(len);
-  other.putBytes(&(_data[_pos]), len);
+  other.putBytes(&_data[_pos], len);
   _after(len);
 }
 
 void Bytestream::peekBytes(void* data, size_t len) const
  {
   _before(len);
-  memcpy(data, &(_data[_pos]), len);
+  memcpy(data, &_data[_pos], len);
 }
 
 void Bytestream::peekBytes(Bytestream& other, size_t len) const
 {
   _before(len);
-  other.putBytes(&(_data[_pos]), len);
+  other.putBytes(&_data[_pos], len);
 }
 
 std::string Bytestream::peekString(size_t len) const
 {
   _before(len);
-  std::string str(reinterpret_cast<char*>(&(_data[_pos])), len);
+  std::string str(reinterpret_cast<char*>(&_data[_pos]), len);
   return str;
 }
 
@@ -196,7 +196,7 @@ bool Bytestream::nextBytestream(const Bytestream& bts, bool compareEqual)
     return false;
   }
 
-  bool res = memcmp(&(_data[_pos]), bts.raw(), noOfNextBytes) == 0;
+  bool res = memcmp(&_data[_pos], bts.raw(), noOfNextBytes) == 0;
   if(res == compareEqual)
   {
     _after(noOfNextBytes);
